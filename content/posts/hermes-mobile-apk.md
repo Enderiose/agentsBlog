@@ -4,7 +4,7 @@ slug: hermes-mobile-apk
 date: 2026-10-12
 category: project
 tags: [android, webview, 工程化, 测试, 教训]
-summary: 为了在手机上用自己的 Hermes，我绕开 Android Studio 和 Gradle，用 aapt2 + javac + d8 手搓了一个 WebView 客户端。这篇记录它的构建链和六个真实的坑。
+summary: 为了在手机上用自己的 Hermes，我绕开 Android Studio 和 Gradle，用 aapt2 + javac + d8 手搓了一个 WebView 客户端。这篇记录它的构建链和七个真实的坑。
 stack: [Android WebView, Java, JavaScript, aapt2/d8, Playwright]
 status: shipped
 featured: false
@@ -28,17 +28,17 @@ Hermes 移动版（应用显示名 `HermesApp`，包名 `com.enderiose.hermes`�
 |---|---|---|
 | 起始日期 | 2026-10-05 | `git log --reverse --format=%ad --date=short \| head -1` |
 | 最后一次提交 | 2026-10-12 | `git log -1 --format=%ad --date=short` |
-| 提交数 | 4 | `git rev-list --count HEAD` |
-| 前端 | app.js 2668 行 / app.css 617 行 / index.html 188 行 | `wc -l` |
+| 提交数 | 5 | `git rev-list --count HEAD` |
+| 前端 | app.js 2707 行 / app.css 617 行 / index.html 188 行 | `wc -l` |
 | 原生与构建 | MainActivity.java 336 行 / `build.sh` 155 行 | `wc -l` |
-| 验证脚本 | 17 个 Python 文件，1985 行 | `find scripts tests -name '*.py' \| wc -l` + `wc -l` |
-| 受版本控制的文件 | 39 个 | `git ls-files \| wc -l` |
+| 验证脚本 | 19 个 Python 文件，2226 行 | `find scripts tests -name '*.py' \| wc -l` + `wc -l` |
+| 受版本控制的文件 | 41 个 | `git ls-files \| wc -l` |
 | 产物 | `out/HermesMobile.apk` 131945 字节 | `ls -l` |
 
 两个数字需要解释，不然就是误导：
 
-- **提交数 4 不等于开发量。** 公开仓库的历史被塌缩过两次：2026-10-05 把历史整体压成一个根提交，2026-10-12 又删库重建了一回（原因见「现状与欠债」）。所以 git 里只剩 4 个提交：一个根提交 + v0.22 + v0.23 + v0.24。真正的版本序列（v0.1 → v0.24）记在 `docs/CONTEXT.md` 里，那是本机文件、不进仓库。
-- **1985 行 Python 不是业务代码**，全部是 Playwright 验证脚本——用真实服务端、真实 run 去驱动真实页面。这个比例（前端 3473 行 : 验证 1985 行）是刻意的，理由在坑三和坑五里。
+- **提交数 5 不等于开发量。** 公开仓库的历史被塌缩过两次：2026-10-05 把历史整体压成一个根提交，2026-10-12 又删库重建了一回（原因见「现状与欠债」）。所以 git 里只剩 5 个提交：一个根提交 + v0.22 / v0.23 / v0.24 / v0.25。真正的版本序列（v0.1 → v0.25）记在 `docs/CONTEXT.md` 里，那是本机文件、不进仓库。
+- **2226 行 Python 不是业务代码**，全部是 Playwright 验证脚本——用真实服务端、真实 run 去驱动真实页面。这个比例（前端 3512 行 : 验证 2226 行）是刻意的，理由在坑三和坑五里。
 
 ## 架构：为什么没有 Gradle
 
@@ -238,6 +238,58 @@ contextTokens（socket） → hermesUsage（hermes 会话） → REST /usage（s
 
 **教训**：两条退路如果建立在**同一个不成立的假设**上，那它们不是两条退路，是一条。这个 bug 存在了很久没人发现，因为"0"看起来像个正常值——它不像报错那样刺眼。修完之后我顺手加了一个回归脚本 `tests/wecom_ctx.py`：打开企微标签下前 3 个会话，断言条上的数字 == `/sessions/hermes/:id` 的 `in+out`。**恒为 0 的值，要有断言盯着。**
 
+### 坑七：会话跑完了，列表还挂着「● 运行中」
+
+**现象**：某个会话跑完之后，会话列表里那条仍然显示「● 运行中」。**点进那个会话再退出来**，标记才消失。（用户原话是"运行状态不同步更新"。）
+
+**原因**：列表的运行标记只有一个数据来源——**当前会话的 run 事件**（`run.started` / `run.completed` / `run.failed` / `abort.completed`）。而这些事件只发给 `session:<id>` 房间；只有房间为空时，服务端才把它直发给发起这次 run 的那个 socket：
+
+```js
+this.nsp.to(`session:${sessionId}`).emit(event, tagged)
+if (!this.nsp.adapter.rooms.get(`session:${sessionId}`)?.size && socket.connected) {
+  socket.emit(event, tagged)      // 房间里没人 → 只回给发起者
+}
+```
+
+于是两种情况都会漏掉完成事件：
+
+1. **App 切后台 / 断线重连后已经不在那个房间**（Android WebView 后台会挂起 JS，socket 常被系统断掉）→ `run.completed` 永久错过；
+2. **别的端发起的 run**（网页 / 企微 / 另一台设备）——App 从来就收不到。
+
+而唯一能清掉这个标记的路径是 `resumed`，`resume` 只对**打开的那个会话**发。这就是"点进会话再切出才消失"的机械原因：**我给这个状态只留了一条补救路径，而那条路径要求用户先打开那个会话。**
+
+**修法**：服务端其实另发了两条**与房间无关**的事件，客户端一直没接：
+
+- `session.activity.snapshot`：每次连上（含重连）发一次，权威列出该 profile 正在跑的会话；
+- `session.activity`：run 生命周期广播到 `pending-interactions:<profile>` 房间——客户端连上时服务端就把它自动加进这个房间，不需要订阅。
+
+```js
+on('session.activity.snapshot', (ev) => {
+  const running = new Set((ev.sessions || []).map(s => String(s && s.session_id || '')).filter(Boolean));
+  // 快照是「此刻在跑什么」的权威答案：不在里面的就不是在跑
+  for (const sid of Object.keys(state.working)) if (!running.has(sid)) delete state.working[sid];
+  for (const sid of running) state.working[sid] = true;
+  syncStopButton(); renderVisibleLists();
+});
+on('session.activity', (ev) => {
+  if (!ev.session_id) return;
+  markWorking(String(ev.session_id), ev.status === 'running');
+});
+```
+
+顺带把渲染收口成一个函数：`renderVisibleLists()` 按"哪个列表在屏上"刷——企微列表也显示运行标记，以前只在 `view === 'sessions'` 时刷。
+
+**验证**：新增 `tests/session_activity_sync.py`，用**两个浏览器上下文**——A 只看列表（全程 `state.cur === null`，从不点进那个会话），B 负责发起 run，模拟"别的端发起的 run"。四条断言里有两条在修复前就是失败的：
+
+| 断言 | 修复前 | 修复后 |
+|---|---|---|
+| A 端列表出现「运行中」（没点进会话） | ❌ | ✅ |
+| A 端跑完自动消失（没点进会话） | ✅（压根没出现过，空过） | ✅ |
+| A 端不是靠 `run.completed` 直达（证明走的是活动通道） | ✅ | ✅ |
+| 重连后快照清掉陈旧「运行中」 | ❌ | ✅ |
+
+**教训**：这条和坑三是同一族的——**我假设了"事件一定会到"**。但这次还多了一层，值得单独记：**我给一个状态只留了一条补救路径，而那条路径对用户很贵**（"点进会话"）。于是它的表现形式变成"点一下就好"，看起来像小毛病，实际是"只有打开的那个会话能被修好"。所以现在多了一条自问：**当用户不做那个动作的时候，谁负责对齐这个状态？** 答案是"连上时的快照"——而且断言里写死了"不许点进会话"。
+
 ### 工具链上的几个小坑
 
 没有 Gradle，这些坑都得自己趟一遍（都写在代码注释里，免得下次重新踩）：
@@ -254,7 +306,7 @@ contextTokens（socket） → hermesUsage（hermes 会话） → REST /usage（s
 - **上下文口径是"累计"，不是"当前占用"。** 企微会话显示的是 Hermes 数据库里这个会话的 `input_tokens + output_tokens` 累计值（701.2k 是 700 条消息一路攒出来的，不是"现在占了多少窗口"）。服务端没有暴露"当前上下文占用"的接口，`session_model_usage` 也只有按 model/task 汇总、没有单次调用记录。所以这个数字**偏大**，是我和用户确认后接受的妥协。
 - **v2 待办还没做**：会话改名、后台推送、离线缓存、企微回复写回。
 - **脱敏残留：这条债最后是"删库重建"还掉的。** 这个仓库是公开的，`docs/CONTEXT.md`（含机型、内网地址、本机路径）被 `.gitignore` 排除，历史也被 `filter-branch` 和 `--orphan` 塌缩过一轮。但 **force-push + `git gc` 并不能清掉 GitHub 上的旧对象**：塌缩之后实测 `GET /contents/CONTEXT.md?ref=<旧提交 SHA>` 仍然返回 200——删掉引用不等于删掉对象。最后是**把仓库整个删掉、同名重建**（2026-10-12）再重推：同一个旧 SHA 现在返回 404。代价是 tag 和 Release 一起没了（要发版得重新打），外加一次"仓库归零"——star、issue、外部链接全部断掉。推之前扫了一遍工作树与历史（`git grep` 全量提交 + `git fsck --unreachable`），确认 `.env`、`signing.jks`、`config.env`、`docs/CONTEXT.md`、`inline.html` 都没进库，仓库里只有 `*.example` 模板。
-- **没有 CI。** 17 个验证脚本都要真实服务端 + 真实 run + 一个 `.model-run-token`，只能在有服务的机器上跑。好处是测试很真实（很多 bug 只有真 run 才现形），代价是"忘了跑"就等于没有测试。
+- **没有 CI。** 19 个验证脚本都要真实服务端 + 真实 run + 一个 `.model-run-token`，只能在有服务的机器上跑。好处是测试很真实（很多 bug 只有真 run 才现形），代价是"忘了跑"就等于没有测试。
 - **只有一台 Android 真机自测过。** 没有多机型、没有多 Android 版本矩阵。
 - **签名密钥是硬约束。** 真实 `signing.jks` 不进仓库，仓库里只有一副新生成的测试密钥（alias `hermes`，口令 `android`）。用测试密钥签的包**无法覆盖安装**在真实密钥签的同包名应用上（`INSTALL_FAILED_UPDATE_INCOMPATIBLE`，只能先卸载）。另外包名从 `com.ekko.hermesm` 改成 `com.enderiose.hermes` 时我才真正体会到：**包名变了就是另一个应用**，签名没变也不构成升级关系，旧包只能手动卸载。
 
@@ -262,11 +314,13 @@ contextTokens（socket） → hermesUsage（hermes 会话） → REST /usage（s
 
 这个项目让我改掉的最大的一个习惯，是**先看别人怎么做**。
 
-坑四（插队变成新运行）和坑六（上下文恒为 0）看着毫无关系，其实是同一件事：我都在**猜一个已经存在的约定**。前者我猜了 socket 事件名，后者我猜了"用量该从哪个接口拿"。猜对的时候什么都不会发生（看起来一切正常），猜错的时候现象千奇百怪，而且都不像"猜错了"。
+坑四（插队变成新运行）、坑六（上下文恒为 0）和坑七（运行状态不消失）看着毫无关系，其实是同一件事：我都在**猜一个已经存在的约定**。前者我猜了 socket 事件名，中间那个我猜了"用量该从哪个接口拿"，最后一个我猜了"哪些事件会到我这里"。猜对的时候什么都不会发生（看起来一切正常），猜错的时候现象千奇百怪，而且都不像"猜错了"。
 
 第二个认识：**静默回退的数字比报错危险**。256000 那个坑里，接口没有报错、没有警告，只是安静地给了我一个默认值，我拿它算了很久的百分比，还据此对用户下了"上下文已满"的错误结论。从那以后我对"有默认值的接口"都会刻意测边界输入。
 
-第三个，关于测试：这个项目的验证脚本比前端代码的一半还多，而且是刻意的。**看起来正常，是这个项目最贵的失败模式**——上下文 0、工具不整合、消息重复，全都不报错，全都要靠断言盯着。我后来给自己定了一条：修完一个"不报错的 bug"，必须先写出一个能复现它的断言，再改代码。
+第三个认识来自坑七，也是我自己以前没想清楚的一条：**如果一个状态只有一条"补救路径"，而且那条路径要用户付出动作，那这个 bug 就会伪装成小毛病。** "点进会话再退出就好了"——听起来像个刷新问题，实际上是"只有打开的那个会话能被修好，别的会话永远修不好"。所以判断一个状态设计好不好，我现在会问一句：**用户什么都不做的时候，谁负责把它对齐？** 如果答案是"没有人"，那就是个定时炸弹。
+
+第四个，关于测试：这个项目的验证脚本比前端代码的一半还多，而且是刻意的。**看起来正常，是这个项目最贵的失败模式**——上下文 0、工具不整合、消息重复、运行状态不消失，全都不报错，全都要靠断言盯着。我后来给自己定了一条：修完一个"不报错的 bug"，必须先写出一个能复现它的断言，再改代码。
 
 最后一点，是关于"客户端"这件事本身的：我一开始以为我要写一个 App，后来发现我写的其实是**一层补丁**——补 WebView 做不到的那几件事，剩下的全部交给服务端已经做好的部分。所有我想"顺手重写一下"的地方，事后都变成了坑；所有我老实复用服务端协议和资源的地方（`socket.io` 外部引用、文件下载接口、字段命名），都省下了后面几轮返工。131945 字节里，真正属于我的原创部分其实很少——而它能用，恰恰是因为我忍住了。
 
@@ -275,5 +329,5 @@ contextTokens（socket） → hermesUsage（hermes 会话） → REST /usage（s
 **项目信息**
 
 - 类型：Android 客户端（Hermes / Ekko Studio 的 WebView 壳）
-- 规模：前端 3473 行 + 原生与构建 491 行 + 验证脚本 1985 行；4 个提交；39 个受版本控制的文件
-- 状态：自用中，持续维护（当前 v0.24）
+- 规模：前端 3512 行 + 原生与构建 491 行 + 验证脚本 2226 行；5 个提交；41 个受版本控制的文件
+- 状态：自用中，持续维护（当前 v0.25）
