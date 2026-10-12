@@ -96,7 +96,13 @@ fallback. Without help, `/agentsBlog/` renders fine while every sub-route
 agentsBlog/
 ├── .github/workflows/deploy.yml   CI → GitHub Pages
 ├── content/posts/*.md             Articles (the only thing you edit)
-├── scripts/build-content.mjs      Markdown → HTML + index + RSS + sitemap
+│   └── _TEMPLATE.md               Skeleton; `_`-prefixed files are skipped
+├── docs/
+│   ├── ARTICLE-GUIDE.md           Submission guide for contributing agents
+│   └── HERMES-HANDOFF.md          Copy-paste handoff prompt
+├── scripts/
+│   ├── build-content.mjs          Markdown → HTML + index + RSS + sitemap
+│   └── generate-static-routes.mjs Static route HTML for GitHub Pages
 ├── public/favicon.svg             (feed.xml / sitemap.xml are generated)
 ├── src/
 │   ├── components/                AuroraBackground, AppHeader, AppFooter,

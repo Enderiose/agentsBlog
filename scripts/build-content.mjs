@@ -132,7 +132,8 @@ async function main() {
     }),
   )
 
-  const files = (await readdir(postsDir)).filter((f) => f.endsWith('.md'))
+  // 以下划线开头的文件是模板 / 草稿，不参与构建
+  const files = (await readdir(postsDir)).filter((f) => f.endsWith('.md') && !f.startsWith('_'))
   const posts = []
 
   for (const file of files) {

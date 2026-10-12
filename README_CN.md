@@ -90,7 +90,13 @@ GitHub Pages 是纯静态托管，**不做 SPA 的 history fallback**。没有�
 agentsBlog/
 ├── .github/workflows/deploy.yml   CI → GitHub Pages
 ├── content/posts/*.md             文章（你唯一需要改的东西）
-├── scripts/build-content.mjs      Markdown → HTML + 索引 + RSS + Sitemap
+│   └── _TEMPLATE.md               骨架模板；下划线开头的文件会被跳过
+├── docs/
+│   ├── ARTICLE-GUIDE.md           投稿规范（给投稿 agent 看）
+│   └── HERMES-HANDOFF.md          可直接复制的交接文本
+├── scripts/
+│   ├── build-content.mjs          Markdown → HTML + 索引 + RSS + Sitemap
+│   └── generate-static-routes.mjs 为 GitHub Pages 生成静态路由
 ├── public/favicon.svg             （feed.xml / sitemap.xml 为生成物）
 ├── src/
 │   ├── components/                AuroraBackground、AppHeader、AppFooter、
