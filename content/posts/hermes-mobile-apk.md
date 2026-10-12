@@ -37,7 +37,7 @@ Hermes 移动版（应用显示名 `HermesApp`，包名 `com.enderiose.hermes`�
 
 两个数字需要解释，不然就是误导：
 
-- **提交数 4 不等于开发量。** 2026-10-05 那天我把公开仓库的历史整体塌缩成了一个根提交（原因见「现状与欠债」），所以 git 里只剩 4 个提交：一个根提交 + v0.22 + v0.23 + v0.24。真正的版本序列（v0.1 → v0.24）记在 `docs/CONTEXT.md` 里，那是本机文件、不进仓库。
+- **提交数 4 不等于开发量。** 公开仓库的历史被塌缩过两次：2026-10-05 把历史整体压成一个根提交，2026-10-12 又删库重建了一回（原因见「现状与欠债」）。所以 git 里只剩 4 个提交：一个根提交 + v0.22 + v0.23 + v0.24。真正的版本序列（v0.1 → v0.24）记在 `docs/CONTEXT.md` 里，那是本机文件、不进仓库。
 - **1985 行 Python 不是业务代码**，全部是 Playwright 验证脚本——用真实服务端、真实 run 去驱动真实页面。这个比例（前端 3473 行 : 验证 1985 行）是刻意的，理由在坑三和坑五里。
 
 ## 架构：为什么没有 Gradle
@@ -253,7 +253,7 @@ contextTokens（socket） → hermesUsage（hermes 会话） → REST /usage（s
 
 - **上下文口径是"累计"，不是"当前占用"。** 企微会话显示的是 Hermes 数据库里这个会话的 `input_tokens + output_tokens` 累计值（701.2k 是 700 条消息一路攒出来的，不是"现在占了多少窗口"）。服务端没有暴露"当前上下文占用"的接口，`session_model_usage` 也只有按 model/task 汇总、没有单次调用记录。所以这个数字**偏大**，是我和用户确认后接受的妥协。
 - **v2 待办还没做**：会话改名、后台推送、离线缓存、企微回复写回。
-- **脱敏有个清不掉的残留。** 这个仓库是公开的，`docs/CONTEXT.md`（含机型、内网地址、本机路径）已被 `.gitignore` 排除，历史也被 `filter-branch` 和 `--orphan` 塌缩过一轮。但 **force-push + `git gc` 并不能真正清掉 GitHub 上的旧对象**：实测 `GET /contents/CONTEXT.md?ref=<旧提交 SHA>` 仍然返回 200。彻底清除只能删库重建，而当前 token 没有 `Administration:write`，所以这条债还挂着。
+- **脱敏残留：这条债最后是"删库重建"还掉的。** 这个仓库是公开的，`docs/CONTEXT.md`（含机型、内网地址、本机路径）被 `.gitignore` 排除，历史也被 `filter-branch` 和 `--orphan` 塌缩过一轮。但 **force-push + `git gc` 并不能清掉 GitHub 上的旧对象**：塌缩之后实测 `GET /contents/CONTEXT.md?ref=<旧提交 SHA>` 仍然返回 200——删掉引用不等于删掉对象。最后是**把仓库整个删掉、同名重建**（2026-10-12）再重推：同一个旧 SHA 现在返回 404。代价是 tag 和 Release 一起没了（要发版得重新打），外加一次"仓库归零"——star、issue、外部链接全部断掉。推之前扫了一遍工作树与历史（`git grep` 全量提交 + `git fsck --unreachable`），确认 `.env`、`signing.jks`、`config.env`、`docs/CONTEXT.md`、`inline.html` 都没进库，仓库里只有 `*.example` 模板。
 - **没有 CI。** 17 个验证脚本都要真实服务端 + 真实 run + 一个 `.model-run-token`，只能在有服务的机器上跑。好处是测试很真实（很多 bug 只有真 run 才现形），代价是"忘了跑"就等于没有测试。
 - **只有一台 Android 真机自测过。** 没有多机型、没有多 Android 版本矩阵。
 - **签名密钥是硬约束。** 真实 `signing.jks` 不进仓库，仓库里只有一副新生成的测试密钥（alias `hermes`，口令 `android`）。用测试密钥签的包**无法覆盖安装**在真实密钥签的同包名应用上（`INSTALL_FAILED_UPDATE_INCOMPATIBLE`，只能先卸载）。另外包名从 `com.ekko.hermesm` 改成 `com.enderiose.hermes` 时我才真正体会到：**包名变了就是另一个应用**，签名没变也不构成升级关系，旧包只能手动卸载。
