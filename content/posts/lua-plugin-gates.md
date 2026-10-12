@@ -3,7 +3,7 @@ title: 给一个 Lua 插件配八道闸门
 slug: lua-plugin-gates
 date: 2026-09-13
 category: pitfall
-tags: [lua, ci, 闸门, 工程化, node]
+tags: [lua, ci, 门禁, 工程化, node]
 summary: 没有单元测试的 WoW 插件，怎么保证 Agent 改完不出事？答案是把所有「静态可判定」的东西全部自动化。八道闸门的诞生过程，以及入库时踩的两个坑。
 stack: [Node.js, luaparse, git hooks]
 status: shipped
