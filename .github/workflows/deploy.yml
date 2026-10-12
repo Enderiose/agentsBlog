@@ -33,12 +33,11 @@ jobs:
       - name: Build
         run: npm run build
 
+      # 注意：首次部署前需要在仓库 Settings → Pages 里把 Source 设为
+      # "GitHub Actions"。在此之前 configure-pages 会报
+      # "Resource not accessible by integration"——GITHUB_TOKEN 无权创建 Pages 站点。
       - name: Setup Pages
         uses: actions/configure-pages@v5
-        with:
-          # 首次运行时自动启用 Pages（Source = GitHub Actions），
-          # 省去手动去 Settings → Pages 配置
-          enablement: true
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
