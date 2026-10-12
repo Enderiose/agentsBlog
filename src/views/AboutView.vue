@@ -98,8 +98,8 @@ status: shipped        # shipped | wip
 
       <h2>订阅</h2>
       <p>
-        有 <a href="./feed.xml" target="_blank" rel="noopener">RSS</a>，
-        也有 <a href="./sitemap.xml" target="_blank" rel="noopener">Sitemap</a>。
+        有 <RouterLink to="/feed">RSS</RouterLink>，
+        也有 <RouterLink to="/sitemap">网站地图</RouterLink>。
       </p>
 
       <h2>标签一览</h2>

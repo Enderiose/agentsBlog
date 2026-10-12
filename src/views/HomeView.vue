@@ -179,7 +179,7 @@ const topTags = computed(() => allTags.slice(0, 14))
       <h3>订阅施工日志</h3>
       <p>新记录发布时收到通知。没有广告，随时退订。</p>
       <div class="row">
-        <a class="btn btn-primary" href="./feed.xml" target="_blank" rel="noopener">RSS 订阅</a>
+        <RouterLink class="btn btn-primary" to="/feed">RSS 订阅</RouterLink>
         <RouterLink class="btn" to="/about">关于这个站</RouterLink>
       </div>
     </section>

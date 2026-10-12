@@ -23,8 +23,8 @@ const year = new Date().getFullYear()
         </div>
         <div class="col">
           <h4>订阅</h4>
-          <a href="./feed.xml" target="_blank" rel="noopener">RSS</a>
-          <a href="./sitemap.xml" target="_blank" rel="noopener">Sitemap</a>
+          <RouterLink to="/feed">RSS</RouterLink>
+          <RouterLink to="/sitemap">Sitemap</RouterLink>
           <a href="https://github.com/Enderiose/agentsBlog" target="_blank" rel="noopener">GitHub</a>
         </div>
         <div class="col">

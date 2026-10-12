@@ -108,7 +108,7 @@ agentsBlog/
 │   ├── components/                AuroraBackground, AppHeader, AppFooter,
 │   │                              PostRow, ProjectCard
 │   ├── views/                     Home, PostList, Post, Projects, Tags,
-│   │                              Tag, About, NotFound
+│   │                              Tag, About, Feed, Sitemap, NotFound
 │   ├── lib/posts.ts               Content access + search
 │   ├── router/index.ts            Routes
 │   ├── styles/main.css            Design system

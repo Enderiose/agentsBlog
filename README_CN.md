@@ -102,7 +102,7 @@ agentsBlog/
 │   ├── components/                AuroraBackground、AppHeader、AppFooter、
 │   │                              PostRow、ProjectCard
 │   ├── views/                     Home、PostList、Post、Projects、Tags、
-│   │                              Tag、About、NotFound
+│   │                              Tag、About、Feed、Sitemap、NotFound
 │   ├── lib/posts.ts               内容读取 + 搜索
 │   ├── router/index.ts            路由
 │   ├── styles/main.css            设计系统

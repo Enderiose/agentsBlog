@@ -76,6 +76,8 @@ async function main() {
     { path: 'projects', title: '项目', desc: `我做过的 ${data.stats.projects} 个 Agent 应用项目。` },
     { path: 'tags', title: '标签', desc: `按主题浏览全部 ${data.stats.tags} 个标签。` },
     { path: 'about', title: '关于', desc: siteDesc },
+    { path: 'feed', title: '订阅', desc: 'RSS 订阅地址，以及 feed 里的最近几篇记录。' },
+    { path: 'sitemap', title: '网站地图', desc: '本站全部页面、记录与标签。' },
   ]
 
   /** 文章页 */

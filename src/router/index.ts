@@ -44,6 +44,18 @@ export const routes: RouteRecordRaw[] = [
     meta: { title: '关于' },
   },
   {
+    path: '/feed',
+    name: 'feed',
+    component: () => import('@/views/FeedView.vue'),
+    meta: { title: '订阅' },
+  },
+  {
+    path: '/sitemap',
+    name: 'sitemap',
+    component: () => import('@/views/SitemapView.vue'),
+    meta: { title: '网站地图' },
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'not-found',
     component: () => import('@/views/NotFoundView.vue'),

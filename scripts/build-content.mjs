@@ -229,6 +229,8 @@ ${items}
     `${SITE.url}/projects/`,
     `${SITE.url}/tags/`,
     `${SITE.url}/about/`,
+    `${SITE.url}/feed/`,
+    `${SITE.url}/sitemap/`,
     ...published.map((p) => `${SITE.url}/posts/${p.slug}/`),
   ]
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
