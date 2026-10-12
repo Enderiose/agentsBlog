@@ -70,6 +70,20 @@ draft: false           # true 不会进入构建产物
 **如果改了仓库名，记得同步改 `vite.config.ts` 里的 `base`**（当前是 `/agentsBlog/`）。
 配错会导致所有静态资源 404、页面白屏 —— 这个坑本站自己也记了一篇。
 
+### 为什么要生成静态路由
+
+GitHub Pages 是纯静态托管，**不做 SPA 的 history fallback**。没有额外处理时，
+`/agentsBlog/` 能正常打开，而每一个子路由（`/agentsBlog/posts/xxx/`）都返回 404 ——
+很容易被误判成部署失败。
+
+`scripts/generate-static-routes.mjs` 紧跟在 `vite build` 之后运行，做四件事：
+
+- 把 `dist/index.html` 复制到每个路由目录（每篇文章、每个标签，以及 `posts/`、
+  `projects/`、`tags/`、`about/`）
+- 按路由改写 `<title>`、description 与 OG 标签，让分享出去的链接显示正确标题
+- 写一份 `404.html` 作为兜底，未预生成的路径也能正常渲染
+- 写 `.nojekyll`，避免 Jekyll 跳过下划线开头的资源目录
+
 ## 目录结构
 
 ```

@@ -7,7 +7,7 @@
   "scripts": {
     "content": "node scripts/build-content.mjs",
     "dev": "npm run content && vite",
-    "build": "npm run content && vite build",
+    "build": "npm run content && vite build && node scripts/generate-static-routes.mjs",
     "preview": "vite preview",
     "typecheck": "vue-tsc --noEmit"
   },

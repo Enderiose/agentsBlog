@@ -75,6 +75,21 @@ If you rename the repository, update `base` in `vite.config.ts` to match
 (`/agentsBlog/` today). Getting this wrong makes every asset 404 and the page
 render blank — a pitfall documented on the site itself.
 
+### Why static routes are generated
+
+GitHub Pages is plain static hosting and does **not** perform SPA history
+fallback. Without help, `/agentsBlog/` renders fine while every sub-route
+(`/agentsBlog/posts/xxx/`) returns 404 — easy to misread as a broken deploy.
+
+`scripts/generate-static-routes.mjs` runs right after `vite build` and:
+
+- copies `dist/index.html` into every route directory (each post, each tag,
+  plus `posts/`, `projects/`, `tags/`, `about/`)
+- rewrites `<title>`, description and OG tags per route, so shared links show
+  the right title instead of the site title
+- writes `404.html` as a catch-all so unknown paths still render the app
+- writes `.nojekyll` so Jekyll does not skip underscore-prefixed assets
+
 ## Layout
 
 ```
