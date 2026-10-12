@@ -1,0 +1,685 @@
+/* ==========================================================================
+   Agent Log — 设计系统
+   配色取自「极光玻璃拟态」，排版语言取自「终端极客风」
+   ========================================================================== */
+
+:root {
+  /* ---- 底色（04）---- */
+  --bg: #07080f;
+  --bg-2: #0b0d17;
+  --panel: rgba(255, 255, 255, 0.055);
+  --panel-2: rgba(255, 255, 255, 0.085);
+  --stroke: rgba(255, 255, 255, 0.11);
+  --stroke-2: rgba(255, 255, 255, 0.2);
+
+  /* ---- 文字 ---- */
+  --ink: #eef2ff;
+  --ink-2: #a5b0cf;
+  --ink-3: #6b7799;
+  --ink-4: #4a5470;
+
+  /* ---- 强调（04）---- */
+  --v1: #7c5cff; /* 紫 */
+  --v2: #22d3ee; /* 青 */
+  --v3: #f472b6; /* 粉 */
+  --v4: #34d399; /* 绿 */
+  --amber: #fbbf24;
+  --red: #ff6b6b;
+
+  /* ---- 终端语义色（01）---- */
+  --prompt: #34d399;
+  --ok: #34d399;
+  --warn: #fbbf24;
+
+  /* ---- 字体（01：全局等宽）---- */
+  --mono: ui-monospace, "Cascadia Code", "JetBrains Mono", "SF Mono", Menlo,
+    Consolas, "Sarasa Mono SC", "Noto Sans Mono CJK SC", "Microsoft YaHei",
+    monospace;
+
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-pill: 999px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 90px;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 15px;
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--v1);
+  color: #fff;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* ---- 滚动条 ---- */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 99px;
+  border: 2px solid var(--bg);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+/* ==========================================================================
+   布局
+   ========================================================================== */
+
+.wrap {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.wrap-narrow {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ==========================================================================
+   玻璃面板（04）
+   ========================================================================== */
+
+.glass {
+  background: var(--panel);
+  border: 1px solid var(--stroke);
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  border-radius: var(--radius);
+}
+
+/* ==========================================================================
+   终端元素（01）
+   ========================================================================== */
+
+/* 分节标题：// SECTION ————————  */
+.sec-head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+}
+
+.sec-head h2 {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin: 0;
+  color: var(--ink);
+}
+
+.sec-head h2::before {
+  content: "// ";
+  color: var(--v1);
+}
+
+.sec-head .rule {
+  flex: 1;
+  height: 1px;
+  min-width: 40px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--stroke) 0 6px,
+    transparent 6px 12px
+  );
+}
+
+.sec-head .count {
+  font-size: 12px;
+  color: var(--ink-4);
+  white-space: nowrap;
+}
+
+/* 终端窗口框 */
+.term {
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: rgba(11, 13, 23, 0.72);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.term-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: rgba(124, 92, 255, 0.06);
+  border-bottom: 1px solid var(--stroke);
+  font-size: 12px;
+  color: var(--ink-3);
+}
+
+.term-dots {
+  display: flex;
+  gap: 7px;
+  flex: 0 0 auto;
+}
+.term-dots i {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  display: block;
+}
+.term-dots i:nth-child(1) {
+  background: #ff5f57;
+}
+.term-dots i:nth-child(2) {
+  background: #febc2e;
+}
+.term-dots i:nth-child(3) {
+  background: #28c840;
+}
+
+.term-body {
+  padding: 26px 26px 28px;
+}
+
+/* 命令行 */
+.cmd {
+  color: var(--ink-3);
+  font-size: 13px;
+  margin-bottom: 14px;
+}
+.cmd .p {
+  color: var(--prompt);
+}
+.cmd b {
+  color: var(--v2);
+  font-weight: 400;
+}
+
+/* 闪烁光标 */
+.cursor {
+  display: inline-block;
+  width: 8px;
+  height: 15px;
+  background: var(--prompt);
+  vertical-align: -2px;
+  animation: blink 1.05s steps(1) infinite;
+}
+@keyframes blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  50.01%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* 渐变文字（04） */
+.grad {
+  background: linear-gradient(100deg, #c4b5fd, #7dd3fc 45%, #f9a8d4);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ==========================================================================
+   按钮 / 标签
+   ========================================================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 22px;
+  border-radius: var(--radius-pill);
+  font-size: 13.5px;
+  font-weight: 600;
+  border: 1px solid var(--stroke-2);
+  background: var(--panel-2);
+  color: var(--ink);
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  transition: all 0.2s ease;
+}
+
+.btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+  transform: translateY(-2px);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #8b5cf6, #22d3ee);
+  color: #08080f;
+  border: 0;
+  box-shadow: 0 14px 38px -14px var(--v1);
+}
+
+.btn-primary:hover {
+  box-shadow: 0 18px 46px -12px var(--v1);
+}
+
+.chip {
+  font-family: inherit;
+  font-size: 12px;
+  padding: 5px 13px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--stroke);
+  background: transparent;
+  color: var(--ink-3);
+  cursor: pointer;
+  transition: all 0.16s ease;
+  white-space: nowrap;
+}
+
+.chip:hover {
+  border-color: var(--stroke-2);
+  color: var(--ink);
+}
+
+.chip.on {
+  border-color: rgba(124, 92, 255, 0.6);
+  background: rgba(124, 92, 255, 0.16);
+  color: #c4b5fd;
+}
+
+/* 分类标签 */
+.cat {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.1px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+
+.cat-project {
+  background: rgba(124, 92, 255, 0.18);
+  color: #c4b5fd;
+  border: 1px solid rgba(124, 92, 255, 0.35);
+}
+.cat-pitfall {
+  background: rgba(251, 146, 60, 0.15);
+  color: #fdba74;
+  border: 1px solid rgba(251, 146, 60, 0.32);
+}
+.cat-changelog {
+  background: rgba(34, 211, 238, 0.15);
+  color: #67e8f9;
+  border: 1px solid rgba(34, 211, 238, 0.32);
+}
+.cat-retro {
+  background: rgba(244, 114, 182, 0.15);
+  color: #f9a8d4;
+  border: 1px solid rgba(244, 114, 182, 0.32);
+}
+
+/* 状态点 */
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  display: inline-block;
+  background: var(--ok);
+  box-shadow: 0 0 8px var(--ok);
+}
+.dot-wip {
+  background: var(--warn);
+  box-shadow: 0 0 8px var(--warn);
+}
+
+/* ==========================================================================
+   日志行列表（01 的核心视觉）
+   ========================================================================== */
+
+.log {
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: rgba(11, 13, 23, 0.6);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 96px 92px 1fr auto;
+  gap: 16px;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--stroke);
+  transition: background 0.16s ease;
+  position: relative;
+}
+
+.row:last-child {
+  border-bottom: 0;
+}
+
+.row::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, var(--v1), var(--v2));
+  transform: scaleY(0);
+  transition: transform 0.2s ease;
+}
+
+.row:hover {
+  background: rgba(124, 92, 255, 0.07);
+}
+
+.row:hover::before {
+  transform: scaleY(1);
+}
+
+.row-date {
+  font-size: 12px;
+  color: var(--ink-4);
+}
+
+.row-tag {
+  justify-self: start;
+}
+
+.row-title {
+  font-size: 14.5px;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.row-title .txt {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.row:hover .row-title .txt {
+  color: #c4b5fd;
+}
+
+.row-meta {
+  font-size: 12px;
+  color: var(--ink-4);
+  text-align: right;
+  white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+  .row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    padding: 14px 16px;
+  }
+  .row-meta {
+    text-align: left;
+  }
+}
+
+/* ==========================================================================
+   正文排版（markdown 输出）
+   ========================================================================== */
+
+.prose {
+  font-size: 15.5px;
+  line-height: 1.85;
+  color: var(--ink-2);
+}
+
+.prose > *:first-child {
+  margin-top: 0;
+}
+
+.prose h2 {
+  font-size: 21px;
+  color: var(--ink);
+  margin: 2.4em 0 0.9em;
+  padding-bottom: 0.4em;
+  border-bottom: 1px solid var(--stroke);
+  letter-spacing: -0.3px;
+  scroll-margin-top: 90px;
+}
+
+.prose h2::before {
+  content: "// ";
+  color: var(--v1);
+  font-weight: 400;
+}
+
+.prose h3 {
+  font-size: 17px;
+  color: var(--ink);
+  margin: 2em 0 0.7em;
+  letter-spacing: -0.2px;
+  scroll-margin-top: 90px;
+}
+
+.prose h4 {
+  font-size: 15px;
+  color: var(--ink);
+  margin: 1.6em 0 0.6em;
+}
+
+.prose p {
+  margin: 0 0 1.2em;
+}
+
+.prose strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.prose em {
+  color: #c4b5fd;
+  font-style: normal;
+}
+
+.prose a {
+  color: var(--v2);
+  border-bottom: 1px solid rgba(34, 211, 238, 0.35);
+  transition: all 0.16s ease;
+}
+
+.prose a:hover {
+  border-bottom-color: var(--v2);
+  background: rgba(34, 211, 238, 0.08);
+}
+
+.prose ul,
+.prose ol {
+  margin: 0 0 1.2em;
+  padding-left: 1.4em;
+}
+
+.prose li {
+  margin: 0.4em 0;
+}
+
+.prose li::marker {
+  color: var(--v1);
+}
+
+.prose blockquote {
+  margin: 1.4em 0;
+  padding: 0.8em 1.2em;
+  border-left: 3px solid var(--v1);
+  background: rgba(124, 92, 255, 0.07);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: var(--ink-2);
+}
+
+.prose blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+.prose hr {
+  border: 0;
+  border-top: 1px dashed var(--stroke);
+  margin: 2.4em 0;
+}
+
+.prose code {
+  font-family: var(--mono);
+  font-size: 0.9em;
+  padding: 0.15em 0.45em;
+  border-radius: 6px;
+  background: rgba(124, 92, 255, 0.14);
+  color: #c4b5fd;
+  border: 1px solid rgba(124, 92, 255, 0.2);
+}
+
+.prose pre {
+  margin: 1.4em 0;
+  padding: 18px 20px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--stroke);
+  background: rgba(5, 6, 12, 0.85) !important;
+  overflow-x: auto;
+  font-size: 13.5px;
+  line-height: 1.7;
+}
+
+.prose pre code {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: inherit;
+}
+
+.prose .shiki {
+  border-radius: var(--radius-sm);
+}
+
+/* 表格 */
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.4em 0;
+  font-size: 13.5px;
+  display: block;
+  overflow-x: auto;
+}
+
+.prose th {
+  text-align: left;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--stroke-2);
+  color: var(--ink);
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.prose td {
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--stroke);
+  vertical-align: top;
+}
+
+.prose tbody tr:hover td {
+  background: rgba(124, 92, 255, 0.05);
+}
+
+/* 标题锚点 */
+.prose .header-anchor {
+  color: var(--ink-4);
+  margin-left: 0.5em;
+  opacity: 0;
+  transition: opacity 0.16s ease;
+  border: 0;
+  font-weight: 400;
+}
+
+.prose h2:hover .header-anchor,
+.prose h3:hover .header-anchor {
+  opacity: 1;
+}
+
+/* ==========================================================================
+   动画
+   ========================================================================== */
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.22s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 移动端微调 */
+@media (max-width: 640px) {
+  body {
+    font-size: 14.5px;
+  }
+  .wrap,
+  .wrap-narrow {
+    padding: 0 18px;
+  }
+  .term-body {
+    padding: 20px 18px 22px;
+  }
+  .prose {
+    font-size: 15px;
+  }
+}

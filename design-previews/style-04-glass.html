@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AGENT LOG — 风格范本 04 · 极光玻璃拟态</title>
+<style>
+  :root{
+    --bg:#07080f;
+    --ink:#eef2ff;
+    --ink-2:#a5b0cf;
+    --ink-3:#6b7799;
+    --glass:rgba(255,255,255,.055);
+    --glass-2:rgba(255,255,255,.085);
+    --stroke:rgba(255,255,255,.11);
+    --stroke-2:rgba(255,255,255,.2);
+    --v1:#7c5cff;
+    --v2:#22d3ee;
+    --v3:#f472b6;
+    --v4:#34d399;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);color:var(--ink);font-family:var(--sans);
+    font-size:16px;line-height:1.7;-webkit-font-smoothing:antialiased;
+    overflow-x:hidden;position:relative;min-height:100vh;
+  }
+  ::selection{background:var(--v1);color:#fff}
+  a{color:inherit;text-decoration:none}
+
+  /* ---------- aurora background ---------- */
+  .aurora{position:fixed;inset:0;z-index:-2;overflow:hidden;pointer-events:none}
+  .blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;animation:float 22s ease-in-out infinite}
+  .b1{width:620px;height:620px;background:radial-gradient(circle,#7c5cff,transparent 70%);top:-220px;left:-140px}
+  .b2{width:560px;height:560px;background:radial-gradient(circle,#22d3ee,transparent 70%);top:120px;right:-180px;animation-delay:-6s}
+  .b3{width:520px;height:520px;background:radial-gradient(circle,#f472b6,transparent 70%);top:900px;left:-120px;animation-delay:-11s;opacity:.34}
+  .b4{width:600px;height:600px;background:radial-gradient(circle,#34d399,transparent 70%);top:1500px;right:-160px;animation-delay:-16s;opacity:.3}
+  @keyframes float{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(60px,-40px) scale(1.1)}66%{transform:translate(-50px,50px) scale(.94)}}
+  .grid-ov{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.35;
+    background-image:linear-gradient(rgba(255,255,255,.028) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.028) 1px,transparent 1px);
+    background-size:64px 64px;
+    mask-image:radial-gradient(ellipse 80% 60% at 50% 30%,#000,transparent 75%);
+    -webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 30%,#000,transparent 75%)}
+
+  .wrap{max-width:1140px;margin:0 auto;padding:0 24px}
+  .glass{
+    background:var(--glass);border:1px solid var(--stroke);
+    backdrop-filter:blur(22px) saturate(160%);-webkit-backdrop-filter:blur(22px) saturate(160%);
+    border-radius:20px;
+  }
+
+  /* ---------- header ---------- */
+  header{position:sticky;top:0;z-index:60;padding:14px 0;
+    background:linear-gradient(180deg,rgba(7,8,15,.82),rgba(7,8,15,.28));
+    backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    border-bottom:1px solid rgba(255,255,255,.06)}
+  .bar{display:flex;align-items:center;gap:16px}
+  .logo{display:flex;align-items:center;gap:11px;font-weight:700;font-size:16px;letter-spacing:-.2px}
+  .logo .mark{
+    width:32px;height:32px;border-radius:10px;flex:0 0 auto;
+    background:linear-gradient(135deg,var(--v1),var(--v2));
+    box-shadow:0 6px 22px -6px var(--v1);display:grid;place-items:center;
+    font-size:15px;font-weight:800;color:#0a0a14;
+  }
+  nav{margin-left:auto;display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+  nav a{padding:7px 14px;border-radius:99px;font-size:13.5px;color:var(--ink-2);transition:.18s}
+  nav a:hover{color:var(--ink);background:var(--glass-2)}
+  nav a.on{color:var(--ink);background:var(--glass-2);border:1px solid var(--stroke-2)}
+  .ghost-btn{
+    padding:8px 16px;border-radius:99px;font-size:13px;font-weight:600;color:#0a0a14;
+    background:linear-gradient(135deg,#c4b5fd,#7dd3fc);border:0;cursor:pointer;
+    box-shadow:0 8px 24px -10px var(--v1);
+  }
+
+  /* ---------- hero ---------- */
+  .hero{padding:74px 0 44px;text-align:center;position:relative}
+  .pill{
+    display:inline-flex;align-items:center;gap:8px;padding:6px 15px;border-radius:99px;
+    font-size:12.5px;color:var(--ink-2);background:var(--glass);border:1px solid var(--stroke);
+    backdrop-filter:blur(10px);margin-bottom:26px;
+  }
+  .pill .dot{width:7px;height:7px;border-radius:50%;background:var(--v4);box-shadow:0 0 10px var(--v4);
+    animation:pulse 2s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.8)}}
+  h1{
+    font-size:clamp(34px,6.2vw,66px);line-height:1.08;letter-spacing:-2.2px;font-weight:800;
+    margin-bottom:22px;
+  }
+  h1 .grad{
+    background:linear-gradient(100deg,#a78bfa,#67e8f9 45%,#f9a8d4);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .lede{font-size:17.5px;color:var(--ink-2);max-width:60ch;margin:0 auto 34px;line-height:1.75}
+  .hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:52px}
+  .btn{
+    padding:13px 26px;border-radius:99px;font-size:14.5px;font-weight:600;cursor:pointer;
+    border:1px solid var(--stroke-2);background:var(--glass-2);color:var(--ink);
+    backdrop-filter:blur(12px);transition:.2s;
+  }
+  .btn:hover{background:rgba(255,255,255,.14);transform:translateY(-2px)}
+  .btn.p{background:linear-gradient(135deg,#8b5cf6,#22d3ee);color:#08080f;border:0;
+    box-shadow:0 14px 38px -14px var(--v1)}
+  .btn.p:hover{box-shadow:0 18px 46px -12px var(--v1)}
+
+  /* stat strip */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;text-align:left}
+  .stat{padding:20px 22px;border-radius:16px;background:var(--glass);border:1px solid var(--stroke);
+    backdrop-filter:blur(18px);transition:.22s}
+  .stat:hover{background:var(--glass-2);transform:translateY(-3px);border-color:var(--stroke-2)}
+  .stat b{display:block;font-size:30px;font-weight:800;letter-spacing:-1.4px;
+    background:linear-gradient(120deg,#c4b5fd,#67e8f9);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .stat span{font-size:12px;color:var(--ink-3);letter-spacing:.6px}
+
+  /* ---------- section ---------- */
+  .sec{padding:56px 0 0}
+  .sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:26px;flex-wrap:wrap}
+  .sec-head h2{font-size:23px;font-weight:700;letter-spacing:-.6px}
+  .sec-head .sub{font-size:13px;color:var(--ink-3)}
+  .sec-head .more{margin-left:auto;font-size:13.5px;color:var(--ink-2);transition:.18s}
+  .sec-head .more:hover{color:var(--v2)}
+
+  /* ---------- featured ---------- */
+  .feature{
+    display:grid;grid-template-columns:1.15fr 1fr;gap:0;overflow:hidden;
+    border-radius:22px;border:1px solid var(--stroke);background:var(--glass);
+    backdrop-filter:blur(22px);margin-bottom:22px;transition:.25s;
+  }
+  .feature:hover{border-color:var(--stroke-2);box-shadow:0 30px 80px -40px var(--v1)}
+  .feature .fx{padding:38px 36px}
+  .feature .visual{
+    position:relative;overflow:hidden;
+    background:linear-gradient(150deg,rgba(124,92,255,.28),rgba(34,211,238,.14) 55%,rgba(244,114,182,.2));
+    display:grid;place-items:center;min-height:270px;
+  }
+  .feature .visual::before{
+    content:"";position:absolute;inset:0;
+    background-image:linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);
+    background-size:28px 28px;
+  }
+  .feature .visual .orb{
+    width:150px;height:150px;border-radius:50%;position:relative;
+    background:conic-gradient(from 0deg,#7c5cff,#22d3ee,#f472b6,#7c5cff);
+    filter:blur(2px);animation:spin 14s linear infinite;
+    box-shadow:0 0 70px -6px rgba(124,92,255,.75);
+  }
+  .feature .visual .orb::after{content:"";position:absolute;inset:22px;border-radius:50%;background:rgba(7,8,15,.86)}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .kicker{display:inline-flex;align-items:center;gap:8px;font-size:11.5px;font-weight:700;
+    letter-spacing:1.6px;text-transform:uppercase;color:var(--v2);margin-bottom:16px}
+  .feature h3{font-size:clamp(23px,3vw,32px);line-height:1.2;letter-spacing:-1px;font-weight:750;margin-bottom:14px}
+  .feature p{color:var(--ink-2);font-size:15px;line-height:1.75;margin-bottom:22px}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}
+  .chipx{font-size:11.5px;padding:4px 11px;border-radius:99px;
+    background:rgba(255,255,255,.06);border:1px solid var(--stroke);color:var(--ink-2)}
+  .fmeta{display:flex;align-items:center;gap:14px;font-size:12.5px;color:var(--ink-3);
+    padding-top:18px;border-top:1px solid var(--stroke)}
+
+  /* ---------- post grid ---------- */
+  .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(292px,1fr));gap:16px}
+  .pcard{
+    padding:24px;border-radius:18px;background:var(--glass);border:1px solid var(--stroke);
+    backdrop-filter:blur(18px);transition:.22s;display:flex;flex-direction:column;position:relative;overflow:hidden;
+  }
+  .pcard::after{content:"";position:absolute;top:0;left:0;right:0;height:1px;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);
+    opacity:0;transition:.25s}
+  .pcard:hover{transform:translateY(-5px);background:var(--glass-2);border-color:var(--stroke-2);
+    box-shadow:0 26px 60px -34px rgba(124,92,255,.85)}
+  .pcard:hover::after{opacity:1}
+  .ptop{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .cat{font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
+    padding:4px 10px;border-radius:99px}
+  .c-proj{background:rgba(124,92,255,.18);color:#c4b5fd;border:1px solid rgba(124,92,255,.35)}
+  .c-pit{background:rgba(251,146,60,.15);color:#fdba74;border:1px solid rgba(251,146,60,.32)}
+  .c-log{background:rgba(34,211,238,.15);color:#67e8f9;border:1px solid rgba(34,211,238,.32)}
+  .c-ret{background:rgba(244,114,182,.15);color:#f9a8d4;border:1px solid rgba(244,114,182,.32)}
+  .ptop .date{margin-left:auto;font-size:12px;color:var(--ink-3);font-family:var(--mono)}
+  .pcard h4{font-size:17.5px;line-height:1.35;letter-spacing:-.4px;font-weight:700;margin-bottom:10px}
+  .pcard:hover h4{background:linear-gradient(100deg,#c4b5fd,#67e8f9);
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .pcard p{font-size:14px;color:var(--ink-2);line-height:1.72;flex:1}
+  .pcard .pfoot{margin-top:18px;padding-top:14px;border-top:1px solid var(--stroke);
+    display:flex;justify-content:space-between;font-size:12px;color:var(--ink-3)}
+  .pcard .pfoot .st{display:flex;align-items:center;gap:6px}
+  .pcard .pfoot .st i{width:6px;height:6px;border-radius:50%;background:var(--v4);box-shadow:0 0 8px var(--v4);display:block}
+  .pcard .pfoot .st.w i{background:#fbbf24;box-shadow:0 0 8px #fbbf24}
+
+  /* ---------- timeline ---------- */
+  .tl{position:relative;padding-left:30px}
+  .tl::before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:1.5px;
+    background:linear-gradient(180deg,transparent,rgba(124,92,255,.55),rgba(34,211,238,.55),transparent)}
+  .tl-item{position:relative;padding:0 0 26px 8px}
+  .tl-item::before{content:"";position:absolute;left:-26px;top:7px;width:11px;height:11px;border-radius:50%;
+    background:#0a0b14;border:2px solid var(--v1);box-shadow:0 0 14px rgba(124,92,255,.8)}
+  .tl-item .d{font-size:12px;color:var(--ink-3);font-family:var(--mono);margin-bottom:5px}
+  .tl-item .t{font-size:15.5px;font-weight:650;margin-bottom:4px}
+  .tl-item .x{font-size:13.5px;color:var(--ink-2);line-height:1.65}
+
+  /* ---------- CTA ---------- */
+  .cta{
+    margin-top:60px;padding:46px 40px;border-radius:24px;text-align:center;position:relative;overflow:hidden;
+    background:linear-gradient(135deg,rgba(124,92,255,.22),rgba(34,211,238,.14) 50%,rgba(244,114,182,.2));
+    border:1px solid var(--stroke-2);backdrop-filter:blur(24px);
+  }
+  .cta h3{font-size:clamp(22px,3.4vw,32px);letter-spacing:-1px;font-weight:800;margin-bottom:12px}
+  .cta p{color:var(--ink-2);max-width:52ch;margin:0 auto 26px;font-size:15.5px}
+  .cta .row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+  /* ---------- footer ---------- */
+  footer{margin-top:70px;border-top:1px solid rgba(255,255,255,.07);padding:34px 0 46px}
+  footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
+    font-size:13px;color:var(--ink-3)}
+  footer a{transition:.18s}
+  footer a:hover{color:var(--v2)}
+
+  @media(max-width:900px){
+    .feature{grid-template-columns:1fr}
+    .feature .visual{min-height:180px;order:-1}
+    .stats{grid-template-columns:1fr 1fr}
+  }
+  @media(max-width:560px){
+    .stats{grid-template-columns:1fr}
+    .hero{padding:46px 0 30px}
+    .cta{padding:32px 22px}
+  }
+</style>
+</head>
+<body>
+
+<div class="aurora">
+  <div class="blob b1"></div><div class="blob b2"></div>
+  <div class="blob b3"></div><div class="blob b4"></div>
+</div>
+<div class="grid-ov"></div>
+
+<header>
+  <div class="wrap bar">
+    <div class="logo"><span class="mark">A</span>Agent Log</div>
+    <nav>
+      <a href="#" class="on">首页</a>
+      <a href="#projects">项目</a>
+      <a href="#pitfalls">踩坑</a>
+      <a href="#timeline">时间线</a>
+      <a href="#about">关于</a>
+      <button class="ghost-btn">GitHub ↗</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="pill"><span class="dot"></span>正在持续更新 · 最近一次 2026-10-12</div>
+    <h1>把 Agent 项目<br>从<span class="grad">想法到交付</span>的<br>全过程留下来</h1>
+    <p class="lede">
+      需求、架构、翻车、复盘 —— 每一个我做过的 Agent 应用都在这里。
+      不是作品集，是一本公开的施工日志。
+    </p>
+    <div class="hero-cta">
+      <button class="btn p">浏览项目</button>
+      <button class="btn">阅读踩坑记录</button>
+    </div>
+    <div class="stats">
+      <div class="stat"><b>18</b><span>个项目</span></div>
+      <div class="stat"><b>142</b><span>篇施工日志</span></div>
+      <div class="stat"><b>63</b><span>条踩坑记录</span></div>
+      <div class="stat"><b>9</b><span>个已交付</span></div>
+    </div>
+  </section>
+
+  <!-- FEATURED -->
+  <section class="sec" id="projects">
+    <div class="sec-head">
+      <h2>置顶项目</h2>
+      <span class="sub">最新更新</span>
+      <a class="more" href="#">全部项目 →</a>
+    </div>
+
+    <a class="feature" href="#">
+      <div class="fx">
+        <div class="kicker">◆ 基础设施 · 已交付</div>
+        <h3>netstorm — 把 NAS 和局域网设备收进一个面板</h3>
+        <p>
+          家里的设备越来越多，查一个 IP 要翻三层路由后台。netstorm 把设备发现、
+          端口扫描和服务状态收进一屏。这篇文章记录了它从一次端口扫描到完整面板的全过程，
+          包括那次把交换机打满的事故。
+        </p>
+        <div class="chips">
+          <span class="chipx">Vue 3</span>
+          <span class="chipx">Node</span>
+          <span class="chipx">局域网扫描</span>
+          <span class="chipx">SSE</span>
+        </div>
+        <div class="fmeta"><span>2026-10-12</span><span>·</span><span>阅读 4 分钟</span></div>
+      </div>
+      <div class="visual"><div class="orb"></div></div>
+    </a>
+  </section>
+
+  <!-- POSTS -->
+  <section class="sec">
+    <div class="sec-head">
+      <h2>最新记录</h2>
+      <span class="sub">项目 · 踩坑 · 变更 · 总结</span>
+      <a class="more" href="#">RSS →</a>
+    </div>
+    <div class="pgrid">
+      <a class="pcard" href="#">
+        <div class="ptop"><span class="cat c-pit">踩坑</span><span class="date">10-03</span></div>
+        <h4>GitHub Pages 子路径白屏：一次完整的复盘</h4>
+        <p>Vite 打包到子路径，资源全 404。根因、排查路径，以及最终那三行配置。</p>
+        <div class="pfoot"><span>Vite</span><span>6 min</span></div>
+      </a>
+      <a class="pcard" href="#">
+        <div class="ptop"><span class="cat c-proj">项目</span><span class="date">10-03</span></div>
+        <h4>秒寻 FoundInSec：索引膨胀的取舍</h4>
+        <p>分片加内存映射，把查询延迟压回可接受范围。附压测对比表。</p>
+        <div class="pfoot"><span class="st"><i></i>已交付</span><span>11 min</span></div>
+      </a>
+      <a class="pcard" href="#">
+        <div class="ptop"><span class="cat c-log">变更</span><span class="date">10-02</span></div>
+        <h4>model-relay v0.9：流式转发重写</h4>
+        <p>统一 OpenAI 兼容协议，重做 SSE 转发与熔断，顺手修了被缓冲吃掉的流。</p>
+        <div class="pfoot"><span class="st"><i></i>已交付</span><span>5 min</span></div>
+      </a>
+      <a class="pcard" href="#">
+        <div class="ptop"><span class="cat c-pit">踩坑</span><span class="date">10-02</span></div>
+        <h4>CRLF 与路径：Windows 开发的三次翻车</h4>
+        <p>本地跑得好好的，一上 CI 就挂。最后靠 .gitattributes 一劳永逸。</p>
+        <div class="pfoot"><span>CI</span><span>4 min</span></div>
+      </a>
+      <a class="pcard" href="#">
+        <div class="ptop"><span class="cat c-proj">项目</span><span class="date">10-02</span></div>
+        <h4>pi-extensions：闸门、投递与命令包装</h4>
+        <p>为 pi 写的扩展集合。权限与钩子顺序是最容易踩坑的地方。</p>
+        <div class="pfoot"><span class="st"><i></i>已交付</span><span>7 min</span></div>
+      </a>
+      <a class="pcard" href="#">
+        <div class="ptop"><span class="cat c-ret">总结</span><span class="date">09-20</span></div>
+        <h4>我的 Agent 工作流 2026</h4>
+        <p>上下文管理、任务委派、自动化边界 —— 一年下来真正沉淀下来的原则。</p>
+        <div class="pfoot"><span>Retro</span><span>14 min</span></div>
+      </a>
+    </div>
+  </section>
+
+  <!-- TIMELINE -->
+  <section class="sec" id="timeline">
+    <div class="sec-head">
+      <h2>最近时间线</h2>
+      <span class="sub">按日期倒序</span>
+    </div>
+    <div class="tl">
+      <div class="tl-item">
+        <div class="d">2026-10-12</div>
+        <div class="t">netstorm 上线，局域网设备全部接入</div>
+        <div class="x">扫描并发上限调到 32，加了指数退避；前端轮询改为事件推送。</div>
+      </div>
+      <div class="tl-item">
+        <div class="d">2026-10-03</div>
+        <div class="t">秒寻 FoundInSec 索引重构完成</div>
+        <div class="x">查询 P95 从 840ms 降到 120ms，内存占用下降约 40%。</div>
+      </div>
+      <div class="tl-item">
+        <div class="d">2026-10-02</div>
+        <div class="t">model-relay v0.9 发布</div>
+        <div class="x">修复 Nginx 缓冲导致的"伪流式"，重做熔断与重试策略。</div>
+      </div>
+      <div class="tl-item">
+        <div class="d">2026-09-27</div>
+        <div class="t">TWWB_check 迁移到无服务器</div>
+        <div class="x">省下一台常驻机器，失败重试与通知聚合改为队列驱动。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta" id="about">
+    <h3>订阅施工日志</h3>
+    <p>新文章发布时收到一封邮件。没有广告，随时退订。</p>
+    <div class="row">
+      <button class="btn p">用邮箱订阅</button>
+      <button class="btn">RSS 订阅</button>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>© 2026 Agent Log · 用 Markdown 写作，用 Vite 构建</div>
+    <div><a href="#">GitHub</a> · <a href="#">RSS</a> · <a href="#">归档</a> · <a href="#">关于</a></div>
+  </div>
+</footer>
+
+</body>
+</html>

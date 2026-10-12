@@ -1,0 +1,22 @@
+# 依赖
+node_modules/
+
+# 构建产物
+dist/
+dist-ssr/
+*.local
+
+# 由 scripts/build-content.mjs 生成，不入库
+src/generated/
+public/feed.xml
+public/sitemap.xml
+
+# 编辑器 / 系统
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
+*.log
+
+# Vite
+.vite/

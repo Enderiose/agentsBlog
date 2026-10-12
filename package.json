@@ -1,0 +1,29 @@
+{
+  "name": "agents-blog",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Build-in-public blog for all of my agent application projects",
+  "scripts": {
+    "content": "node scripts/build-content.mjs",
+    "dev": "npm run content && vite",
+    "build": "npm run content && vite build",
+    "preview": "vite preview",
+    "typecheck": "vue-tsc --noEmit"
+  },
+  "dependencies": {
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0"
+  },
+  "devDependencies": {
+    "@shikijs/markdown-it": "^1.24.2",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "gray-matter": "^4.0.3",
+    "markdown-it": "^14.1.0",
+    "markdown-it-anchor": "^9.2.0",
+    "shiki": "^1.24.2",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.7",
+    "vue-tsc": "^2.2.0"
+  }
+}

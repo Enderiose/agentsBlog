@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AGENT LOG — 风格范本 03 · 新粗野主义</title>
+<style>
+  :root{
+    --bg:#f3ede3;
+    --ink:#000;
+    --yellow:#ffd93d;
+    --red:#ff5c5c;
+    --teal:#4ecdc4;
+    --purple:#b39ddb;
+    --lime:#c6f432;
+    --pink:#ff9ecd;
+    --white:#fff;
+    --sans:"Archivo Black","Arial Black",-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    --body:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);color:var(--ink);
+    font-family:var(--body);font-size:16px;line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(var(--ink) .9px,transparent .9px);
+    background-size:22px 22px;background-position:0 0;
+  }
+  ::selection{background:var(--yellow);color:#000}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+  .hd{font-family:var(--sans);letter-spacing:-.5px;text-transform:uppercase}
+
+  /* ---------- marquee ---------- */
+  .marquee{background:var(--ink);color:var(--yellow);overflow:hidden;white-space:nowrap;
+    border-bottom:4px solid var(--ink);padding:7px 0}
+  .marquee-in{display:inline-block;animation:slide 26s linear infinite;
+    font-family:var(--sans);font-size:13px;letter-spacing:2px;text-transform:uppercase}
+  .marquee-in span{margin:0 26px}
+  .marquee-in b{color:var(--white)}
+  @keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* ---------- header ---------- */
+  header{position:sticky;top:0;z-index:60;background:var(--bg);border-bottom:4px solid var(--ink)}
+  .bar{display:flex;align-items:center;gap:18px;height:74px}
+  .logo{
+    font-family:var(--sans);font-size:23px;letter-spacing:-1px;text-transform:uppercase;
+    background:var(--ink);color:var(--yellow);padding:8px 14px;
+    border:3px solid var(--ink);box-shadow:5px 5px 0 var(--red);transform:rotate(-1.5deg);
+  }
+  nav{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap}
+  nav a{
+    font-family:var(--sans);font-size:12px;letter-spacing:1.4px;text-transform:uppercase;
+    padding:7px 13px;border:3px solid var(--ink);background:var(--white);
+    box-shadow:3px 3px 0 var(--ink);transition:.1s;
+  }
+  nav a:hover{background:var(--yellow);transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--ink)}
+  nav a.on{background:var(--teal)}
+
+  /* ---------- hero ---------- */
+  .hero{padding:64px 0 56px;position:relative}
+  .hero-grid{display:grid;grid-template-columns:1.3fr .9fr;gap:36px;align-items:start}
+  .badge{
+    display:inline-block;font-family:var(--sans);font-size:12px;letter-spacing:2px;text-transform:uppercase;
+    background:var(--red);color:var(--white);border:3px solid var(--ink);
+    padding:6px 14px;box-shadow:4px 4px 0 var(--ink);margin-bottom:24px;transform:rotate(-1deg);
+  }
+  h1{
+    font-family:var(--sans);font-size:clamp(40px,7.4vw,84px);line-height:.96;
+    letter-spacing:-3px;text-transform:uppercase;margin-bottom:26px;
+  }
+  h1 .hl{background:var(--yellow);padding:0 10px;display:inline-block;border:4px solid var(--ink);
+    box-shadow:6px 6px 0 var(--ink);transform:rotate(-1deg);margin:4px 0}
+  h1 .hl2{background:var(--teal);padding:0 10px;display:inline-block;border:4px solid var(--ink);
+    box-shadow:6px 6px 0 var(--ink);transform:rotate(1deg);margin:4px 0}
+  .lede{font-size:18px;line-height:1.7;max-width:56ch;margin-bottom:30px;
+    border-left:6px solid var(--ink);padding-left:18px}
+  .lede b{background:var(--lime);padding:1px 5px;border:2px solid var(--ink);display:inline-block}
+
+  .cta-row{display:flex;gap:14px;flex-wrap:wrap}
+  .btn{
+    font-family:var(--sans);font-size:14px;letter-spacing:1.4px;text-transform:uppercase;
+    padding:14px 26px;border:4px solid var(--ink);cursor:pointer;transition:.1s;
+    box-shadow:6px 6px 0 var(--ink);background:var(--white);
+  }
+  .btn:hover{transform:translate(-3px,-3px);box-shadow:9px 9px 0 var(--ink)}
+  .btn.p{background:var(--yellow)}
+  .btn.s{background:var(--purple)}
+
+  /* stat blocks */
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .stat{
+    border:4px solid var(--ink);background:var(--white);padding:22px 20px;
+    box-shadow:7px 7px 0 var(--ink);position:relative;
+  }
+  .stat:nth-child(1){background:var(--yellow);transform:rotate(-1.2deg)}
+  .stat:nth-child(2){background:var(--teal);transform:rotate(1deg)}
+  .stat:nth-child(3){background:var(--pink);transform:rotate(.8deg)}
+  .stat:nth-child(4){background:var(--lime);transform:rotate(-.8deg)}
+  .stat b{display:block;font-family:var(--sans);font-size:52px;line-height:1;letter-spacing:-3px}
+  .stat span{font-family:var(--sans);font-size:11.5px;letter-spacing:2px;text-transform:uppercase}
+
+  /* ---------- section ---------- */
+  .sec{padding:56px 0}
+  .sec-head{display:flex;align-items:center;gap:16px;margin-bottom:36px;flex-wrap:wrap}
+  .sec-head h2{
+    font-family:var(--sans);font-size:clamp(26px,4vw,40px);letter-spacing:-2px;text-transform:uppercase;
+    background:var(--ink);color:var(--white);padding:8px 18px;border:4px solid var(--ink);
+    box-shadow:6px 6px 0 var(--red);transform:rotate(-1deg);
+  }
+  .sec-head .sub{font-family:var(--sans);font-size:13px;letter-spacing:2px;text-transform:uppercase;
+    border:3px solid var(--ink);padding:8px 14px;background:var(--bg);box-shadow:4px 4px 0 var(--ink)}
+
+  /* ---------- cards ---------- */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:26px}
+  .card{
+    border:4px solid var(--ink);background:var(--white);padding:26px;
+    box-shadow:8px 8px 0 var(--ink);transition:.12s;display:flex;flex-direction:column;
+  }
+  .card:hover{transform:translate(-4px,-4px);box-shadow:12px 12px 0 var(--ink)}
+  .card:nth-child(3n+1):hover{background:var(--yellow)}
+  .card:nth-child(3n+2):hover{background:var(--teal)}
+  .card:nth-child(3n+3):hover{background:var(--pink)}
+  .tagline{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+  .tag{
+    font-family:var(--sans);font-size:10.5px;letter-spacing:1.6px;text-transform:uppercase;
+    border:2.5px solid var(--ink);padding:3px 9px;background:var(--white);
+  }
+  .tag.y{background:var(--yellow)}
+  .tag.t{background:var(--teal)}
+  .tag.r{background:var(--red);color:var(--white)}
+  .tag.p{background:var(--purple)}
+  .card h3{font-family:var(--sans);font-size:23px;line-height:1.15;letter-spacing:-1px;
+    text-transform:uppercase;margin-bottom:12px}
+  .card p{font-size:14.5px;line-height:1.7;color:#262626;flex:1}
+  .card .foot{margin-top:20px;padding-top:16px;border-top:3px dashed var(--ink);
+    display:flex;justify-content:space-between;align-items:center;
+    font-family:var(--sans);font-size:11.5px;letter-spacing:1.4px;text-transform:uppercase}
+  .card .go{border:3px solid var(--ink);padding:5px 11px;background:var(--ink);color:var(--white);transition:.12s}
+  .card:hover .go{background:var(--white);color:var(--ink)}
+
+  /* ---------- pitfalls list ---------- */
+  .pit-list{display:flex;flex-direction:column;gap:0;border:4px solid var(--ink);
+    box-shadow:8px 8px 0 var(--ink);background:var(--white)}
+  .pit{display:grid;grid-template-columns:120px 1fr auto;gap:20px;align-items:center;
+    padding:20px 24px;border-bottom:4px solid var(--ink);transition:.12s}
+  .pit:last-child{border-bottom:0}
+  .pit:hover{background:var(--yellow)}
+  .pit .no{font-family:var(--sans);font-size:30px;letter-spacing:-2px;line-height:1}
+  .pit .t{font-family:var(--sans);font-size:19px;line-height:1.3;letter-spacing:-.6px}
+  .pit .t small{display:block;font-family:var(--body);font-size:13.5px;letter-spacing:0;
+    font-weight:400;text-transform:none;color:#333;margin-top:5px}
+  .pit .d{font-family:var(--sans);font-size:11.5px;letter-spacing:1.4px;text-transform:uppercase;
+    border:3px solid var(--ink);padding:5px 10px;background:var(--bg);white-space:nowrap}
+
+  /* ---------- big banner ---------- */
+  .banner{
+    border:4px solid var(--ink);background:var(--purple);padding:44px 40px;
+    box-shadow:10px 10px 0 var(--ink);text-align:center;transform:rotate(-.5deg);margin:16px 0 0;
+  }
+  .banner h3{font-family:var(--sans);font-size:clamp(24px,4vw,40px);letter-spacing:-2px;
+    text-transform:uppercase;line-height:1.1;margin-bottom:14px}
+  .banner p{font-size:16px;max-width:52ch;margin:0 auto 24px}
+  .banner .row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+  /* ---------- footer ---------- */
+  footer{background:var(--ink);color:var(--white);margin-top:70px;padding:44px 0;border-top:4px solid var(--ink)}
+  footer .wrap{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:center}
+  footer .fl{font-family:var(--sans);font-size:20px;letter-spacing:-1px;text-transform:uppercase;color:var(--yellow)}
+  footer .links{display:flex;gap:10px;flex-wrap:wrap}
+  footer .links a{font-family:var(--sans);font-size:11.5px;letter-spacing:1.4px;text-transform:uppercase;
+    border:3px solid var(--white);padding:7px 13px;transition:.12s}
+  footer .links a:hover{background:var(--yellow);color:var(--ink);border-color:var(--yellow)}
+
+  @media(max-width:920px){
+    .hero-grid{grid-template-columns:1fr}
+    .stats{grid-template-columns:1fr 1fr}
+  }
+  @media(max-width:640px){
+    .bar{height:auto;padding:14px 0;flex-wrap:wrap}
+    nav{margin-left:0;width:100%}
+    .pit{grid-template-columns:1fr;gap:10px}
+    .pit .no{font-size:22px}
+    .banner{padding:30px 22px}
+    h1{letter-spacing:-2px}
+  }
+</style>
+</head>
+<body>
+
+<div class="marquee">
+  <div class="marquee-in">
+    <span>BUILD IN PUBLIC</span><span>★</span><span>18 个项目</span><span>★</span><span>142 篇日志</span><span>★</span><span>63 个坑</span><span>★</span><span><b>不写成功学</b></span><span>★</span>
+    <span>BUILD IN PUBLIC</span><span>★</span><span>18 个项目</span><span>★</span><span>142 篇日志</span><span>★</span><span>63 个坑</span><span>★</span><span><b>不写成功学</b></span><span>★</span>
+  </div>
+</div>
+
+<header>
+  <div class="wrap bar">
+    <div class="logo">Agent Log</div>
+    <nav>
+      <a href="#" class="on">项目</a>
+      <a href="#pitfalls">踩坑</a>
+      <a href="#retro">总结</a>
+      <a href="#about">关于</a>
+      <a href="#">RSS</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-grid">
+      <div>
+        <div class="badge">施工日志 · 2026</div>
+        <h1>
+          我做的<br>
+          <span class="hl">每一个</span><br>
+          Agent 项目<br>
+          和它的<br>
+          <span class="hl2">翻车现场</span>
+        </h1>
+        <p class="lede">
+          需求从哪来、架构怎么选、<b>哪一步炸了</b>、最后长成什么样。
+          全部摊开写，包括那些我不想承认的部分。
+        </p>
+        <div class="cta-row">
+          <button class="btn p">看项目 →</button>
+          <button class="btn s">读踩坑</button>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><b>18</b><span>Projects</span></div>
+        <div class="stat"><b>142</b><span>Build Logs</span></div>
+        <div class="stat"><b>63</b><span>Pitfalls</span></div>
+        <div class="stat"><b>9</b><span>Shipped</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section class="sec" id="projects">
+    <div class="sec-head">
+      <h2>项目</h2>
+      <span class="sub">9 个在跑</span>
+    </div>
+    <div class="grid">
+      <a class="card" href="#">
+        <div class="tagline"><span class="tag y">security</span><span class="tag">已交付</span></div>
+        <h3>秒寻 FoundInSec</h3>
+        <p>秒传链接检索与校验。核心难点是索引膨胀与查询延迟的取舍，最后用分片 + 内存映射压到可接受范围。</p>
+        <div class="foot"><span>2026-10-03</span><span class="go">查看</span></div>
+      </a>
+      <a class="card" href="#">
+        <div class="tagline"><span class="tag t">infra</span><span class="tag">已交付</span></div>
+        <h3>netstorm</h3>
+        <p>NAS / 局域网管理面板。设备发现、端口扫描、服务状态一屏看完，前端 Vue 3 + 轻量状态管理。</p>
+        <div class="foot"><span>2026-10-12</span><span class="go">查看</span></div>
+      </a>
+      <a class="card" href="#">
+        <div class="tagline"><span class="tag p">gateway</span><span class="tag">已交付</span></div>
+        <h3>model-relay</h3>
+        <p>多模型中继网关。统一 OpenAI 兼容协议，处理 SSE 流式转发、重试与配额，顺手解决超时熔断。</p>
+        <div class="foot"><span>2026-10-02</span><span class="go">查看</span></div>
+      </a>
+      <a class="card" href="#">
+        <div class="tagline"><span class="tag">tooling</span><span class="tag">已交付</span></div>
+        <h3>pi-extensions</h3>
+        <p>为 pi 写的扩展集合：秘密文件闸门、微信投递、命令包装。踩坑集中在权限与钩子顺序。</p>
+        <div class="foot"><span>2026-10-02</span><span class="go">查看</span></div>
+      </a>
+      <a class="card" href="#">
+        <div class="tagline"><span class="tag t">automation</span><span class="tag">已交付</span></div>
+        <h3>TWWB_check</h3>
+        <p>自动化签到工具。多账号、失败重试、通知聚合，从本地 cron 迁到无服务器后省下一台机器。</p>
+        <div class="foot"><span>2026-09-27</span><span class="go">查看</span></div>
+      </a>
+      <a class="card" href="#">
+        <div class="tagline"><span class="tag r">WIP</span><span class="tag">tooling</span></div>
+        <h3>foobar2000-toolkit</h3>
+        <p>歌单整理工具包。标签规范化、重复曲目合并、编码修复，纯脚本但坑不少。</p>
+        <div class="foot"><span>2026-09-29</span><span class="go">查看</span></div>
+      </a>
+    </div>
+  </section>
+
+  <!-- PITFALLS -->
+  <section class="sec" id="pitfalls">
+    <div class="sec-head">
+      <h2>踩坑</h2>
+      <span class="sub">按痛感排序</span>
+    </div>
+    <div class="pit-list">
+      <a class="pit" href="#">
+        <div class="no">01</div>
+        <div class="t">GitHub Pages 子路径白屏
+          <small>base 配错一次，资源全 404，debug 花了两小时。</small>
+        </div>
+        <div class="d">Vite · 10-03</div>
+      </a>
+      <a class="pit" href="#">
+        <div class="no">02</div>
+        <div class="t">Windows 的 CRLF 与路径分隔符
+          <small>本地跑得好好的，一上 CI 就挂。三次之后才想起 .gitattributes。</small>
+        </div>
+        <div class="d">CI · 10-02</div>
+      </a>
+      <a class="pit" href="#">
+        <div class="no">03</div>
+        <div class="t">SSE 流式转发被缓冲吃掉
+          <small>Nginx 默认缓冲让"流式"变成了"等全部结束再吐"。</small>
+        </div>
+        <div class="d">Node · 10-02</div>
+      </a>
+      <a class="pit" href="#">
+        <div class="no">04</div>
+        <div class="t">SQLite WAL 下的并发写
+          <small>多进程写入偶发 database is locked，最后靠重试与单写者队列解决。</small>
+        </div>
+        <div class="d">SQLite · 10-03</div>
+      </a>
+      <a class="pit" href="#">
+        <div class="no">05</div>
+        <div class="t">端口扫描把交换机打满
+          <small>线程开太多，家里网络集体掉线。后来加了并发上限与退避。</small>
+        </div>
+        <div class="d">Net · 10-12</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- RETRO BANNER -->
+  <section class="sec" id="retro">
+    <div class="banner">
+      <h3>我的 Agent 工作流 2026</h3>
+      <p>上下文管理、任务委派、自动化边界 —— 一年下来，真正沉淀下来的那几条原则。</p>
+      <div class="row">
+        <button class="btn p">读总结 →</button>
+        <button class="btn">订阅更新</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fl">Agent Log © 2026</div>
+    <div class="links">
+      <a href="#">GitHub</a><a href="#">RSS</a><a href="#">归档</a><a href="#">关于</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

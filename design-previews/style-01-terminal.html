@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AGENT.LOG — 风格范本 01 · 终端极客风</title>
+<style>
+  :root{
+    --bg:#070b09;
+    --bg-soft:#0d1410;
+    --panel:#0b120e;
+    --line:#1c2a22;
+    --line-hot:#2f4a3b;
+    --fg:#cfe8da;
+    --fg-dim:#6f8a7d;
+    --fg-dimmer:#44584e;
+    --green:#00ff9c;
+    --green-dim:#0b8f5c;
+    --amber:#ffcc66;
+    --cyan:#5ce1e6;
+    --magenta:#ff6ec7;
+    --mono:ui-monospace,"JetBrains Mono","Cascadia Code","SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--fg);
+    font-family:var(--mono);
+    font-size:14px;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+    background-image:
+      linear-gradient(rgba(0,255,156,.025) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(0,255,156,.025) 1px,transparent 1px);
+    background-size:36px 36px;
+  }
+  ::selection{background:var(--green);color:#04120b}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+
+  /* ---------- scanline overlay ---------- */
+  .scan{
+    position:fixed;inset:0;pointer-events:none;z-index:99;
+    background:repeating-linear-gradient(180deg,rgba(0,0,0,0) 0 2px,rgba(0,0,0,.16) 2px 3px);
+    mix-blend-mode:multiply;opacity:.5;
+  }
+  .glow{
+    position:fixed;top:-30vh;left:50%;transform:translateX(-50%);
+    width:120vw;height:80vh;pointer-events:none;z-index:0;
+    background:radial-gradient(ellipse at center,rgba(0,255,156,.10),transparent 62%);
+    filter:blur(30px);
+  }
+
+  /* ---------- top bar ---------- */
+  header{
+    position:sticky;top:0;z-index:50;
+    backdrop-filter:blur(10px);
+    background:rgba(7,11,9,.86);
+    border-bottom:1px solid var(--line);
+  }
+  .bar{display:flex;align-items:center;gap:18px;height:58px}
+  .dots{display:flex;gap:7px;flex:0 0 auto}
+  .dots i{width:11px;height:11px;border-radius:50%;display:block}
+  .dots i:nth-child(1){background:#ff5f57}
+  .dots i:nth-child(2){background:#febc2e}
+  .dots i:nth-child(3){background:#28c840}
+  .brand{font-weight:700;letter-spacing:.5px;white-space:nowrap}
+  .brand .prompt{color:var(--green)}
+  .brand .cursor{display:inline-block;width:8px;height:15px;background:var(--green);
+    vertical-align:-2px;animation:blink 1.05s steps(1) infinite}
+  @keyframes blink{0%,50%{opacity:1}50.01%,100%{opacity:0}}
+  nav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+  nav a{
+    padding:5px 11px;border:1px solid transparent;border-radius:3px;
+    color:var(--fg-dim);font-size:13px;transition:.16s;
+  }
+  nav a:hover{color:var(--green);border-color:var(--line-hot);background:rgba(0,255,156,.05)}
+  nav a.on{color:var(--green);border-color:var(--green-dim);background:rgba(0,255,156,.07)}
+
+  /* ---------- hero ---------- */
+  .hero{padding:76px 0 54px;position:relative;z-index:1}
+  .win{
+    border:1px solid var(--line);border-radius:8px;overflow:hidden;
+    background:linear-gradient(180deg,rgba(13,20,16,.92),rgba(9,14,11,.92));
+    box-shadow:0 0 0 1px rgba(0,255,156,.05),0 30px 70px -30px rgba(0,255,156,.22);
+  }
+  .win-bar{
+    display:flex;align-items:center;gap:10px;padding:9px 14px;
+    background:rgba(0,255,156,.045);border-bottom:1px solid var(--line);
+    font-size:12px;color:var(--fg-dim);
+  }
+  .win-body{padding:28px 26px 30px}
+  .cmd{color:var(--fg-dim);font-size:13px;margin-bottom:14px}
+  .cmd b{color:var(--cyan);font-weight:400}
+  h1{
+    font-size:clamp(30px,5.4vw,54px);line-height:1.14;font-weight:700;
+    letter-spacing:-1px;margin:6px 0 18px;
+  }
+  h1 .g{color:var(--green);text-shadow:0 0 22px rgba(0,255,156,.45)}
+  h1 .outline{
+    color:transparent;-webkit-text-stroke:1px var(--green-dim);
+  }
+  .lede{color:var(--fg-dim);max-width:64ch;font-size:14.5px}
+  .lede em{color:var(--amber);font-style:normal}
+  .metrics{display:flex;gap:34px;flex-wrap:wrap;margin-top:30px;padding-top:22px;border-top:1px dashed var(--line)}
+  .metric b{display:block;font-size:26px;color:var(--green);line-height:1.2}
+  .metric span{font-size:11.5px;color:var(--fg-dimmer);letter-spacing:1.2px;text-transform:uppercase}
+
+  /* ---------- section head ---------- */
+  .sec{padding:46px 0 0}
+  .sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:22px;flex-wrap:wrap}
+  .sec-head h2{font-size:15px;letter-spacing:2px;text-transform:uppercase;color:var(--fg)}
+  .sec-head h2::before{content:"// ";color:var(--green-dim)}
+  .sec-head .rule{flex:1;height:1px;background:repeating-linear-gradient(90deg,var(--line) 0 6px,transparent 6px 12px)}
+  .sec-head .count{font-size:12px;color:var(--fg-dimmer)}
+
+  /* ---------- filters ---------- */
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+  .chip{
+    border:1px solid var(--line);background:transparent;color:var(--fg-dim);
+    font-family:var(--mono);font-size:12.5px;padding:5px 12px;border-radius:3px;cursor:pointer;transition:.16s;
+  }
+  .chip:hover{border-color:var(--line-hot);color:var(--fg)}
+  .chip.on{border-color:var(--green);color:var(--green);background:rgba(0,255,156,.08);box-shadow:0 0 14px -4px rgba(0,255,156,.5)}
+
+  /* ---------- post list (log style) ---------- */
+  .log{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:rgba(11,18,14,.6)}
+  .row{
+    display:grid;grid-template-columns:96px 92px 1fr auto;
+    gap:16px;align-items:center;
+    padding:15px 20px;border-bottom:1px solid var(--line);
+    transition:.16s;position:relative;
+  }
+  .row:last-child{border-bottom:0}
+  .row::before{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--green);
+    transform:scaleY(0);transition:.2s;
+  }
+  .row:hover{background:rgba(0,255,156,.045)}
+  .row:hover::before{transform:scaleY(1)}
+  .row .date{font-size:12px;color:var(--fg-dimmer)}
+  .row .tag{font-size:11.5px;padding:2px 8px;border-radius:3px;border:1px solid;justify-self:start;white-space:nowrap}
+  .t-proj{color:var(--green);border-color:rgba(0,255,156,.35);background:rgba(0,255,156,.07)}
+  .t-pit{color:var(--amber);border-color:rgba(255,204,102,.35);background:rgba(255,204,102,.07)}
+  .t-log{color:var(--cyan);border-color:rgba(92,225,230,.35);background:rgba(92,225,230,.07)}
+  .t-sum{color:var(--magenta);border-color:rgba(255,110,199,.35);background:rgba(255,110,199,.07)}
+  .row .title{font-size:14.5px;color:var(--fg);display:flex;align-items:center;gap:10px;min-width:0}
+  .row .title .txt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .row:hover .title .txt{color:var(--green)}
+  .row .meta{font-size:12px;color:var(--fg-dimmer);text-align:right;white-space:nowrap}
+  .row .meta b{color:var(--fg-dim);font-weight:400}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);flex:0 0 auto}
+
+  /* ---------- feature cards ---------- */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));gap:16px;margin-top:6px}
+  .card{
+    border:1px solid var(--line);border-radius:8px;padding:20px;
+    background:linear-gradient(180deg,rgba(13,20,16,.75),rgba(9,14,11,.75));
+    transition:.18s;position:relative;overflow:hidden;
+  }
+  .card::after{
+    content:"";position:absolute;inset:0;opacity:0;transition:.2s;
+    background:radial-gradient(400px circle at var(--mx,50%) var(--my,0%),rgba(0,255,156,.09),transparent 60%);
+  }
+  .card:hover{border-color:var(--line-hot);transform:translateY(-3px)}
+  .card:hover::after{opacity:1}
+  .card .idx{font-size:11.5px;color:var(--green-dim);letter-spacing:1px}
+  .card h3{font-size:16px;margin:10px 0 8px;color:var(--fg)}
+  .card p{font-size:13px;color:var(--fg-dim);line-height:1.75}
+  .card .foot{margin-top:16px;padding-top:12px;border-top:1px dashed var(--line);
+    display:flex;justify-content:space-between;font-size:11.5px;color:var(--fg-dimmer)}
+  .card .foot .st{color:var(--green)}
+
+  /* ---------- terminal snippet ---------- */
+  .term{
+    margin-top:8px;border:1px solid var(--line);border-radius:8px;
+    background:#050806;padding:18px 20px;font-size:13px;overflow-x:auto;
+  }
+  .term .l{white-space:pre}
+  .term .p{color:var(--green)}
+  .term .c{color:var(--fg)}
+  .term .o{color:var(--fg-dimmer)}
+  .term .e{color:var(--amber)}
+  .term .k{color:var(--cyan)}
+
+  /* ---------- footer ---------- */
+  footer{margin-top:70px;border-top:1px solid var(--line);padding:30px 0 46px;color:var(--fg-dimmer);font-size:12.5px}
+  footer .fgrid{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+  footer a:hover{color:var(--green)}
+
+  @media(max-width:760px){
+    .row{grid-template-columns:1fr;gap:6px;padding:14px 16px}
+    .row .meta{text-align:left}
+    .hero{padding:44px 0 30px}
+    .metrics{gap:22px}
+  }
+</style>
+</head>
+<body>
+<div class="scan"></div>
+<div class="glow"></div>
+
+<header>
+  <div class="wrap bar">
+    <div class="dots"><i></i><i></i><i></i></div>
+    <div class="brand"><span class="prompt">~/</span>AGENT.LOG<span class="cursor"></span></div>
+    <nav>
+      <a href="#" class="on">projects</a>
+      <a href="#pitfalls">pitfalls</a>
+      <a href="#notes">notes</a>
+      <a href="#about">about</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="win">
+      <div class="win-bar">
+        <span style="color:var(--green)">●</span>
+        <span>agent-log — zsh — 80×24</span>
+        <span style="margin-left:auto">UTF-8 · main</span>
+      </div>
+      <div class="win-body">
+        <div class="cmd"><b>~/agents</b> $ tail -f ./build-in-public.log</div>
+        <h1>把每一次<span class="g">构建</span><br>连同<span class="outline">翻车现场</span>一起记下来。</h1>
+        <p class="lede">
+          这里是我所有 Agent 应用项目的施工日志 —— 需求怎么来的、架构怎么选的、
+          <em>哪一步炸了</em>、最后又长成了什么样子。不写成功学，只写可复现的过程。
+        </p>
+        <div class="metrics">
+          <div class="metric"><b>18</b><span>projects</span></div>
+          <div class="metric"><b>142</b><span>build logs</span></div>
+          <div class="metric"><b>63</b><span>pitfalls</span></div>
+          <div class="metric"><b>9</b><span>shipped</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PITFALLS -->
+  <section class="sec" id="pitfalls">
+    <div class="sec-head">
+      <h2>recent_pitfalls</h2>
+      <div class="rule"></div>
+      <div class="count">63 entries</div>
+    </div>
+    <div class="filters">
+      <button class="chip on">all</button>
+      <button class="chip">project</button>
+      <button class="chip">pitfall</button>
+      <button class="chip">changelog</button>
+      <button class="chip">retro</button>
+    </div>
+
+    <div class="log">
+      <a class="row" href="#">
+        <div class="date">2026-10-12</div>
+        <div class="tag t-proj">project</div>
+        <div class="title"><span class="dot"></span><span class="txt">netstorm — 把 NAS 和局域网设备塞进一个面板</span></div>
+        <div class="meta"><b>Vue 3</b> · 4 min</div>
+      </a>
+      <a class="row" href="#">
+        <div class="date">2026-10-03</div>
+        <div class="tag t-pit">pitfall</div>
+        <div class="title"><span class="dot" style="background:var(--amber);box-shadow:0 0 8px var(--amber)"></span><span class="txt">GitHub Pages 子路径白屏：base 配错一次，debug 两小时</span></div>
+        <div class="meta"><b>Vite</b> · 6 min</div>
+      </a>
+      <a class="row" href="#">
+        <div class="date">2026-10-03</div>
+        <div class="tag t-proj">project</div>
+        <div class="title"><span class="dot"></span><span class="txt">秒寻 FoundInSec — 秒传链接检索系统的索引设计</span></div>
+        <div class="meta"><b>Node</b> · 11 min</div>
+      </a>
+      <a class="row" href="#">
+        <div class="date">2026-10-02</div>
+        <div class="tag t-log">changelog</div>
+        <div class="title"><span class="dot" style="background:var(--cyan);box-shadow:0 0 8px var(--cyan)"></span><span class="txt">model-relay v0.9 — 多模型中继网关的流式转发</span></div>
+        <div class="meta"><b>SSE</b> · 5 min</div>
+      </a>
+      <a class="row" href="#">
+        <div class="date">2026-10-02</div>
+        <div class="tag t-pit">pitfall</div>
+        <div class="title"><span class="dot" style="background:var(--amber);box-shadow:0 0 8px var(--amber)"></span><span class="txt">Windows 下 CRLF 与路径分隔符，把 CI 干趴了三次</span></div>
+        <div class="meta"><b>CI</b> · 4 min</div>
+      </a>
+      <a class="row" href="#">
+        <div class="date">2026-09-27</div>
+        <div class="tag t-proj">project</div>
+        <div class="title"><span class="dot"></span><span class="txt">TWWB_check — 多账号自动签到，从 cron 到无服务器</span></div>
+        <div class="meta"><b>Cron</b> · 8 min</div>
+      </a>
+      <a class="row" href="#">
+        <div class="date">2026-09-20</div>
+        <div class="tag t-sum">retro</div>
+        <div class="title"><span class="dot" style="background:var(--magenta);box-shadow:0 0 8px var(--magenta)"></span><span class="txt">我的 Agent 工作流 2026：上下文、委派与自动化边界</span></div>
+        <div class="meta"><b>Retro</b> · 14 min</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section class="sec" id="notes">
+    <div class="sec-head">
+      <h2>active_projects</h2>
+      <div class="rule"></div>
+      <div class="count">9 running</div>
+    </div>
+    <div class="grid">
+      <a class="card" href="#">
+        <div class="idx">01 / security</div>
+        <h3>秒寻 FoundInSec</h3>
+        <p>秒传链接检索与校验。核心难点是索引膨胀与查询延迟的取舍，最后用分片 + 内存映射压到可接受范围。</p>
+        <div class="foot"><span class="st">● shipped</span><span>2026-10-03</span></div>
+      </a>
+      <a class="card" href="#">
+        <div class="idx">02 / infra</div>
+        <h3>netstorm</h3>
+        <p>NAS / LAN 管理面板。设备发现、端口扫描、服务状态一屏看完，前端用 Vue 3 + 轻量状态管理。</p>
+        <div class="foot"><span class="st">● shipped</span><span>2026-10-12</span></div>
+      </a>
+      <a class="card" href="#">
+        <div class="idx">03 / gateway</div>
+        <h3>model-relay</h3>
+        <p>多模型中继。统一 OpenAI 兼容协议，处理 SSE 流式转发、重试与配额，顺手解决超时熔断。</p>
+        <div class="foot"><span class="st">● shipped</span><span>2026-10-02</span></div>
+      </a>
+      <a class="card" href="#">
+        <div class="idx">04 / tooling</div>
+        <h3>pi-extensions</h3>
+        <p>为 pi 写的扩展集合：秘密文件闸门、微信投递、命令包装。踩坑集中在权限与钩子顺序。</p>
+        <div class="foot"><span class="st">● shipped</span><span>2026-10-02</span></div>
+      </a>
+      <a class="card" href="#">
+        <div class="idx">05 / automation</div>
+        <h3>TWWB_check</h3>
+        <p>自动化签到工具。多账号、失败重试、通知聚合，从本地 cron 迁到无服务器后省下一台机器。</p>
+        <div class="foot"><span class="st">● shipped</span><span>2026-09-27</span></div>
+      </a>
+      <a class="card" href="#">
+        <div class="idx">06 / tooling</div>
+        <h3>foobar2000-toolkit</h3>
+        <p>歌单整理工具包。标签规范化、重复曲目合并、编码修复，纯脚本但坑不少。</p>
+        <div class="foot"><span class="st" style="color:var(--amber)">◐ wip</span><span>2026-09-29</span></div>
+      </a>
+    </div>
+  </section>
+
+  <!-- TERMINAL SNIPPET -->
+  <section class="sec">
+    <div class="sec-head">
+      <h2>how_i_write</h2>
+      <div class="rule"></div>
+      <div class="count">markdown first</div>
+    </div>
+    <div class="term">
+      <div class="l"><span class="p">~/agents</span> <span class="c">$ cat content/posts/netstorm.md</span></div>
+      <div class="l">&nbsp;</div>
+      <div class="l"><span class="o">---</span></div>
+      <div class="l"><span class="k">title</span>: netstorm — 把 NAS 塞进一个面板</div>
+      <div class="l"><span class="k">date</span>: 2026-10-12</div>
+      <div class="l"><span class="k">tags</span>: [project, vue, nas]</div>
+      <div class="l"><span class="k">status</span>: shipped</div>
+      <div class="l"><span class="o">---</span></div>
+      <div class="l">&nbsp;</div>
+      <div class="l"><span class="o">## 起因</span></div>
+      <div class="l">家里的设备越来越多，每次查 IP 都要翻路由后台…</div>
+      <div class="l">&nbsp;</div>
+      <div class="l"><span class="o">## 踩坑</span></div>
+      <div class="l"><span class="e">- 扫描线程开太多，把交换机打满了</span></div>
+      <div class="l"><span class="e">- 前端轮询间隔和缓存撞车，状态一直不刷新</span></div>
+      <div class="l">&nbsp;</div>
+      <div class="l"><span class="p">~/agents</span> <span class="c">$ <span style="display:inline-block;width:8px;height:14px;background:var(--green);vertical-align:-3px;animation:blink 1.05s steps(1) infinite"></span></span></div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap fgrid">
+    <div>AGENT.LOG · build in public · 2026</div>
+    <div><a href="#">GitHub</a> · <a href="#">RSS</a> · <a href="#">Sitemap</a></div>
+  </div>
+</footer>
+
+<script>
+  // 标签筛选（示意交互）
+  document.querySelectorAll('.chip').forEach(c=>{
+    c.addEventListener('click',()=>{
+      document.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));
+      c.classList.add('on');
+    });
+  });
+  // 卡片光晕跟随
+  document.querySelectorAll('.card').forEach(card=>{
+    card.addEventListener('mousemove',e=>{
+      const r=card.getBoundingClientRect();
+      card.style.setProperty('--mx',(e.clientX-r.left)+'px');
+      card.style.setProperty('--my',(e.clientY-r.top)+'px');
+    });
+  });
+</script>
+</body>
+</html>

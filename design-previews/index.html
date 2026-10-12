@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Log · 风格范本选择</title>
+<style>
+  :root{
+    --bg:#0b0d12;--panel:#12151d;--line:#232838;--fg:#e8ecf6;--dim:#8a93a8;--dim2:#5d657a;
+    --a:#6d8cff;--b:#22d3ee;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--fg);font-family:var(--sans);line-height:1.65;
+    -webkit-font-smoothing:antialiased;padding:0 0 70px}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1320px;margin:0 auto;padding:0 28px}
+
+  header{padding:46px 0 30px;border-bottom:1px solid var(--line);margin-bottom:40px;
+    background:radial-gradient(ellipse 70% 100% at 12% 0%,rgba(109,140,255,.14),transparent 60%)}
+  h1{font-size:clamp(26px,4vw,38px);letter-spacing:-1.2px;font-weight:800;margin-bottom:12px}
+  h1 span{background:linear-gradient(100deg,#a5b8ff,#67e8f9);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:var(--dim);font-size:15.5px;max-width:74ch}
+  .meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+  .m{font-size:12px;padding:5px 12px;border-radius:99px;border:1px solid var(--line);
+    background:var(--panel);color:var(--dim);font-family:var(--mono)}
+
+  h2.sec{font-size:14px;letter-spacing:2px;text-transform:uppercase;color:var(--dim2);
+    margin:0 0 20px;display:flex;align-items:center;gap:14px}
+  h2.sec::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(430px,1fr));gap:26px}
+
+  .item{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;
+    transition:.24s;display:flex;flex-direction:column}
+  .item:hover{border-color:rgba(109,140,255,.55);transform:translateY(-4px);
+    box-shadow:0 30px 70px -40px rgba(109,140,255,.9)}
+
+  .thumb{position:relative;height:300px;overflow:hidden;background:#000;border-bottom:1px solid var(--line)}
+  .thumb iframe{
+    width:1440px;height:1000px;border:0;transform:scale(.357);transform-origin:top left;
+    pointer-events:none;position:absolute;top:0;left:0;
+  }
+  .thumb .fade{position:absolute;inset:auto 0 0 0;height:90px;pointer-events:none;
+    background:linear-gradient(180deg,transparent,rgba(18,21,29,.96))}
+  .thumb .open{
+    position:absolute;right:14px;bottom:14px;z-index:3;pointer-events:auto;
+    font-size:12.5px;font-weight:600;padding:8px 15px;border-radius:99px;
+    background:rgba(255,255,255,.94);color:#0b0d12;transition:.18s;
+  }
+  .thumb .open:hover{background:var(--b)}
+  .thumb .no{position:absolute;left:14px;top:14px;z-index:3;font-family:var(--mono);font-size:12px;
+    padding:5px 11px;border-radius:8px;background:rgba(0,0,0,.62);border:1px solid rgba(255,255,255,.16);
+    color:#fff;backdrop-filter:blur(8px)}
+
+  .body{padding:22px 24px 24px;display:flex;flex-direction:column;flex:1}
+  .body h3{font-size:20px;letter-spacing:-.5px;font-weight:750;margin-bottom:6px}
+  .body .tag{font-family:var(--mono);font-size:11.5px;color:var(--dim2);margin-bottom:14px}
+  .body p{font-size:14px;color:var(--dim);line-height:1.75;flex:1}
+
+  .pros{margin-top:16px;display:flex;flex-direction:column;gap:7px}
+  .pros div{font-size:13px;color:var(--dim);display:flex;gap:9px;align-items:flex-start}
+  .pros div::before{content:"▸";color:var(--a);flex:0 0 auto}
+  .pros div b{color:var(--fg);font-weight:600}
+  .warn::before{content:"!";color:#fbbf24}
+
+  .pick{margin-top:20px;padding-top:16px;border-top:1px solid var(--line);
+    display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .pick .best{font-size:11.5px;font-family:var(--mono);padding:4px 11px;border-radius:99px;
+    background:rgba(52,211,153,.14);color:#6ee7b7;border:1px solid rgba(52,211,153,.32)}
+  .pick .n{font-size:12px;color:var(--dim2);margin-left:auto}
+
+  /* tech stack block */
+  .stack-block{margin-top:56px;background:var(--panel);border:1px solid var(--line);
+    border-radius:16px;padding:30px 32px}
+  .stack-block h3{font-size:19px;letter-spacing:-.4px;margin-bottom:6px}
+  .stack-block > p{color:var(--dim);font-size:14.5px;margin-bottom:24px}
+  .layers{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+  .layer{border:1px solid var(--line);border-radius:12px;padding:18px;background:rgba(255,255,255,.02)}
+  .layer h4{font-size:12px;letter-spacing:1.4px;text-transform:uppercase;color:var(--a);margin-bottom:12px;
+    font-family:var(--mono)}
+  .layer ul{list-style:none;display:flex;flex-direction:column;gap:8px}
+  .layer li{font-size:13.5px;color:var(--dim);display:flex;gap:9px}
+  .layer li::before{content:"·";color:var(--dim2)}
+  .layer li b{color:var(--fg);font-weight:600}
+
+  .note{margin-top:22px;padding:16px 20px;border-radius:12px;font-size:13.5px;line-height:1.7;
+    background:rgba(109,140,255,.08);border:1px solid rgba(109,140,255,.24);color:var(--dim)}
+  .note b{color:var(--fg)}
+
+  @media(max-width:980px){.thumb iframe{transform:scale(.46)}}
+  @media(max-width:560px){
+    .grid{grid-template-columns:1fr}
+    .thumb{height:230px}
+    .thumb iframe{transform:scale(.27)}
+    .wrap{padding:0 18px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>Agent Log · <span>风格范本</span>选择</h1>
+    <p class="sub">
+      4 个风格，同一批内容（你的真实项目清单）。下面每个都是可直接双击打开的单文件 HTML，
+      零依赖、无需构建。选一个，或者告诉我要混搭哪几个的部分。
+    </p>
+    <div class="meta">
+      <span class="m">单文件 HTML5</span>
+      <span class="m">零依赖</span>
+      <span class="m">响应式</span>
+      <span class="m">真实项目数据</span>
+      <span class="m">深/浅色各异</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <h2 class="sec">四个风格</h2>
+  <div class="grid">
+
+    <div class="item">
+      <div class="thumb">
+        <span class="no">01</span>
+        <iframe src="style-01-terminal.html" loading="lazy" title="终端极客风"></iframe>
+        <div class="fade"></div>
+        <a class="open" href="style-01-terminal.html" target="_blank">打开全屏 ↗</a>
+      </div>
+      <div class="body">
+        <h3>终端极客风</h3>
+        <div class="tag">Terminal / Hacker · 深色</div>
+        <p>命令行美学：扫描线、荧光绿、等宽字体、日志行式的文章列表。最贴合「Agent / 开发日志」的主题，辨识度最高。</p>
+        <div class="pros">
+          <div><b>主题契合度最高</b> —— 一眼就是工程师的博客</div>
+          <div>内容以「日志行」呈现，适合流水式的更新记录</div>
+          <div>深色护眼，长时间阅读舒适</div>
+          <div class="warn">字重和颜色偏冷，非技术读者会觉得距离感强</div>
+        </div>
+        <div class="pick"><span class="best">✓ 最推荐</span><span class="n">适合：技术博客定位</span></div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="thumb">
+        <span class="no">02</span>
+        <iframe src="style-02-magazine.html" loading="lazy" title="编辑杂志风"></iframe>
+        <div class="fade"></div>
+        <a class="open" href="style-02-magazine.html" target="_blank">打开全屏 ↗</a>
+      </div>
+      <div class="body">
+        <h3>编辑杂志风</h3>
+        <div class="tag">Editorial / Magazine · 浅色</div>
+        <p>衬线大标题、首字下沉、分栏、拉引语。像一本正经的刊物，适合长文和「总结 / 复盘」类内容。</p>
+        <div class="pros">
+          <div><b>长文阅读体验最好</b>，排版信息层次清晰</div>
+          <div>浅色纸感，打印/分享都好看</div>
+          <div>「踩坑」和「总结」这类叙事内容最出彩</div>
+          <div class="warn">视觉个性弱一些，偏传统媒体感</div>
+        </div>
+        <div class="pick"><span class="best">✓ 适合长文</span><span class="n">适合：内容优先</span></div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="thumb">
+        <span class="no">03</span>
+        <iframe src="style-03-brutalist.html" loading="lazy" title="新粗野主义"></iframe>
+        <div class="fade"></div>
+        <a class="open" href="style-03-brutalist.html" target="_blank">打开全屏 ↗</a>
+      </div>
+      <div class="body">
+        <h3>新粗野主义</h3>
+        <div class="tag">Neo-Brutalism · 高饱和</div>
+        <p>粗黑边框、硬阴影、撞色色块、超大字号。个性极强，滚动条一拉过去就忘不掉。</p>
+        <div class="pros">
+          <div><b>记忆点最强</b>，社交媒体截图传播友好</div>
+          <div>「踩坑」列表做成了编号清单，冲击力足</div>
+          <div>天然适合做成系列化的视觉语言</div>
+          <div class="warn">颜色多，长时间阅读容易累；对内容克制度要求高</div>
+        </div>
+        <div class="pick"><span class="best">✓ 最有个性</span><span class="n">适合：想做出圈</span></div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="thumb">
+        <span class="no">04</span>
+        <iframe src="style-04-glass.html" loading="lazy" title="极光玻璃拟态"></iframe>
+        <div class="fade"></div>
+        <a class="open" href="style-04-glass.html" target="_blank">打开全屏 ↗</a>
+      </div>
+      <div class="body">
+        <h3>极光玻璃拟态</h3>
+        <div class="tag">Aurora / Glassmorphism · 深色</div>
+        <p>极光渐变背景 + 毛玻璃卡片 + 柔和光晕。现代、精致，是当前 SaaS / AI 产品的主流审美。</p>
+        <div class="pros">
+          <div><b>最现代、最"产品感"</b>，像 AI 产品官网</div>
+          <div>卡片化布局对项目索引和文章列表都友好</div>
+          <div>渐变标题和光晕细节，第一印象加分</div>
+          <div class="warn">毛玻璃在低端设备上略吃性能；同质化较高</div>
+        </div>
+        <div class="pick"><span class="best">✓ 最现代</span><span class="n">适合：AI 产品感</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TECH STACK -->
+  <div class="stack-block">
+    <h3>配套技术栈建议</h3>
+    <p>你点名了 HTML5 + JS + Node + Vue，下面是我建议的组合。目标：内容用 Markdown 写，构建产物是纯静态，一键部署 GitHub Pages。</p>
+    <div class="layers">
+      <div class="layer">
+        <h4>前端</h4>
+        <ul>
+          <li><b>Vue 3</b> + Composition API + <b>TypeScript</b></li>
+          <li><b>Vite</b> 构建（快、生态好、Pages 部署简单）</li>
+          <li><b>Vue Router</b> 路由，<b>Pinia</b> 轻量状态</li>
+          <li>原生 CSS 变量 + 少量 <b>UnoCSS</b>（可选）</li>
+        </ul>
+      </div>
+      <div class="layer">
+        <h4>内容层</h4>
+        <ul>
+          <li><b>Markdown + frontmatter</b> 写文章（title/date/tags/status）</li>
+          <li><b>markdown-it</b> 渲染 + <b>Shiki</b> 代码高亮</li>
+          <li><b>gray-matter</b> 解析元数据，Vite 插件自动生成索引</li>
+          <li>文章按 <b>tags</b> 自动归类：project / pitfall / changelog / retro</li>
+        </ul>
+      </div>
+      <div class="layer">
+        <h4>构建与数据</h4>
+        <ul>
+          <li>Node 脚本扫描 <code>content/posts/*.md</code> 生成 <code>posts.json</code></li>
+          <li>静态搜索：<b>Pagefind</b> 或 Fuse.js（无需后端）</li>
+          <li>RSS 用 Node 脚本生成 <code>feed.xml</code></li>
+          <li>可选：把项目元数据从各仓库 README 自动同步</li>
+        </ul>
+      </div>
+      <div class="layer">
+        <h4>部署</h4>
+        <ul>
+          <li><b>GitHub Actions</b> → 构建 → 发布 <b>gh-pages</b> 分支</li>
+          <li>或 <code>/docs</code> 目录 + Pages 设置</li>
+          <li><code>base: '/agentsBlog/'</code> 别忘（就是那个坑）</li>
+          <li>自定义域名 + CNAME 可选</li>
+        </ul>
+      </div>
+    </div>
+    <div class="note">
+      <b>关于"要不要用现成框架"：</b> Astro / VitePress 写文档站更省事，但你要的是「能自己控制视觉」的博客，
+      而且点名了 Vue。所以建议 <b>Vite + Vue 3 自建</b> —— 模板就是上面你选的那个风格，
+      把静态 HTML 拆成 Vue 组件即可，改造成本很低。
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

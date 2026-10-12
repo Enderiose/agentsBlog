@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AGENT LOG — 风格范本 02 · 编辑杂志风</title>
+<style>
+  :root{
+    --paper:#faf8f4;
+    --paper-2:#f2ede5;
+    --ink:#1a1714;
+    --ink-2:#4a443d;
+    --ink-3:#8b8279;
+    --rule:#ddd5c9;
+    --accent:#c2410c;
+    --accent-soft:#fdf0e7;
+    --blue:#1e3a8a;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Songti SC","Source Han Serif SC",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--paper);color:var(--ink);
+    font-family:var(--sans);font-size:16px;line-height:1.75;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--accent);color:#fff}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 32px}
+  .serif{font-family:var(--serif)}
+
+  /* ---------- masthead ---------- */
+  .topline{border-bottom:1px solid var(--rule);background:var(--paper-2)}
+  .topline .wrap{display:flex;align-items:center;justify-content:space-between;height:34px;
+    font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:var(--ink-3)}
+  .topline .wrap span{white-space:nowrap}
+
+  header.masthead{border-bottom:3px double var(--ink);padding:26px 0 20px;background:var(--paper)}
+  .masthead .wrap{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap}
+  .logo{font-family:var(--serif);font-size:clamp(30px,5vw,46px);font-weight:700;letter-spacing:-1.2px;line-height:1}
+  .logo .amp{color:var(--accent);font-style:italic}
+  .tagline{font-size:12.5px;color:var(--ink-3);letter-spacing:.4px;margin-top:8px;font-family:var(--serif);font-style:italic}
+  nav.main{display:flex;gap:26px;font-size:12px;letter-spacing:1.6px;text-transform:uppercase}
+  nav.main a{padding-bottom:4px;border-bottom:1.5px solid transparent;color:var(--ink-2);transition:.15s}
+  nav.main a:hover,nav.main a.on{color:var(--accent);border-color:var(--accent)}
+
+  /* ---------- hero / lead story ---------- */
+  .lead{padding:52px 0 44px;border-bottom:1px solid var(--rule)}
+  .lead .wrap{display:grid;grid-template-columns:1.55fr 1fr;gap:56px;align-items:start}
+  .kicker{font-size:11.5px;letter-spacing:2.4px;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:16px}
+  .lead h1{font-family:var(--serif);font-size:clamp(34px,5.4vw,58px);line-height:1.1;letter-spacing:-1.6px;font-weight:700;margin-bottom:20px}
+  .lead h1 em{font-style:italic;color:var(--accent)}
+  .lead .standfirst{font-family:var(--serif);font-size:19px;line-height:1.7;color:var(--ink-2);max-width:56ch}
+  .lead .standfirst::first-letter{
+    float:left;font-size:64px;line-height:.82;padding:6px 12px 0 0;
+    font-weight:700;color:var(--accent);font-family:var(--serif);
+  }
+  .byline{margin-top:26px;padding-top:16px;border-top:1px solid var(--rule);
+    font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:var(--ink-3)}
+
+  .sidebar{border-left:1px solid var(--rule);padding-left:32px}
+  .sidebar h4{font-size:11.5px;letter-spacing:2.2px;text-transform:uppercase;color:var(--ink-3);margin-bottom:18px;font-weight:700}
+  .side-item{padding:14px 0;border-bottom:1px dotted var(--rule)}
+  .side-item:last-child{border-bottom:0}
+  .side-item .n{font-family:var(--serif);font-size:26px;color:var(--rule);font-weight:700;line-height:1;float:left;margin-right:12px;margin-top:-2px}
+  .side-item h5{font-family:var(--serif);font-size:16.5px;line-height:1.4;font-weight:600;margin-bottom:5px}
+  .side-item h5:hover{color:var(--accent)}
+  .side-item p{font-size:13px;color:var(--ink-3);line-height:1.6}
+  .side-item .d{font-size:11px;letter-spacing:1px;color:var(--ink-3);text-transform:uppercase;margin-top:6px}
+
+  /* ---------- stats strip ---------- */
+  .stats{background:var(--ink);color:var(--paper);padding:26px 0}
+  .stats .wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:24px;text-align:center}
+  .stat b{display:block;font-family:var(--serif);font-size:38px;line-height:1.1;color:#fff}
+  .stat b i{color:var(--accent);font-style:normal;font-size:22px}
+  .stat span{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#a9a29a}
+
+  /* ---------- section ---------- */
+  .sec{padding:56px 0}
+  .sec-head{display:flex;align-items:baseline;gap:18px;margin-bottom:34px;border-bottom:1px solid var(--ink);padding-bottom:12px}
+  .sec-head h2{font-family:var(--serif);font-size:24px;letter-spacing:-.4px;font-weight:700}
+  .sec-head .sub{font-size:12px;letter-spacing:1.6px;text-transform:uppercase;color:var(--ink-3);margin-left:auto}
+
+  /* ---------- article cards ---------- */
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:0}
+  .acard{padding:0 30px 0 0;border-right:1px solid var(--rule)}
+  .acard:nth-child(3n){border-right:0;padding-right:0}
+  .acard:nth-child(n+4){border-top:1px solid var(--rule);padding-top:34px;margin-top:34px}
+  .acard .cat{font-size:10.5px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);font-weight:700}
+  .acard .cat.pit{color:#b45309}
+  .acard .cat.ret{color:var(--blue)}
+  .acard h3{font-family:var(--serif);font-size:22px;line-height:1.28;margin:12px 0 10px;letter-spacing:-.4px;font-weight:600}
+  .acard:hover h3{color:var(--accent)}
+  .acard p{font-size:14.5px;color:var(--ink-2);line-height:1.72}
+  .acard .meta{margin-top:16px;font-size:11.5px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-3);
+    display:flex;gap:12px;align-items:center}
+  .acard .meta .sep{width:14px;height:1px;background:var(--ink-3)}
+
+  /* ---------- pull quote ---------- */
+  .pull{margin:56px 0;padding:34px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);text-align:center}
+  .pull q{font-family:var(--serif);font-size:clamp(21px,3vw,30px);line-height:1.5;font-style:italic;color:var(--ink);quotes:"\201C" "\201D"}
+  .pull cite{display:block;margin-top:16px;font-size:11.5px;letter-spacing:2px;text-transform:uppercase;color:var(--ink-3);font-style:normal}
+
+  /* ---------- project table ---------- */
+  .ptable{width:100%;border-collapse:collapse;font-size:14.5px}
+  .ptable th{text-align:left;font-size:10.5px;letter-spacing:2px;text-transform:uppercase;color:var(--ink-3);
+    padding:0 16px 12px 0;border-bottom:1px solid var(--ink);font-weight:700}
+  .ptable td{padding:17px 16px 17px 0;border-bottom:1px solid var(--rule);vertical-align:top}
+  .ptable tr:hover td{background:var(--accent-soft)}
+  .ptable .pname{font-family:var(--serif);font-size:17.5px;font-weight:600}
+  .ptable .pname:hover{color:var(--accent)}
+  .ptable .desc{color:var(--ink-2);font-size:13.5px;line-height:1.6}
+  .pill{display:inline-block;font-size:10.5px;letter-spacing:1.2px;text-transform:uppercase;
+    padding:3px 10px;border:1px solid var(--ink);border-radius:99px;white-space:nowrap}
+  .pill.ok{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .pill.wip{background:transparent;color:var(--ink-2);border-color:var(--rule)}
+  .ptable .stack{font-size:12.5px;color:var(--ink-3);font-family:var(--serif);font-style:italic}
+
+  /* ---------- newsletter ---------- */
+  .sub-block{background:var(--paper-2);border:1px solid var(--rule);padding:40px;margin:60px 0 0;
+    display:flex;gap:40px;align-items:center;flex-wrap:wrap}
+  .sub-block .t{flex:1;min-width:260px}
+  .sub-block h3{font-family:var(--serif);font-size:26px;letter-spacing:-.4px;margin-bottom:8px}
+  .sub-block p{font-size:14.5px;color:var(--ink-2)}
+  .sub-form{display:flex;gap:0;flex:0 0 auto}
+  .sub-form input{font-family:var(--sans);font-size:14px;padding:13px 16px;width:250px;
+    border:1px solid var(--ink);border-right:0;background:#fff;color:var(--ink);outline:none}
+  .sub-form button{font-family:var(--sans);font-size:12px;letter-spacing:1.6px;text-transform:uppercase;
+    padding:13px 24px;background:var(--ink);color:var(--paper);border:1px solid var(--ink);cursor:pointer;transition:.15s}
+  .sub-form button:hover{background:var(--accent);border-color:var(--accent)}
+
+  /* ---------- footer ---------- */
+  footer{border-top:3px double var(--ink);margin-top:70px;padding:34px 0 50px}
+  footer .wrap{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;
+    font-size:12px;color:var(--ink-3);letter-spacing:.4px}
+  footer a:hover{color:var(--accent)}
+
+  @media(max-width:900px){
+    .lead .wrap{grid-template-columns:1fr;gap:36px}
+    .sidebar{border-left:0;padding-left:0;border-top:1px solid var(--rule);padding-top:26px}
+    .cards{grid-template-columns:1fr 1fr}
+    .acard:nth-child(3n){border-right:1px solid var(--rule);padding-right:30px}
+    .acard:nth-child(2n){border-right:0;padding-right:0}
+    .acard:nth-child(n+3){border-top:1px solid var(--rule);padding-top:34px;margin-top:34px}
+  }
+  @media(max-width:620px){
+    .wrap{padding:0 20px}
+    .cards{grid-template-columns:1fr}
+    .acard{border-right:0!important;padding-right:0!important}
+    .acard:nth-child(n+2){border-top:1px solid var(--rule);padding-top:30px;margin-top:30px}
+    .sub-block{padding:26px}
+    .sub-form input{width:100%}
+    .sub-form{flex-direction:column;width:100%}
+    .sub-form input{border-right:1px solid var(--ink);border-bottom:0}
+  }
+</style>
+</head>
+<body>
+
+<div class="topline">
+  <div class="wrap">
+    <span>Vol. 04 · 2026 年 10 月</span>
+    <span>Build in Public · 施工日志</span>
+    <span>第 142 期</span>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div>
+      <div class="logo serif">Agent <span class="amp">&amp;</span> Log</div>
+      <div class="tagline">每一个项目，连同它翻过的车</div>
+    </div>
+    <nav class="main">
+      <a href="#" class="on">首页</a>
+      <a href="#projects">项目</a>
+      <a href="#pitfalls">踩坑</a>
+      <a href="#retro">总结</a>
+      <a href="#about">关于</a>
+    </nav>
+  </div>
+</header>
+
+<!-- LEAD STORY -->
+<section class="lead">
+  <div class="wrap">
+    <article>
+      <div class="kicker">本期封面 · 基础设施</div>
+      <h1 class="serif">把 NAS 和局域网里的<br>每一台设备，<em>收进一个面板</em></h1>
+      <p class="standfirst">
+        家里的设备越来越多，查一个 IP 要翻三层路由后台。于是我写了 netstorm —— 一个自托管的
+        局域网管理面板。这篇文章记录了它从「一次端口扫描」到「一屏掌握全网状态」的全过程，
+        以及中间那些把我卡了两小时的坑。
+      </p>
+      <div class="byline">文 / 我 · 2026-10-12 · 阅读约 4 分钟</div>
+    </article>
+
+    <aside class="sidebar">
+      <h4>编辑精选</h4>
+      <a class="side-item" href="#">
+        <span class="n">01</span>
+        <h5>GitHub Pages 子路径白屏</h5>
+        <p>base 配错一次，debug 两小时。</p>
+        <div class="d">Vite · 10-03</div>
+      </a>
+      <a class="side-item" href="#">
+        <span class="n">02</span>
+        <h5>秒寻：索引膨胀的取舍</h5>
+        <p>分片 + 内存映射，把查询延迟压回可接受范围。</p>
+        <div class="d">Node · 10-03</div>
+      </a>
+      <a class="side-item" href="#">
+        <span class="n">03</span>
+        <h5>Windows 换行符的三次背刺</h5>
+        <p>CRLF 与路径分隔符，把 CI 干趴了三次。</p>
+        <div class="d">CI · 10-02</div>
+      </a>
+    </aside>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats">
+  <div class="wrap">
+    <div class="stat"><b>18</b><span>项目</span></div>
+    <div class="stat"><b>142</b><span>施工日志</span></div>
+    <div class="stat"><b>63</b><span>踩坑记录</span></div>
+    <div class="stat"><b>9</b><span>已交付</span></div>
+    <div class="stat"><b>1</b><span>作者</span></div>
+  </div>
+</section>
+
+<!-- ARTICLES -->
+<section class="sec" id="pitfalls">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 class="serif">最新文章</h2>
+      <span class="sub">Projects · Pitfalls · Retros</span>
+    </div>
+
+    <div class="cards">
+      <a class="acard" href="#">
+        <div class="cat">项目</div>
+        <h3>netstorm：自托管的局域网管理面板</h3>
+        <p>设备发现、端口扫描、服务状态一屏看完。前端 Vue 3，后端一个轻量 Node 服务。</p>
+        <div class="meta"><span>2026-10-12</span><span class="sep"></span><span>4 min</span></div>
+      </a>
+      <a class="acard" href="#">
+        <div class="cat pit">踩坑</div>
+        <h3>base 路径：一次部署白屏的完整复盘</h3>
+        <p>Vite 打包到 GitHub Pages 子路径，资源 404 的根因、排查路径与最终配置。</p>
+        <div class="meta"><span>2026-10-03</span><span class="sep"></span><span>6 min</span></div>
+      </a>
+      <a class="acard" href="#">
+        <div class="cat">项目</div>
+        <h3>秒寻 FoundInSec：秒传链接检索</h3>
+        <p>索引设计与查询延迟的取舍，以及为什么最后选了分片加内存映射。</p>
+        <div class="meta"><span>2026-10-03</span><span class="sep"></span><span>11 min</span></div>
+      </a>
+      <a class="acard" href="#">
+        <div class="cat">变更</div>
+        <h3>model-relay v0.9：流式转发重写</h3>
+        <p>统一 OpenAI 兼容协议，重做 SSE 转发与熔断，附压测数据。</p>
+        <div class="meta"><span>2026-10-02</span><span class="sep"></span><span>5 min</span></div>
+      </a>
+      <a class="acard" href="#">
+        <div class="cat pit">踩坑</div>
+        <h3>CRLF 与路径：Windows 开发的三次翻车</h3>
+        <p>本地跑得好好的，一上 CI 就挂。最后用 .gitattributes 一劳永逸。</p>
+        <div class="meta"><span>2026-10-02</span><span class="sep"></span><span>4 min</span></div>
+      </a>
+      <a class="acard" href="#">
+        <div class="cat ret">总结</div>
+        <h3>我的 Agent 工作流 2026</h3>
+        <p>上下文管理、任务委派、自动化边界 —— 一年下来真正沉淀了什么。</p>
+        <div class="meta"><span>2026-09-20</span><span class="sep"></span><span>14 min</span></div>
+      </a>
+    </div>
+
+    <div class="pull">
+      <q>不写成功学。只写可复现的过程，和那些把我卡住的东西。</q>
+      <cite>— 写在第一篇文章的开头</cite>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECT INDEX -->
+<section class="sec" id="projects" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 class="serif">项目索引</h2>
+      <span class="sub">9 个进行中 · 9 个已交付</span>
+    </div>
+    <table class="ptable">
+      <thead>
+        <tr><th style="width:22%">项目</th><th style="width:42%">简介</th><th style="width:16%">技术栈</th><th style="width:12%">状态</th><th style="width:8%">日期</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><a class="pname" href="#">秒寻 FoundInSec</a></td>
+          <td class="desc">秒传链接检索与校验，重点解决索引膨胀与查询延迟。</td>
+          <td class="stack">Node · SQLite</td>
+          <td><span class="pill ok">已交付</span></td>
+          <td class="stack">10-03</td>
+        </tr>
+        <tr>
+          <td><a class="pname" href="#">netstorm</a></td>
+          <td class="desc">NAS / 局域网设备管理面板，一屏掌握全网状态。</td>
+          <td class="stack">Vue 3 · Node</td>
+          <td><span class="pill ok">已交付</span></td>
+          <td class="stack">10-12</td>
+        </tr>
+        <tr>
+          <td><a class="pname" href="#">model-relay</a></td>
+          <td class="desc">多模型中继网关，统一协议并处理流式转发与熔断。</td>
+          <td class="stack">Node · SSE</td>
+          <td><span class="pill ok">已交付</span></td>
+          <td class="stack">10-02</td>
+        </tr>
+        <tr>
+          <td><a class="pname" href="#">pi-extensions</a></td>
+          <td class="desc">为 pi 编写的扩展集合：闸门、投递与命令包装。</td>
+          <td class="stack">Node · TS</td>
+          <td><span class="pill ok">已交付</span></td>
+          <td class="stack">10-02</td>
+        </tr>
+        <tr>
+          <td><a class="pname" href="#">TWWB_check</a></td>
+          <td class="desc">多账号自动化签到，含失败重试与通知聚合。</td>
+          <td class="stack">Cron · Serverless</td>
+          <td><span class="pill ok">已交付</span></td>
+          <td class="stack">09-27</td>
+        </tr>
+        <tr>
+          <td><a class="pname" href="#">foobar2000-toolkit</a></td>
+          <td class="desc">歌单整理工具包：标签规范化、去重与编码修复。</td>
+          <td class="stack">Python · CLI</td>
+          <td><span class="pill wip">进行中</span></td>
+          <td class="stack">09-29</td>
+        </tr>
+        <tr>
+          <td><a class="pname" href="#">extension-audit</a></td>
+          <td class="desc">浏览器扩展审查证据包，静态分析与权限比对。</td>
+          <td class="stack">Node · AST</td>
+          <td><span class="pill ok">已交付</span></td>
+          <td class="stack">09-29</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="sub-block">
+      <div class="t">
+        <h3 class="serif">订阅更新</h3>
+        <p>新文章发布时收到一封邮件。没有广告，随时退订。</p>
+      </div>
+      <form class="sub-form" onsubmit="event.preventDefault();this.querySelector('button').textContent='已订阅 ✓'">
+        <input type="email" placeholder="you@example.com" required>
+        <button type="submit">订阅</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>© 2026 Agent &amp; Log · 用 Markdown 写作，用 Vite 构建</div>
+    <div><a href="#">GitHub</a> · <a href="#">RSS</a> · <a href="#">归档</a> · <a href="#">关于</a></div>
+  </div>
+</footer>
+
+</body>
+</html>
