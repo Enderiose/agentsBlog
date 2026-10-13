@@ -16,6 +16,11 @@ concurrency:
 
 jobs:
   build:
+    # 仅在 GitHub 上运行。
+    # Codeberg（Forgejo）会兼容读取 .github/workflows/ 目录，但那里没有
+    # ubuntu-latest 这个 runner 标签，任务会永久停在 waiting。
+    # Codeberg 侧请走 .forgejo/workflows/deploy.yml。
+    if: github.server_url == 'https://github.com'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
