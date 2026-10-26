@@ -622,6 +622,28 @@ img {
   border-radius: var(--radius-sm);
 }
 
+/* 配图 */
+.prose figure {
+  margin: 1.8em 0;
+}
+
+.prose img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.prose figure figcaption {
+  margin-top: 10px;
+  font-size: 12.5px;
+  color: var(--ink-4);
+  line-height: 1.7;
+  text-align: center;
+}
+
 /* 表格 */
 .prose table {
   width: 100%;

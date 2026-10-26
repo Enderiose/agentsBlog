@@ -111,6 +111,19 @@ repo: https://github.com/you/repo   # 可选：文章头渲染成仓库链接
 ---
 ```
 
+### 配图
+
+图片放 `public/media/<slug>/`，正文里写站点绝对路径（构建时会自动补部署子路径）：
+
+```md
+<figure>
+  <img src="/media/token-usage/dashboard-top.png" alt="面板顶部">
+  <figcaption>图注写这张图能看出什么，别写「示意图」</figcaption>
+</figure>
+```
+
+截图一律用真界面截图，不用拼贴、不用假数据图。
+
 ### category 怎么选
 
 | 值 | 什么时候用 |

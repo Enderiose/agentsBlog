@@ -33,6 +33,14 @@ const SITE = {
   lang: 'zh-CN',
 }
 
+/** 部署子路径（由 SITE.url 推导，需与 vite.config.ts 的 base 一致） */
+const BASE_PATH = new URL(SITE.url).pathname.replace(/\/$/, '')
+
+/** 把文章里的 /media/... 换成带子路径的绝对地址，图片在 dev 与 Pages 下都能取到 */
+function withBase(html) {
+  return html.replace(/="\/media\//g, `="${BASE_PATH}/media/`)
+}
+
 /** 分类白名单，决定列表页的筛选与配色 */
 const CATEGORIES = {
   project: { label: '项目', order: 1 },
@@ -146,7 +154,7 @@ async function main() {
 
     const body = content.trim()
     // shiki >= 1.x 的 markdown-it 插件是同步的，highlighter 已在上面预加载完毕
-    const html = md.render(body)
+    const html = withBase(md.render(body))
     const toc = extractToc(html)
 
     const STATUSES = ['shipped', 'wip', 'abandoned']
