@@ -8,7 +8,6 @@ tags: [android, webview, 工程化, 测试, 教训]
 summary: 为了在手机上用自己的 Hermes，我绕开 Android Studio 和 Gradle，用 aapt2 + javac + d8 手搓了一个 WebView 客户端。这篇记录它的构建链和七个真实的坑。
 stack: [Android WebView, Java, JavaScript, aapt2/d8, Playwright]
 status: shipped
-featured: false
 updated: 2026-10-26
 repo: https://github.com/Enderiose/hermes-app
 ---

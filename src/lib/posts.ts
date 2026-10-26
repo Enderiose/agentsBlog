@@ -26,7 +26,6 @@ export interface Post {
   stack: string[]
   repo: string
   demo: string
-  featured: boolean
   draft: boolean
   readingTime: number
   html: string
@@ -72,8 +71,28 @@ export function postsByTag(tag: string): Post[] {
   return sortedPosts.filter((p) => p.tags.includes(tag))
 }
 
+/** 最近一次实质更新的日期（没填 updated 就用首发日期） */
+export function lastUpdated(p: Post): string {
+  return p.updated && p.updated > p.date ? p.updated : p.date
+}
+
+/**
+ * 首页 featured：不写死，取「最近更新的项目」。
+ * 同日更新的按首发日期新者优先，再按 slug 稳定排序。
+ */
 export function featuredPost(): Post | undefined {
-  return sortedPosts.find((p) => p.featured) ?? sortedPosts[0]
+  // 弃坑项目不占首页：除非真的只剩它们
+  let projects = posts.filter(
+    (p) => p.category === 'project' && !p.draft && p.status !== 'abandoned',
+  )
+  if (!projects.length) projects = posts.filter((p) => p.category === 'project' && !p.draft)
+  if (!projects.length) return sortedPosts[0]
+  return [...projects].sort((a, b) => {
+    const d = lastUpdated(b).localeCompare(lastUpdated(a))
+    if (d !== 0) return d
+    const dd = b.date.localeCompare(a.date)
+    return dd !== 0 ? dd : a.slug.localeCompare(b.slug)
+  })[0]
 }
 
 /** 上一个 / 下一个（按日期倒序的相邻项） */

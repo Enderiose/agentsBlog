@@ -10,7 +10,6 @@ stack: [技术1, 技术2]
 status: shipped            # shipped | wip | abandoned
 updated: 2026-01-02       # 可选：有实质更新时填，正文日期不动，文章头显示「更新于」
 repo: https://github.com/you/repo   # 可选：文章头渲染成仓库链接
-featured: false
 ---
 
 <!--

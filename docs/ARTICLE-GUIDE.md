@@ -97,15 +97,17 @@ git log --oneline | head -40
 
 ```yaml
 ---
-title: 具体、有画面感的标题
+title: 具体、有画面感的标题      # 内容式标题，读者靠它决定点不点
+project: 项目名                 # 列表/卡片的「项目」列；认项目靠它，不靠 title
 slug: kebab-case-english       # 文件名即 slug，二者保持一致
 date: 2026-10-12               # 用项目起始日期或最后一个里程碑日期
 category: project              # project | pitfall | changelog | retro
 tags: [wow, lua, codex]        # 3-6 个
 summary: 一句话摘要，60-110 字，会出现在列表页与搜索结果里。
 stack: [Lua 5.1, Node.js]      # 技术栈，2-5 项
-status: shipped                # shipped | wip
-featured: false                # true 会置顶首页（全站最多一篇）
+status: shipped                # shipped | wip | abandoned
+updated: 2026-10-20            # 可选：有实质更新时填，文章头显示「更新于」
+repo: https://github.com/you/repo   # 可选：文章头渲染成仓库链接
 ---
 ```
 

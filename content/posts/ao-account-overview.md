@@ -8,7 +8,6 @@ tags: [wow, lua, codex, 插件, 工程化]
 summary: 一个魔兽怀旧服的账号级角色概览插件。18 天、321 次提交、3.4 万行 Lua，从 codex 起步，最后长成了一套自带闸门和子代理的完整工程。
 stack: [Lua 5.1, WoW API, Node.js, codex, pi]
 status: shipped
-featured: true
 ---
 
 这是起点。

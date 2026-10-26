@@ -54,8 +54,7 @@ category: project      # project | pitfall | changelog | retro
 tags: [wow, lua, codex]
 summary: One sentence, shown in lists and search results.
 stack: [Lua 5.1, Node.js]
-status: shipped        # shipped | wip
-featured: false        # true pins it to the homepage
+status: shipped        # shipped | wip | abandoned
 draft: false           # true hides it from the build
 ---
 

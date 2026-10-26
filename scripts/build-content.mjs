@@ -166,7 +166,6 @@ async function main() {
       stack: Array.isArray(data.stack) ? data.stack.map(String) : [],
       repo: data.repo || '',
       demo: data.demo || '',
-      featured: Boolean(data.featured),
       draft: Boolean(data.draft),
       readingTime: readingTime(body),
       html,

@@ -68,7 +68,7 @@ const topTags = computed(() => allTags.slice(0, 14))
       <div class="sec-head">
         <h2>featured</h2>
         <div class="rule" />
-        <span class="count">置顶</span>
+        <span class="count">最近更新</span>
       </div>
 
       <RouterLink :to="`/posts/${featured.slug}`" class="feature glass">

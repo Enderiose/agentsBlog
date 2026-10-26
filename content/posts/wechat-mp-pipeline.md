@@ -8,7 +8,6 @@ tags: [公众号, 自动化, python, 工作流, 教训]
 summary: 账号的发布权限被微信收回之后，我把公众号做成了一条只管出草稿的管线：每天 8:00 自己选题、写四篇 HTML、生图、建 4 图文草稿，8:30 把全文投到企业微信等审。跑了十天，回头看，难的不是写文章。
 stack: [Python, Hermes cron, 微信公众号 API, PIL]
 status: shipped
-featured: false
 ---
 
 第一次想把文章直接发出去，接口回的是：

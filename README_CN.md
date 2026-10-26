@@ -51,8 +51,7 @@ category: project      # project | pitfall | changelog | retro
 tags: [wow, lua, codex]
 summary: 一句话摘要，会出现在列表和搜索结果里。
 stack: [Lua 5.1, Node.js]
-status: shipped        # shipped | wip
-featured: false        # true 会置顶到首页
+status: shipped        # shipped | wip | abandoned
 draft: false           # true 不会进入构建产物
 ---
 

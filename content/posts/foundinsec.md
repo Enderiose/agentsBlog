@@ -9,7 +9,6 @@ summary: 一个空间可视化定位的小程序：输入名字，家里柜子�
 stack: [微信小程序, 微信云开发, WXS, Node.js]
 status: abandoned
 updated: 2026-10-26
-featured: true
 ---
 
 > **2026-10-26 更新：项目停了。**
