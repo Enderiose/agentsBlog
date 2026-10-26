@@ -13,7 +13,7 @@ defineProps<{
       <span :class="['cat', `cat-${post.category}`]">{{ post.categoryLabel }}</span>
     </span>
     <span class="row-title">
-      <i :class="['dot', { 'dot-wip': post.status === 'wip' }]" />
+      <i :class="['dot', `dot-${post.status}`]" />
       <span class="txt">{{ post.title }}</span>
     </span>
     <span class="row-meta">

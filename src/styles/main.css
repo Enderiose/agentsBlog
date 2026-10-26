@@ -367,6 +367,14 @@ img {
   background: var(--warn);
   box-shadow: 0 0 8px var(--warn);
 }
+/* 已弃坑：不发光 —— 活着的项目才发光 */
+.dot-abandoned {
+  background: transparent;
+  border: 1px solid var(--ink-4);
+  box-shadow: none;
+  width: 7px;
+  height: 7px;
+}
 
 /* ==========================================================================
    日志行列表（01 的核心视觉）

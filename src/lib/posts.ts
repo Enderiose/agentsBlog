@@ -1,6 +1,8 @@
 import data from '@/generated/posts.json'
 
 export type Category = 'project' | 'pitfall' | 'changelog' | 'retro'
+/** shipped = 已交付 · wip = 进行中 · abandoned = 已弃坑 */
+export type Status = 'shipped' | 'wip' | 'abandoned'
 
 export interface TocItem {
   level: number
@@ -12,11 +14,13 @@ export interface Post {
   slug: string
   title: string
   date: string
+  /** 有实质更新时手动填；首页仍按首次发布日期排序 */
+  updated?: string
   category: Category
   categoryLabel: string
   tags: string[]
   summary: string
-  status: string
+  status: Status
   stack: string[]
   repo: string
   demo: string
@@ -40,6 +44,7 @@ export interface Stats {
   projects: number
   pitfalls: number
   retros: number
+  abandoned: number
   tags: number
 }
 

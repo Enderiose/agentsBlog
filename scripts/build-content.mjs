@@ -27,7 +27,7 @@ const publicDir = join(root, 'public')
 /** 站点信息 —— 部署地址变了要改这里 */
 const SITE = {
   title: 'Agent Log',
-  description: '我所有 Agent 应用项目的施工日志 —— 需求、架构、踩坑与最终成果。',
+  description: '我做 Agent 应用的过程记录：需求怎么来、架构怎么选、哪里炸了、最后长成什么样。',
   url: 'https://enderiose.github.io/agentsBlog',
   author: 'Enderiose',
   lang: 'zh-CN',
@@ -149,15 +149,19 @@ async function main() {
     const html = md.render(body)
     const toc = extractToc(html)
 
+    const STATUSES = ['shipped', 'wip', 'abandoned']
+    const rawStatus = String(data.status || 'shipped').trim().toLowerCase()
+
     posts.push({
       slug,
       title: data.title || slug,
       date,
+      updated: data.updated ? formatDate(data.updated) : '',
       category,
       categoryLabel: CATEGORIES[category].label,
       tags: Array.isArray(data.tags) ? data.tags.map(String) : [],
       summary: data.summary || makeSummary(body),
-      status: data.status || 'shipped',
+      status: STATUSES.includes(rawStatus) ? rawStatus : 'shipped',
       stack: Array.isArray(data.stack) ? data.stack.map(String) : [],
       repo: data.repo || '',
       demo: data.demo || '',
@@ -179,6 +183,7 @@ async function main() {
     projects: published.filter((p) => p.category === 'project').length,
     pitfalls: published.filter((p) => p.category === 'pitfall').length,
     retros: published.filter((p) => p.category === 'retro').length,
+    abandoned: published.filter((p) => p.status === 'abandoned').length,
     tags: [...new Set(published.flatMap((p) => p.tags))].length,
   }
 

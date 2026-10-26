@@ -87,7 +87,13 @@ watch(
     <header class="phead glass">
       <div class="meta-top">
         <span :class="['cat', `cat-${post.category}`]">{{ post.categoryLabel }}</span>
+        <span v-if="post.status === 'wip'" class="st st-wip">进行中</span>
+        <span v-else-if="post.status === 'abandoned'" class="st st-dead">已弃坑</span>
         <span class="date">{{ post.date }}</span>
+        <template v-if="post.updated">
+          <span class="sep">·</span>
+          <span class="rt">更新于 {{ post.updated }}</span>
+        </template>
         <span class="sep">·</span>
         <span class="rt">{{ post.readingTime }} 分钟</span>
       </div>
@@ -104,6 +110,13 @@ watch(
       <div v-if="post.stack.length" class="stack">
         <span class="lbl">stack:</span>
         <span v-for="s in post.stack" :key="s" class="s">{{ s }}</span>
+      </div>
+
+      <div v-if="post.repo" class="stack">
+        <span class="lbl">repo:</span>
+        <a class="s repo" :href="post.repo" target="_blank" rel="noopener">
+          {{ post.repo.replace(/^https:\/\/github\.com\//, '') }}
+        </a>
       </div>
     </header>
 
@@ -203,6 +216,23 @@ watch(
   flex-wrap: wrap;
 }
 
+/* 状态标签：进行中 / 已弃坑 */
+.st {
+  font-size: 11px;
+  letter-spacing: 0.6px;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  border: 1px solid currentColor;
+  opacity: 0.85;
+}
+.st-wip {
+  color: var(--warn);
+}
+.st-dead {
+  color: var(--ink-4);
+  border-style: dashed;
+}
+
 h1 {
   font-size: clamp(25px, 4.2vw, 40px);
   line-height: 1.2;
@@ -260,6 +290,14 @@ h1 {
   background: rgba(34, 211, 238, 0.1);
   border: 1px solid rgba(34, 211, 238, 0.24);
   color: #67e8f9;
+}
+.stack .s.repo {
+  color: #c4b5fd;
+  border-color: rgba(124, 92, 255, 0.34);
+  background: rgba(124, 92, 255, 0.12);
+}
+.stack .s.repo:hover {
+  border-color: rgba(124, 92, 255, 0.7);
 }
 
 /* ---- 布局 ---- */

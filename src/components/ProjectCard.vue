@@ -6,6 +6,12 @@ defineProps<{
   index?: number
 }>()
 
+const STATUS_LABEL: Record<Post['status'], string> = {
+  shipped: '已交付',
+  wip: '进行中',
+  abandoned: '已弃坑',
+}
+
 function glow(e: MouseEvent) {
   const el = e.currentTarget as HTMLElement
   const r = el.getBoundingClientRect()
@@ -29,8 +35,8 @@ function glow(e: MouseEvent) {
 
     <div class="foot">
       <span class="st">
-        <i :class="['dot', { 'dot-wip': post.status === 'wip' }]" />
-        {{ post.status === 'wip' ? '进行中' : '已交付' }}
+        <i :class="['dot', `dot-${post.status}`]" />
+        {{ STATUS_LABEL[post.status] }}
       </span>
       <span>{{ post.date }}</span>
     </div>

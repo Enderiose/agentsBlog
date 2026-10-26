@@ -10,10 +10,10 @@ const stack = [
 ]
 
 const categories = [
-  { key: 'project', label: '项目', desc: '一个应用的完整过程：起因、架构、踩坑、成果。' },
-  { key: 'pitfall', label: '踩坑', desc: '单独成篇的坑。能复现，能对照，能少走弯路。' },
-  { key: 'changelog', label: '变更', desc: '重要改动与版本演进，附带前后对比。' },
-  { key: 'retro', label: '总结', desc: '跨项目的复盘：工作流、方法论、沉淀下来的原则。' },
+  { key: 'project', label: '项目', desc: '从一个需求到最后交付，中间发生过什么。' },
+  { key: 'pitfall', label: '踩坑', desc: '单独成篇的坑，附复现步骤和最后的修法。' },
+  { key: 'changelog', label: '变更', desc: '版本怎么变的，以及为什么这么改。' },
+  { key: 'retro', label: '总结', desc: '几个项目做完回头看，哪些做法留下来了。' },
 ]
 </script>
 
@@ -46,7 +46,7 @@ const categories = [
         所以开了这个站。把每个项目的<strong>需求、架构、踩坑和最终成果</strong>摊开写。
       </p>
       <blockquote>
-        <p>不写成功学。只写可复现的过程，和那些把我卡住的东西。</p>
+        <p>能写成命令、文件路径和报错原文的，就照实写；绕了三圈才想明白的地方，也一并记下来。</p>
       </blockquote>
 
       <h2>写什么</h2>
@@ -76,7 +76,9 @@ category: project      # project | pitfall | changelog | retro
 tags: [wow, lua]
 summary: 一句话摘要，会出现在列表和搜索结果里
 stack: [Lua, Node.js]
-status: shipped        # shipped | wip
+status: shipped        # shipped | wip | abandoned
+updated: 2026-10-26   # 可选：有实质更新时填，文章头会显示「更新于」
+repo: https://github.com/you/repo   # 可选：文章头会渲染成仓库链接
 ---
 
 正文……</code></pre>
@@ -92,6 +94,7 @@ status: shipped        # shipped | wip
           <tr><th>项目</th><td>{{ stats.projects }} 个</td></tr>
           <tr><th>踩坑</th><td>{{ stats.pitfalls }} 条</td></tr>
           <tr><th>总结</th><td>{{ stats.retros }} 篇</td></tr>
+          <tr v-if="stats.abandoned"><th>已弃坑</th><td>{{ stats.abandoned }} 个</td></tr>
           <tr><th>标签</th><td>{{ stats.tags }} 个</td></tr>
         </tbody>
       </table>

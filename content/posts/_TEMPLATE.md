@@ -6,7 +6,9 @@ category: project
 tags: [tag1, tag2, tag3]
 summary: 一句话摘要，60-110 字。会出现在列表页、搜索结果和分享卡片里，所以要写成一个完整的句子，而不是一串关键词。
 stack: [技术1, 技术2]
-status: shipped
+status: shipped            # shipped | wip | abandoned
+updated: 2026-01-02       # 可选：有实质更新时填，正文日期不动，文章头显示「更新于」
+repo: https://github.com/you/repo   # 可选：文章头渲染成仓库链接
 featured: false
 ---
 
