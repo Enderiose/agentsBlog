@@ -35,6 +35,7 @@ npm run content    # 重新生成文章索引 / RSS / Sitemap
 npm run build      # 内容 + 生产构建，输出到 dist/
 npm run preview    # 预览 dist/
 npm run typecheck  # vue-tsc 类型检查
+npm run audit:leaks  # 明文凭据 / 本机路径 / 内网地址闸门（CI 也会跑）
 ```
 
 > `npm run dev` 与 `npm run build` 已经内置了 `npm run content`。

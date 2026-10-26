@@ -35,6 +35,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Audit leaks (明文凭据 / 本机路径 / 内网地址)
+        run: npm run audit:leaks
+
       - name: Build
         run: npm run build
 

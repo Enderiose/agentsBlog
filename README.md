@@ -38,6 +38,7 @@ npm run content    # regenerate the post index / RSS / sitemap
 npm run build      # content + production build into dist/
 npm run preview    # serve dist/
 npm run typecheck  # vue-tsc
+npm run audit:leaks  # gate: plaintext credentials / local paths / LAN IPs (also runs in CI)
 ```
 
 > `npm run dev` and `npm run build` already run `npm run content` first.
