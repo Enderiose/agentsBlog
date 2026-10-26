@@ -49,7 +49,7 @@ pget <url>
 pget <url> -s ae8efabbedc5e9b9e07c01cd42c424b62425f5674f59f3ab32038e5d94f7c213
 
 :: 指定输出名 / 目录 / 线程数
-pget <url> -o app.zip -d D:\Downloads -n 24
+pget <url> -o app.zip -d <下载目录> -n 24
 
 :: 只看大小、是否支持 Range，不下载
 pget <url> --probe

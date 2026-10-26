@@ -120,7 +120,7 @@ Base64 的长度必须是 4 的倍数，不够要补 `=`。**这个细节如果�
 | 项 | 说明 |
 |---|---|
 | 操作系统 | Windows，命令经 **Git Bash** 执行 |
-| 目录切换 | 必须写成 `cd "D:/agents_project/linux.do"`（反斜杠 + `cd /d` 会报 `too many arguments`） |
+| 目录切换 | 必须写成 `cd "<项目根>/linux.do"`（反斜杠 + `cd /d` 会报 `too many arguments`） |
 | 运行时 | Python 3.11.0、Node v24.19.0 |
 | 站点防护 | 整站位于 **Cloudflare** 之后 |
 

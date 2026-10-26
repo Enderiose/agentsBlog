@@ -202,14 +202,14 @@ ONLY FOR WAV TAGS EDITED BY FOOBAR2000!!!
 所以我写了个 `fpl_cache_check.py` 来查"哪些歌单条目缓存过期"：
 
 ```bash
-python scripts/cue_fix.py "D:\Music Backup"              # 体检
-python scripts/cue_fix.py --apply "D:\Music Backup"      # 转 UTF-8（逐个 .bak 备份）
-python scripts/fpl_cache_check.py --dir "D:\foobar2000"  # 查缓存过期
+python scripts/cue_fix.py "<音乐库>"              # 体检
+python scripts/cue_fix.py --apply "<音乐库>"      # 转 UTF-8（逐个 .bak 备份）
+python scripts/fpl_cache_check.py --dir "<foobar2000 目录>"  # 查缓存过期
 ```
 
 ### 实测编码分布
 
-`D:\Music Backup`，2026-09-29：
+`<音乐库>`，2026-09-29：
 
 | 编码 | 数量 |
 |---|---|
@@ -231,7 +231,7 @@ python scripts/fpl_cache_check.py --dir "D:\foobar2000"  # 查缓存过期
 
 ## 歌单失效：盘符重映射
 
-**症状**：`Y:\video\Music\…` 全部失效。
+**症状**：`<旧盘>:\video\Music\…` 全部失效。
 
 排查：
 
@@ -241,11 +241,11 @@ python scripts/fpl_check.py "<歌单>.fpl"
 
 它列出：失效项、按盘符分布、**候选修复盘符**。
 
-本例中的真相：**Y: 实为 X: 的错误映射** —— 64 条失效项全部能在 `X:\video\Music\` 找到（62 条仅盘符错，2 条多一层目录）。
+本例中的真相：**<旧盘>: 实为 <新盘>: 的错误映射** —— 64 条失效项全部能在 `<新盘>:\video\Music\` 找到（62 条仅盘符错，2 条多一层目录）。
 
 **做法**：
 
-- 同长度替换（`Y:` → `X:`）可以直接改 `.fpl` 二进制
+- 同长度替换（`<旧盘>:` → `<新盘>:`）可以直接改 `.fpl` 二进制
 - 若路径长度变化（增删目录层），**不要**原地改 `.fpl`，改为**另存 `.m3u8`**
 
 第二条是关键：`.fpl` 是二进制格式，内部有长度字段。路径变长会破坏结构。
