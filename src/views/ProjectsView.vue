@@ -22,7 +22,7 @@ const projects = computed(() => postsByCategory('project'))
           </div>
           <h1>项目</h1>
           <p class="lede">
-            我做过的每一个 Agent 应用。每个项目都带完整的过程记录 —— 目标、架构、踩的坑、最后的形态。
+            我做过的 Agent 应用都在这儿，一篇对一个项目：目标、架构、踩的坑、最后的形态。
           </p>
         </div>
       </div>

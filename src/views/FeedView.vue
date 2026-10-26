@@ -45,8 +45,7 @@ async function copy() {
           </div>
           <h1>订阅</h1>
           <p class="lede">
-            这里没有邮件列表，也不打算有。想第一时间看到新记录，用 RSS ——
-            没有算法、没有广告、不用留邮箱。
+            新记录靠 RSS 分发，没有邮件列表，也不做站内推送。把地址粘进阅读器就能收到。
           </p>
         </div>
       </div>
@@ -67,8 +66,7 @@ async function copy() {
       </div>
 
       <p class="hint">
-        把上面这行粘进任意阅读器 —— Feedly、Inoreader、NetNewsWire、Reeder、FreshRSS 都行。
-        支持自动发现的浏览器也能直接识别本站。
+        主流阅读器（Feedly、Inoreader、NetNewsWire、Reeder、FreshRSS）都能直接订阅。用浏览器打开本站时，地址栏里的订阅按钮也能认出这个源。
       </p>
     </section>
 

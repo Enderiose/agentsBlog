@@ -40,9 +40,9 @@ const topTags = computed(() => allTags.slice(0, 14))
           </h1>
 
           <p class="lede">
-            这里是我所有 Agent 应用项目的施工日志 —— 需求怎么来的、架构怎么选的、<em>哪一步炸了</em>、
+            这里是我所有 Agent 应用项目的施工日志：需求怎么来的、架构怎么选的、<em>哪一步炸了</em>，
             最后又长成了什么样子。<br />
-            不写成功学，只写可复现的过程。
+            稿子一般在项目收尾时写，趁我还记得自己当时判断错在哪里。
           </p>
 
           <div class="metrics">
@@ -177,7 +177,7 @@ const topTags = computed(() => allTags.slice(0, 14))
     <!-- ============ CTA ============ -->
     <section class="cta">
       <h3>订阅施工日志</h3>
-      <p>新记录发布时收到通知。没有广告，随时退订。</p>
+      <p>新记录会出现在你的阅读器里。不想看了，删掉订阅源就行。</p>
       <div class="row">
         <RouterLink class="btn btn-primary" to="/feed">RSS 订阅</RouterLink>
         <RouterLink class="btn" to="/about">关于这个站</RouterLink>

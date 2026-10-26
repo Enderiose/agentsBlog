@@ -44,7 +44,7 @@ const sitemapUrl = `${site.url}/sitemap.xml`
             <span class="p">~/agents</span> $ <b>tree -L 2 ./</b>
           </div>
           <h1>网站地图</h1>
-          <p class="lede">这个站的全部页面、记录和标签，一眼看全。</p>
+          <p class="lede">页面、记录、标签都在这一页，找不到东西时可以从这儿翻。</p>
         </div>
       </div>
     </section>
