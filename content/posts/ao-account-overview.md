@@ -1,5 +1,6 @@
 ---
 title: AO_AccountOverview — 我的第一个 Agent 项目
+project: AO_AccountOverview
 slug: ao-account-overview
 date: 2026-08-31
 category: project

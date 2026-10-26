@@ -1,5 +1,6 @@
 ---
 title: 给一个 Lua 插件配八道闸门
+project: AO_AccountOverview
 slug: lua-plugin-gates
 date: 2026-09-13
 category: pitfall

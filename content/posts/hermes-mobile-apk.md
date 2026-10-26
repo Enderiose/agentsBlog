@@ -1,5 +1,6 @@
 ---
 title: 把 Hermes 装进手机：没有 Gradle 的 131945 字节 Android 客户端
+project: Hermes Mobile
 slug: hermes-mobile-apk
 date: 2026-10-12
 category: project

@@ -1,5 +1,6 @@
 ---
 title: 每天 8:00，草稿箱里自己多出四篇稿子
+project: 公众号草稿管线
 slug: wechat-mp-pipeline
 date: 2026-10-12
 category: project

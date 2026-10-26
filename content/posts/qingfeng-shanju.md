@@ -1,5 +1,6 @@
 ---
 title: 把写小说变成一个可验收的工程
+project: 青风山居
 slug: qingfeng-shanju
 date: 2026-10-12
 category: project

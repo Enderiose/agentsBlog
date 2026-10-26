@@ -1,5 +1,6 @@
 ---
 title: 解一个红包：不猜，逐层核对
+project: 红包解密
 slug: redenvelope
 date: 2026-10-05
 category: project

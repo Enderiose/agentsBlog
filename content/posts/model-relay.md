@@ -1,5 +1,6 @@
 ---
 title: 不碰凭据的模型中继
+project: Model Relay
 slug: model-relay
 date: 2026-09-21
 category: project

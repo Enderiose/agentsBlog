@@ -1,5 +1,6 @@
 ---
-title: netstorm — 从"全网每 30 秒断一次"开始
+title: 从「全网每 30 秒断一次」开始
+project: NAS
 slug: netstorm
 date: 2026-10-12
 category: project
@@ -16,6 +17,8 @@ status: shipped
 不是某台设备，是**所有**设备。看视频卡一下、下载断一下、SSH 掉一下，然后又自己好了。
 
 路由器重启过、光猫换过、网线拔插过。持续了一个月。
+
+（项目已改名 **NAS**，目录从 `netstorm` 换到了 `D:\agents_project\nas` —— 它最后确实不是“网络风暴排查工具”，而是这台 NAS 和它旁边那堆东西的运维记录。文章 URL 保持 `netstorm`，免得旧链接失效。）
 
 ## 根因：NAS 的网卡 hang 死
 
@@ -222,6 +225,7 @@ handoff.md     跨会话账本，append-only
 
 **项目信息**
 
+- 项目：**NAS**（原名 netstorm，目录 `D:\agents_project\nas`）
 - 类型：家庭 / 小型办公局域网运维
 - 范围：NAS 管理 · LAN 管理 · Docker 容器修复与部署
 - 状态：持续维护

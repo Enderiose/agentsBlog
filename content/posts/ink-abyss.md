@@ -1,5 +1,6 @@
 ---
 title: 拿一个小游戏测模型：素材像坏了，其实是少了一行 queue_redraw()
+project: Ink Abyss
 slug: ink-abyss
 date: 2026-10-26
 category: project

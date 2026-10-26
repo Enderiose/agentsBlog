@@ -1,5 +1,6 @@
 ---
 title: 159 KB/s 不是带宽不够，是单连接被限速
+project: download_tools
 slug: pget
 date: 2026-09-30
 category: project

@@ -1,5 +1,6 @@
 ---
 title: 用子代理和文档，管住一个 3.4 万行的项目
+project: AO_AccountOverview
 slug: agent-workflow-retro
 date: 2026-09-20
 category: retro

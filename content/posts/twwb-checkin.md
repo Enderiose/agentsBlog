@@ -1,5 +1,6 @@
 ---
 title: 自动化一个没有 API 的东西
+project: checkin
 slug: twwb-checkin
 date: 2026-09-27
 category: project

@@ -1,5 +1,6 @@
 ---
 title: 一个字节都不改，但让它显示成我想要的样子
+project: foobar2000 Toolkit
 slug: foobar2000-toolkit
 date: 2026-09-29
 category: project

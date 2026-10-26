@@ -1,5 +1,6 @@
 ---
 title: 给浏览器扩展做一次可复现的取证
+project: Extension Audit
 slug: extension-audit
 date: 2026-09-28
 category: project
