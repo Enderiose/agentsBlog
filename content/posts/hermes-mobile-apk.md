@@ -8,6 +8,8 @@ summary: 为了在手机上用自己的 Hermes，我绕开 Android Studio 和 Gr
 stack: [Android WebView, Java, JavaScript, aapt2/d8, Playwright]
 status: shipped
 featured: false
+updated: 2026-10-26
+repo: https://github.com/Enderiose/hermes-app
 ---
 
 起因很小：我白天在电脑上跟 Hermes（我自建的 agent）干活，晚上人挪到沙发或床上，就只剩一台手机。
@@ -27,18 +29,18 @@ Hermes 移动版（应用显示名 `HermesApp`，包名 `com.enderiose.hermes`�
 | 指标 | 数值 | 出处 |
 |---|---|---|
 | 起始日期 | 2026-10-05 | `git log --reverse --format=%ad --date=short \| head -1` |
-| 最后一次提交 | 2026-10-12 | `git log -1 --format=%ad --date=short` |
-| 提交数 | 5 | `git rev-list --count HEAD` |
-| 前端 | app.js 2707 行 / app.css 617 行 / index.html 188 行 | `wc -l` |
+| 最后一次提交 | 2026-10-24 | `git log -1 --format=%ad --date=short` |
+| 提交数 | 15 | `git rev-list --count HEAD` |
+| 前端 | app.js 4180 行 / app.css 1031 行 / index.html 303 行 | `wc -l` |
 | 原生与构建 | MainActivity.java 336 行 / `build.sh` 155 行 | `wc -l` |
 | 验证脚本 | 19 个 Python 文件，2226 行 | `find scripts tests -name '*.py' \| wc -l` + `wc -l` |
-| 受版本控制的文件 | 41 个 | `git ls-files \| wc -l` |
-| 产物 | `out/HermesMobile.apk` 131945 字节 | `ls -l` |
+| 受版本控制的文件 | 43 个 | `git ls-files \| wc -l` |
+| 产物 | `dist/HermesApp-0.26-private.apk` 136041 字节 | `ls -l` |
 
 两个数字需要解释，不然就是误导：
 
-- **提交数 5 不等于开发量。** 公开仓库的历史被塌缩过两次：2026-10-05 把历史整体压成一个根提交，2026-10-12 又删库重建了一回（原因见「现状与欠债」）。所以 git 里只剩 5 个提交：一个根提交 + v0.22 / v0.23 / v0.24 / v0.25。真正的版本序列（v0.1 → v0.25）记在 `docs/CONTEXT.md` 里，那是本机文件、不进仓库。
-- **2226 行 Python 不是业务代码**，全部是 Playwright 验证脚本——用真实服务端、真实 run 去驱动真实页面。这个比例（前端 3512 行 : 验证 2226 行）是刻意的，理由在坑三和坑五里。
+- **提交数不等于开发量。** 公开仓库的历史被塌缩过两次：2026-10-05 把历史整体压成一个根提交，2026-10-12 又删库重建了一回（原因见「现状与欠债」）。塌缩后只剩 5 个提交（一个根提交 + v0.22 → v0.25），后面的 10 个是 10 月 24 日那轮加的（v0.26 → 1.0.1）。真正的版本序列记在 `docs/CONTEXT.md` 里，那是本机文件、不进仓库。
+- **2226 行 Python 不是业务代码**，全部是 Playwright 验证脚本——用真实服务端、真实 run 去驱动真实页面。这个比例（前端 5514 行 : 验证 2226 行）是刻意的，理由在坑三和坑五里。
 
 ## 架构：为什么没有 Gradle
 
@@ -301,10 +303,35 @@ on('session.activity', (ev) => {
 - **Playwright 连 socket 需要 `--disable-features=LocalNetworkAccessChecks`**：headless Chromium 的本地网络限制会让 websocket 直接失败，而 REST 却正常——很容易误判成"服务端坏了"。**不要**用 `--disable-web-security` 绕过，那会连 origin 校验一起绕过，测试就失真了。
 - **paste 事件只绑一次**：绑在 input 和 view 两处会因冒泡重复处理，实测出现 2 份附件。
 
+## 十月末：从 v0.26 到 1.0.1
+
+10 月 24 日一天里提了十次。这段时间做的不是「新功能」，而是把一件事做全：
+
+**每次都给一个 WebView 给不了的入口。**
+
+| 版本 | 补上的东西 |
+|---|---|
+| 0.26 | 思考过程只在进行中占一行，结束后隐藏，空正文不再渲染空气泡 |
+| 1.0.0-alpha.2 | 「＋」附件（相册多选 / 相机 / 任意文件）+ 工作台 + 按 Ekko 客户端复刻的界面 |
+| alpha.3 | 会话操作菜单、技能内容读写、定时任务运行历史 |
+| alpha.4 | 图片灯箱、长按气泡复制、顶栏 pill |
+| alpha.5 | 工作台日志查看 |
+| alpha.6 | 单条消息的复制 / 引用 / 朗读 / Fork |
+| 1.0.1 | 版本收敛：alpha 系列收口 |
+
+每一项都能对到服务端已经做好的能力上 —— 技能、MCP、定时任务、工作流，服务端早就有接口，缺的只是手机上一个能点的入口。反过来，任何一次「顺手自己实现一套」的尝试都变成了 bug。
+
+### 两个与功能无关的坑
+
+- **`previewText` 被一次同步覆盖掉**。会话列表的 JSON 预览在网页同步后被整体刷掉，列表退化成只剩标题。修法不是「再同步一遍」，而是**在同步前加自检**：比对本地的字段清单，缺了就拒绝写入。覆盖类 bug 不能靠重试，得靠「不干净的输入不落盘」。
+- **`pipefail` 把成功的构建判成失败**。构建尾部的 `tail`/`grep` 在 SIGPIPE 下返回非零，`set -o pipefail` 一接，整个构建就报失败 —— 而 APK 其实已经打好了。尾部管道加 `|| true`，只在真正需要判错的地方留 pipefail。
+
+至于出包：最后一次停在 0.26（136,041 字节）。1.0.x 的改动都在仓库里，但没再留 dist 包 —— 自用工具，装到自己手机上就是发布。
+
 ## 现状与欠债
 
 - **上下文口径是"累计"，不是"当前占用"。** 企微会话显示的是 Hermes 数据库里这个会话的 `input_tokens + output_tokens` 累计值（701.2k 是 700 条消息一路攒出来的，不是"现在占了多少窗口"）。服务端没有暴露"当前上下文占用"的接口，`session_model_usage` 也只有按 model/task 汇总、没有单次调用记录。所以这个数字**偏大**，是我和用户确认后接受的妥协。
-- **v2 待办还没做**：会话改名、后台推送、离线缓存、企微回复写回。
+- **v2 待办还剩三件**：后台推送、离线缓存、企微回复写回。（会话改名 1.0 已落地）
 - **脱敏残留：这条债最后是"删库重建"还掉的。** 这个仓库是公开的，`docs/CONTEXT.md`（含机型、内网地址、本机路径）被 `.gitignore` 排除，历史也被 `filter-branch` 和 `--orphan` 塌缩过一轮。但 **force-push + `git gc` 并不能清掉 GitHub 上的旧对象**：塌缩之后实测 `GET /contents/CONTEXT.md?ref=<旧提交 SHA>` 仍然返回 200——删掉引用不等于删掉对象。最后是**把仓库整个删掉、同名重建**（2026-10-12）再重推：同一个旧 SHA 现在返回 404。代价是 tag 和 Release 一起没了（要发版得重新打），外加一次"仓库归零"——star、issue、外部链接全部断掉。推之前扫了一遍工作树与历史（`git grep` 全量提交 + `git fsck --unreachable`），确认 `.env`、`signing.jks`、`config.env`、`docs/CONTEXT.md`、`inline.html` 都没进库，仓库里只有 `*.example` 模板。
 - **没有 CI。** 19 个验证脚本都要真实服务端 + 真实 run + 一个 `.model-run-token`，只能在有服务的机器上跑。好处是测试很真实（很多 bug 只有真 run 才现形），代价是"忘了跑"就等于没有测试。
 - **只有一台 Android 真机自测过。** 没有多机型、没有多 Android 版本矩阵。
@@ -329,5 +356,6 @@ on('session.activity', (ev) => {
 **项目信息**
 
 - 类型：Android 客户端（Hermes / Ekko Studio 的 WebView 壳）
-- 规模：前端 3512 行 + 原生与构建 491 行 + 验证脚本 2226 行；5 个提交；41 个受版本控制的文件
-- 状态：自用中，持续维护（当前 v0.25）
+- 规模：前端 5514 行 + 原生与构建 620 行 + 验证脚本 2226 行（19 个脚本）；15 个提交；43 个受版本控制的文件
+- 仓库：https://github.com/Enderiose/hermes-app
+- 状态：自用中，持续维护（当前 1.0.1）

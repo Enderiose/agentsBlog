@@ -4,9 +4,11 @@ slug: twwb-checkin
 date: 2026-09-27
 category: project
 tags: [自动化, 签到, python, cdp, windows]
-summary: Trae SOLO CN 和 WorkBuddy 每天都要手动签到。它们都没有 API，所以只能模拟点击。这篇文章记录了怎么把"点按钮"这件事做得不靠运气 —— 自校验、不盲点、可诊断。
+summary: Trae SOLO CN 和 WorkBuddy 每天都要手动签到。它们都没有 API，所以只能模拟点击。这篇文章记录了怎么把"点按钮"这件事做得不靠运气 —— 自校验、不盲点、可诊断。后来又加了第三类目标：任意网页签到，先静默 HTTP、失败再上无头浏览器。
 stack: [Python, ctypes, Win32 API, CDP, Node.js, schtasks]
 status: shipped
+updated: 2026-10-26
+repo: https://github.com/Enderiose/checkin
 ---
 
 每天两件事：打开 Trae 点签到，打开 WorkBuddy 点签到。
@@ -245,9 +247,65 @@ WORKBUDDY_SKIP_MENU = True
 
 为什么需要这个开关？因为"点头像 → 等菜单 → 点签到"这条链路里，菜单的渲染时序不稳定。能少一步就少一个失败点。
 
+## 第二版：从「点两个按钮」到「签任意网页」
+
+十月这版改动比第一版本身还大，而且是被逼的：要签的站点从两个变成了十几个，全是网页，没有一个提供能直接调的 API。
+
+先说名字：项目已从 `TWWB_checkin` 改名为 **`checkin`**，仓库在
+[github.com/Enderiose/checkin](https://github.com/Enderiose/checkin)。
+（老仓库远端还在的话，`git remote set-url origin <新地址>` 就行。）
+
+### 站点列表是一个 TOML 文件
+
+```toml
+[[sites]]
+name = "example"          # 同时是 cookie 文件名：cookies/example.json
+url  = "https://example.com/checkin"   # 能点到签到按钮的那个页面，不是后端 API
+
+[[sites]]
+name = "anyrouter"
+url = "https://anyrouter.top/console/topup"
+login_only  = true        # 打开页面本身就算签到，没有按钮
+checkin_api = "/api/user/sign_in"
+browser_only = true       # 有 WAF，静默 HTTP 必被拦
+```
+
+`.config` 是 git-ignored 的，仓库里只放 `.config.example`。cookie 按 `name` 存成 `cookies/<name>.json`，每站登录一次：
+
+```cmd
+python scripts\web_checkin.py --login anyrouter
+```
+
+### 两级降级，而不是一个「万能浏览器脚本」
+
+```
+1. 静默  带保存的 cookie 直接 GET 那个页面
+         页面已写「已签到」或「成功」→ 结束，不开浏览器
+2. 无头  静默拿不到结论（401/403、跳登录、文字拿不准）
+         → Chrome/Edge 无头打开页面、点按钮、读结果、存截图
+```
+
+中间那句「拿不准」是重点。**判定靠关键词，而且顺序是先 `already` 再 `success`** —— 因为已经签完的页面通常还留着「签到」两个字，先匹 success 会把「今天已签到」误读成「刚刚签成了」。
+
+浏览器这层没有用 Selenium 当第一选择，而是走 CDP 直连无头 Chrome/Edge（`browser_engine.py`），只有 `websocket-client` 缺席时才回退 Selenium。少一层驱动就少一个版本兼容问题。
+
+### 调度从「登录 + 2 分钟」变成二选一
+
+| 方式 | 适用 |
+|---|---|
+| `logon` | 桌面应用（Trae / WorkBuddy），必须等桌面就绪 |
+| `daily` | 纯网页签到，不需要你登录，固定时刻跑 |
+
+目标也变成可组合的：`trae` / `workbuddy` / `web` / `all` / `apps`。安装时用 PowerShell 选择器点，不用再背参数。
+
+### 又踩到的两个坑
+
+- **子模块指到了 fork**。上游改了点击逻辑，但装在自己这边的 `workbuddy-checkin/` 还是旧的 —— 子模块改指 fork，并把 `.gitmodules` 补进版本控制，不然换台机器 `--recursive` 克隆下来还是一份没人维护的代码。
+- **残留进程会被下一次签到撞上**。上一轮的 Chrome/Node 没退干净，下一轮抢窗口、抢调试端口。`clean_strays.py` 就是干这个的：只清自己起的进程，按名字和命令行比对，不做宽口径杀进程。
+
 ## 回头看
 
-这个项目很小 —— 4 次提交，58 个文件。
+第一版很小 —— 4 次提交，58 个文件。加上网页签到这一轮，现在是 8 次提交、`scripts/` 下 2810 行 Python。
 
 但它把"自动化一个没有 API 的东西"这件事里所有的坑都踩了一遍：
 
@@ -273,5 +331,7 @@ WORKBUDDY_SKIP_MENU = True
 **项目信息**
 
 - 类型：Windows 自动化签到（计划任务）
-- 目标：Trae SOLO CN + WorkBuddy
-- 状态：已交付
+- 目标：Trae SOLO CN + WorkBuddy + 任意网页
+- 规模：8 次提交 · `scripts/*.py` 2810 行
+- 仓库：https://github.com/Enderiose/checkin
+- 状态：自用中，持续维护
