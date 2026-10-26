@@ -71,6 +71,7 @@ const categories = [
       <p>每篇文章就是一个 Markdown 文件，放在 <code>content/posts/</code>：</p>
       <pre><code>---
 title: 文章标题
+project: 项目名        # 列表里作为「项目」列显示
 date: 2026-10-12
 category: project      # project | pitfall | changelog | retro
 tags: [wow, lua]

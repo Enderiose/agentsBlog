@@ -155,6 +155,7 @@ async function main() {
     posts.push({
       slug,
       title: data.title || slug,
+      project: data.project || '',
       date,
       updated: data.updated ? formatDate(data.updated) : '',
       category,

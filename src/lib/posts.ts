@@ -13,6 +13,8 @@ export interface TocItem {
 export interface Post {
   slug: string
   title: string
+  /** 所属项目名（列表里当「项目标题」列显示；文章标题往往是内容式标题） */
+  project: string
   date: string
   /** 有实质更新时手动填；首页仍按首次发布日期排序 */
   updated?: string

@@ -87,6 +87,7 @@ watch(
     <header class="phead glass">
       <div class="meta-top">
         <span :class="['cat', `cat-${post.category}`]">{{ post.categoryLabel }}</span>
+        <span v-if="post.project" class="proj">{{ post.project }}</span>
         <span v-if="post.status === 'wip'" class="st st-wip">进行中</span>
         <span v-else-if="post.status === 'abandoned'" class="st st-dead">已弃坑</span>
         <span class="date">{{ post.date }}</span>
@@ -214,6 +215,13 @@ watch(
   font-size: 12px;
   color: var(--ink-4);
   flex-wrap: wrap;
+}
+
+/* 所属项目名 */
+.proj {
+  color: var(--ink-2);
+  font-size: 12.5px;
+  letter-spacing: 0.2px;
 }
 
 /* 状态标签：进行中 / 已弃坑 */

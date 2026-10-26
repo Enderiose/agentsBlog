@@ -12,6 +12,7 @@ defineProps<{
     <span class="row-tag">
       <span :class="['cat', `cat-${post.category}`]">{{ post.categoryLabel }}</span>
     </span>
+    <span class="row-proj" :title="post.project">{{ post.project || '—' }}</span>
     <span class="row-title">
       <i :class="['dot', `dot-${post.status}`]" />
       <span class="txt">{{ post.title }}</span>

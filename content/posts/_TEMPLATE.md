@@ -1,5 +1,6 @@
 ---
 title: 这里写一个具体、有画面感的标题
+project: 项目名        # 列表与卡片里当「项目标题」显示；title 是内容式标题
 slug: kebab-case-english-slug
 date: 2026-01-01
 category: project

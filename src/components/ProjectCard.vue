@@ -26,7 +26,8 @@ function glow(e: MouseEvent) {
       <span v-if="index !== undefined">{{ String(index + 1).padStart(2, '0') }} / </span>{{ post.category }}
     </div>
 
-    <h3>{{ post.title }}</h3>
+    <h3 class="pname">{{ post.project || post.title }}</h3>
+    <p class="ptitle">{{ post.title }}</p>
     <p>{{ post.summary }}</p>
 
     <div v-if="post.stack.length" class="stack">
@@ -90,16 +91,29 @@ function glow(e: MouseEvent) {
   margin-bottom: 12px;
 }
 
-h3 {
-  font-size: 17px;
-  line-height: 1.4;
+h3.pname {
+  font-size: 17.5px;
+  line-height: 1.35;
   letter-spacing: -0.4px;
-  margin: 0 0 10px;
+  margin: 0 0 6px;
   color: var(--ink);
   transition: all 0.2s ease;
 }
 
-.card:hover h3 {
+/* 文章标题：内容式标题，作为项目名下面的副行 */
+p.ptitle {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--ink-2);
+  margin: 0 0 12px;
+  flex: none;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card:hover h3.pname {
   background: linear-gradient(100deg, #c4b5fd, #67e8f9);
   -webkit-background-clip: text;
   background-clip: text;

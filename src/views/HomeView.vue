@@ -75,7 +75,7 @@ const topTags = computed(() => allTags.slice(0, 14))
         <div class="fx">
           <div class="kicker">
             <span :class="['cat', `cat-${featured.category}`]">{{ featured.categoryLabel }}</span>
-            <span class="d">起点</span>
+            <span class="d">{{ featured.project || '起点' }}</span>
           </div>
           <h3>{{ featured.title }}</h3>
           <p>{{ featured.summary }}</p>
