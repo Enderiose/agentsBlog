@@ -1,14 +1,14 @@
 ---
-title: 把 Hermes 装进手机：没有 Gradle 的 131945 字节 Android 客户端
+title: 把 Hermes 装进手机：没有 Gradle 的 Android 客户端（v1.0.2）
 project: Hermes Mobile
 slug: hermes-mobile-apk
 date: 2026-10-12
 category: project
 tags: [android, webview, 工程化, 测试, 教训]
-summary: 为了在手机上用自己的 Hermes，我绕开 Android Studio 和 Gradle，用 aapt2 + javac + d8 手搓了一个 WebView 客户端。这篇记录它的构建链和七个真实的坑。
+summary: 为了在手机上用自己的 Hermes，我绕开 Android Studio 和 Gradle，用 aapt2 + javac + d8 手搓了一个 WebView 客户端。这篇记录它的构建链、八个真实的坑，以及一个“有出处但没意义”的数字。
 stack: [Android WebView, Java, JavaScript, aapt2/d8, Playwright]
 status: shipped
-updated: 2026-10-26
+updated: 2026-11-01
 repo: https://github.com/Enderiose/hermes-app
 ---
 
@@ -29,24 +29,24 @@ Hermes 移动版（应用显示名 `HermesApp`，包名 `com.enderiose.hermes`�
 | 指标 | 数值 | 出处 |
 |---|---|---|
 | 起始日期 | 2026-10-05 | `git log --reverse --format=%ad --date=short \| head -1` |
-| 最后一次提交 | 2026-10-24 | `git log -1 --format=%ad --date=short` |
-| 提交数 | 15 | `git rev-list --count HEAD` |
-| 前端 | app.js 4180 行 / app.css 1031 行 / index.html 303 行 | `wc -l` |
-| 原生与构建 | MainActivity.java 336 行 / `build.sh` 155 行 | `wc -l` |
-| 验证脚本 | 19 个 Python 文件，2226 行 | `find scripts tests -name '*.py' \| wc -l` + `wc -l` |
-| 受版本控制的文件 | 43 个 | `git ls-files \| wc -l` |
-| 产物 | `dist/HermesApp-0.26-private.apk` 136041 字节 | `ls -l` |
+| 最后一次提交 | 2026-11-01 | `git log -1 --format=%ad --date=short` |
+| 提交数 | 13 | `git rev-list --count HEAD` |
+| 前端 | app.js 4243 行 / app.css 1031 行 / index.html 303 行 | `wc -l` |
+| 原生与构建 | MainActivity.java 463 行 + SimpleFileProvider.java 119 行 / `build.sh` 193 行 | `wc -l` |
+| 验证脚本 | 23 个 Python 文件，2671 行 | `find scripts tests -name '*.py' \| wc -l` + `wc -l` |
+| 受版本控制的文件 | 47 个 | `git ls-files \| wc -l` |
+| 产物 | 最后留有 dist 包的是 `HermesApp-0.26-private.apk`（136041 字节）；1.0.x 起不再保留 | `ls -l` |
 
 两个数字需要解释，不然就是误导：
 
-- **提交数不等于开发量。** 公开仓库的历史被塌缩过两次：2026-10-05 把历史整体压成一个根提交，2026-10-12 又删库重建了一回（原因见「现状与欠债」）。塌缩后只剩 5 个提交（一个根提交 + v0.22 → v0.25），后面的 10 个是 10 月 24 日那轮加的（v0.26 → 1.0.1）。真正的版本序列记在 `docs/CONTEXT.md` 里，那是本机文件、不进仓库。
-- **2226 行 Python 不是业务代码**，全部是 Playwright 验证脚本——用真实服务端、真实 run 去驱动真实页面。这个比例（前端 5514 行 : 验证 2226 行）是刻意的，理由在坑三和坑五里。
+- **提交数不等于开发量。** 公开仓库的历史被塌缩过两次：2026-10-05 把历史整体压成一个根提交，2026-10-12 又删库重建了一回（原因见「现状与欠债」）。塌缩后只剩 5 个提交（一个根提交 + v0.22 → v0.25），10 月 18 日的 v0.26、10 月 24 日一天里的 5 个（alpha.2 → 1.0.1），再加上 10 月底到 11 月初的 2 个（v1.0.2 + 测试基建），凑成现在的 13 个。真正的版本序列记在 `docs/CONTEXT.md` 里，那是本机文件、不进仓库。
+- **2671 行 Python 不是业务代码**，全部是 Playwright 验证脚本——用真实服务端、真实 run 去驱动真实页面。这个比例（前端 5577 行 : 验证 2671 行）是刻意的，理由在坑三、坑五和最后一节。
 
 ## 架构：为什么没有 Gradle
 
 ### 构建链
 
-`build.sh` 一共 155 行，做六件事：
+`build.sh` 一共 193 行，做六件事：
 
 ```bash
 SDK="${ANDROID_SDK:-/opt/android-sdk}"
@@ -230,6 +230,8 @@ on('run.peer_user_message', (ev) => {
 contextTokens（socket） → hermesUsage（hermes 会话） → REST /usage（studio 会话）
 ```
 
+（这条口径后来又改了一次——累计值看着像一直在爆上下文，见后面「给一个数字标上 ≈」那节。）
+
 实测（同一个会话）：
 
 | | 修复前 | 修复后 |
@@ -305,7 +307,7 @@ on('session.activity', (ev) => {
 
 ## 十月末：从 v0.26 到 1.0.1
 
-10 月 24 日一天里提了十次。这段时间做的不是「新功能」，而是把一件事做全：
+10 月 24 日一天里提了五个提交，版本从 alpha.2 一路推到 1.0.1。这段时间做的不是「新功能」，而是把一件事做全：
 
 **每次都给一个 WebView 给不了的入口。**
 
@@ -328,12 +330,113 @@ on('session.activity', (ev) => {
 
 至于出包：最后一次停在 0.26（136,041 字节）。1.0.x 的改动都在仓库里，但没再留 dist 包 —— 自用工具，装到自己手机上就是发布。
 
+## 十一月初：给一个数字标上「≈」（v1.0.2）
+
+坑六修完，企微会话的上下文条终于不是 0 了。用了一周才发现：它只是"不为 0"，并不等于"对"。
+
+**现象**：打开一个聊了很久的企微会话，顶部写着 `上下文 1.63M / 1.0M (163%)`。我真的以为它在爆上下文，还据此跟用户说过"这个会话该清了"。
+
+**原因**：那个退路取的是 `GET /api/studio/sessions/hermes/:id` 的 `input_tokens + output_tokens`。这两个字段是**每次 API 调用的 prompt 累加**——同一段历史在一轮对话里被重复计费 N 次，聊得越久越离谱。实测：某会话累计 1.63M，而 provider 最后一次实际收到的 prompt 只有 **126.9k**。
+
+**真值在哪**：Hermes 把 provider 回报的用量落盘在 `state.db` 的 `sessions.model_config._usage_anchor.prompt_tokens`。问题是 Studio 的 `/sessions/hermes/:id` **不透出这个字段**，客户端拿不到。要拿真值得改 `/app` 里 Studio 自己的代码再重启容器——超出这个 App 的范围。
+
+**修法**：客户端按**消息字数估算**当前上下文，并且明确标成估算。
+
+```js
+const CTX_BASE = 9886;          // 系统提示 + 工具 schema 的固定底噪
+const CTX_PER_CJK = 0.9049;     // 中文 token/字
+const CTX_PER_OTHER = 0.3298;   // 其它 token/字
+
+function estimateContextTokens(msgs) {
+  let cjk = 0, other = 0;
+  for (const m of (msgs || [])) {
+    // 口径必须与拟合样本一致：只算 content 与 tool_calls，不含 reasoning_content
+    for (const raw of [m.content, m.tool_calls]) {
+      if (!raw) continue;
+      const s = typeof raw === 'string' ? raw : JSON.stringify(raw);
+      const hit = s.match(CTX_CJK_RE);
+      const c = hit ? hit.length : 0;
+      cjk += c; other += s.length - c;
+    }
+  }
+  if (!cjk && !other) return 0;
+  return Math.round(CTX_BASE + cjk * CTX_PER_CJK + other * CTX_PER_OTHER);
+}
+```
+
+三个系数不是拍的：拿 **91 个真实会话**的 anchor 做最小二乘拟合，中位误差 ~10%。界面上显示 `≈143.2k`，`title` 里写明"估算值：客户端按消息字数折算（服务端未透出真实 prompt 用量）"。
+
+**断言也跟着换了口径**（`tests/wecom_ctx.py`），每个会话三条：
+
+1. 文本里必须带 `≈`（标明这是估算）；
+2. 估算值与 anchor 偏差 ≤35%；
+3. 估算值必须**明显小于**累计值（至少小 2 倍）。
+
+第三条是专门防"哪天又改回旧口径"的——回退之后前两条可能照样通过，因为累计值和 prompt 值都"像"上下文。
+
+**教训**：**"能算出来的数"和"有意义的数"是两件事。** 上一版给出的数字有出处、有代码、能复现，唯独没有意义——它是计费口径，不是窗口占用。这类错误最坏的地方是它长得跟正确值一模一样：1.63M 和 126.9k 都是"有出处的数字"，只有把两者放一起比对才知道哪个是错的。所以现在凡是从推算得来的量，界面上一律带 `≈` 再加一句口径说明——不是客套，是为了让下一个人（包括三个月后的我）不会把它当实测值继续往上算。
+
+## 测试基建：/dev/shm 只有 64M，还有一张假 PNG
+
+这两个不算功能 bug，但吃掉的时间比任何一个功能 bug 都多。
+
+### 每个脚本各写一遍的启动参数
+
+**现象**：跑全套 Playwright，页面动不动 `TargetClosedError: Page crashed`。诡异的是同一时刻 REST 请求全部正常——只有浏览器崩。
+
+**原因**：容器里 `/dev/shm` 只有 64MB。Chromium 默认把共享内存当渲染缓冲，而 `inline.html` 是单文件、DOM 一百多 KB 的大页面，一渲染就压崩。
+
+**修法**：抽出 `scripts/_launch.py`，一套参数走遍 23 个脚本：
+
+```python
+DEFAULT_ARGS = [
+    '--no-sandbox',              # 容器内非 root 命名空间受限
+    '--disable-dev-shm-usage',   # /dev/shm 64M，不关掉会把渲染进程压崩
+    '--disable-gpu',             # 无 GPU，软件渲染反而更稳
+    '--single-process',          # 不加它渲染这份大页面必崩（Page crashed）
+    '--disable-features=LocalNetworkAccessChecks',  # 页面以 127.0.0.1 为 origin
+]
+LAUNCH_ARGS = os.environ.get('CHROME_ARGS', '').split() or DEFAULT_ARGS
+```
+
+`--single-process` 是必须的，但它有个反作用：**单进程下开多个 context 会卡死**。所以 `scripts/ui_shots.py`（出包后"看一眼"的截图脚本）改成每个场景单独 launch 一个浏览器，宁可慢，也不赌。
+
+**教训**：这套参数原先散在二十多个脚本里，每加一条就漏几个——"我明明改了啊"的经典来源。抽成一个被 `import` 的文件，代价是一行 `sys.path.insert`，收益是下次改参数只改一处。
+
+### 一张自己手抄的假 PNG
+
+**现象**：`verify_image.py` 里图片上传用例一直红：`fetch` 返回 200，`<img>` 却 `onerror`。我先查上传链路，再查 data URI，又查 CSP，全都不像有错。
+
+**原因**：测试用的那张图是我**手抄的一段 base64**，它根本不是合法 PNG。Chrome 能下载、却解不出来，`<img>` 自然 `onerror`。也就是说，**我在验证一个假失败**，被验证的代码其实是对的。
+
+**修法**：用 `zlib` + `struct` 现场拼一张 8×8 的真 PNG（容器里没有 Pillow，不能依赖它）：
+
+```python
+def tiny_png(w=8, h=8):
+    def chunk(tag, data):
+        return (struct.pack('>I', len(data)) + tag + data
+                + struct.pack('>I', zlib.crc32(tag + data) & 0xffffffff))
+    raw = b''.join(b'\x00' + b'\xff\x00\x00' * w for _ in range(h))
+    return (b'\x89PNG\r\n\x1a\n'
+            + chunk(b'IHDR', struct.pack('>IIBBBBB', w, h, 8, 2, 0, 0, 0))
+            + chunk(b'IDAT', zlib.compress(raw))
+            + chunk(b'IEND', b''))
+```
+
+代码里留了一句注释警告：*旧版这里是一段手抄 base64，Chrome 解不出来（fetch 200 但 `<img>` onerror），曾误判成「图片显示坏了」——别再换回那段。*
+
+**教训**：**验证脚本的输入也要自证。** 一个稳定的假失败比没有测试更糟：它会训练你忽略红色，或者让你去改本来正确的代码。现在的规矩是——测试素材一律程序生成，而且生成后先断言"它自己能被解码"。
+
+顺带补了两个用例：`tests/attach_panel.py`（点 ＋ → 面板 → 选中 → 附件条出现，不触发真实 run）和 `tests/message_actions.py`（长按菜单的复制 / 引用 / 朗读 / Fork，直接调 `openMessageActions()`，绕开 Playwright 里不可靠的长按手势）。
+
+---
+
 ## 现状与欠债
 
-- **上下文口径是"累计"，不是"当前占用"。** 企微会话显示的是 Hermes 数据库里这个会话的 `input_tokens + output_tokens` 累计值（701.2k 是 700 条消息一路攒出来的，不是"现在占了多少窗口"）。服务端没有暴露"当前上下文占用"的接口，`session_model_usage` 也只有按 model/task 汇总、没有单次调用记录。所以这个数字**偏大**，是我和用户确认后接受的妥协。
+- **上下文数字是“估算”，不是实测。** 企微/hermes-history 会话拿不到 socket 的 `contextTokens`，客户端按消息字数折算（91 个会话拟合：中文 0.905 token/字、其它 0.33、底噪 9.9k），界面带 `≈`，与 provider 真实 anchor 的中位偏差 ~10%，断言卡 ≤35%。真值在 `state.db` 的 `_usage_anchor.prompt_tokens`，但 Studio 的 `/sessions/hermes/:id` 不透出——要拿真值就得改服务端接口，这一版先忍住。
 - **v2 待办还剩三件**：后台推送、离线缓存、企微回复写回。（会话改名 1.0 已落地）
 - **脱敏残留：这条债最后是"删库重建"还掉的。** 这个仓库是公开的，`docs/CONTEXT.md`（含机型、内网地址、本机路径）被 `.gitignore` 排除，历史也被 `filter-branch` 和 `--orphan` 塌缩过一轮。但 **force-push + `git gc` 并不能清掉 GitHub 上的旧对象**：塌缩之后实测 `GET /contents/CONTEXT.md?ref=<旧提交 SHA>` 仍然返回 200——删掉引用不等于删掉对象。最后是**把仓库整个删掉、同名重建**（2026-10-12）再重推：同一个旧 SHA 现在返回 404。代价是 tag 和 Release 一起没了（要发版得重新打），外加一次"仓库归零"——star、issue、外部链接全部断掉。推之前扫了一遍工作树与历史（`git grep` 全量提交 + `git fsck --unreachable`），确认 `.env`、`signing.jks`、`config.env`、`docs/CONTEXT.md`、`inline.html` 都没进库，仓库里只有 `*.example` 模板。
-- **没有 CI。** 19 个验证脚本都要真实服务端 + 真实 run + 一个 `.model-run-token`，只能在有服务的机器上跑。好处是测试很真实（很多 bug 只有真 run 才现形），代价是"忘了跑"就等于没有测试。
+- **没有 CI。** 23 个验证脚本都要真实服务端 + 真实 run + 一个 `.model-run-token`，只能在有服务的机器上跑。好处是测试很真实（很多 bug 只有真 run 才现形），代价是"忘了跑"就等于没有测试。
 - **只有一台 Android 真机自测过。** 没有多机型、没有多 Android 版本矩阵。
 - **签名密钥是硬约束。** 真实 `signing.jks` 不进仓库，仓库里只有一副新生成的测试密钥（alias `hermes`，口令 `android`）。用测试密钥签的包**无法覆盖安装**在真实密钥签的同包名应用上（`INSTALL_FAILED_UPDATE_INCOMPATIBLE`，只能先卸载）。另外包名从 `com.ekko.hermesm` 改成 `com.enderiose.hermes` 时我才真正体会到：**包名变了就是另一个应用**，签名没变也不构成升级关系，旧包只能手动卸载。
 
@@ -343,19 +446,19 @@ on('session.activity', (ev) => {
 
 坑四（插队变成新运行）、坑六（上下文恒为 0）和坑七（运行状态不消失）看着毫无关系，其实是同一件事：我都在**猜一个已经存在的约定**。前者我猜了 socket 事件名，中间那个我猜了"用量该从哪个接口拿"，最后一个我猜了"哪些事件会到我这里"。猜对的时候什么都不会发生（看起来一切正常），猜错的时候现象千奇百怪，而且都不像"猜错了"。
 
-第二个认识：**静默回退的数字比报错危险**。256000 那个坑里，接口没有报错、没有警告，只是安静地给了我一个默认值，我拿它算了很久的百分比，还据此对用户下了"上下文已满"的错误结论。从那以后我对"有默认值的接口"都会刻意测边界输入。
+第二个认识：**静默回退的数字比报错危险**。256000 那个坑里，接口没有报错、没有警告，只是安静地给了我一个默认值，我拿它算了很久的百分比，还据此对用户下了"上下文已满"的错误结论。十月底又栽了同一族的一次：累计口径给了我 1.63M，而真实 prompt 只有 126.9k，我对着那个数字说过好几回"该清了"。两次的共同点是——**数字有出处，但出处不对**。从那以后我对"有默认值的接口"会刻意测边界输入，对"推算出来的量"一律在界面上标 `≈`。
 
 第三个认识来自坑七，也是我自己以前没想清楚的一条：**如果一个状态只有一条"补救路径"，而且那条路径要用户付出动作，那这个 bug 就会伪装成小毛病。** "点进会话再退出就好了"——听起来像个刷新问题，实际上是"只有打开的那个会话能被修好，别的会话永远修不好"。所以判断一个状态设计好不好，我现在会问一句：**用户什么都不做的时候，谁负责把它对齐？** 如果答案是"没有人"，那就是个定时炸弹。
 
 第四个，关于测试：这个项目的验证脚本比前端代码的一半还多，而且是刻意的。**看起来正常，是这个项目最贵的失败模式**——上下文 0、工具不整合、消息重复、运行状态不消失，全都不报错，全都要靠断言盯着。我后来给自己定了一条：修完一个"不报错的 bug"，必须先写出一个能复现它的断言，再改代码。
 
-最后一点，是关于"客户端"这件事本身的：我一开始以为我要写一个 App，后来发现我写的其实是**一层补丁**——补 WebView 做不到的那几件事，剩下的全部交给服务端已经做好的部分。所有我想"顺手重写一下"的地方，事后都变成了坑；所有我老实复用服务端协议和资源的地方（`socket.io` 外部引用、文件下载接口、字段命名），都省下了后面几轮返工。131945 字节里，真正属于我的原创部分其实很少——而它能用，恰恰是因为我忍住了。
+最后一点，是关于"客户端"这件事本身的：我一开始以为我要写一个 App，后来发现我写的其实是**一层补丁**——补 WebView 做不到的那几件事，剩下的全部交给服务端已经做好的部分。所有我想"顺手重写一下"的地方，事后都变成了坑；所有我老实复用服务端协议和资源的地方（`socket.io` 外部引用、文件下载接口、字段命名），都省下了后面几轮返工。582 行 Java 加 5577 行前端里，真正属于我的原创部分其实很少——而它能用，恰恰是因为我忍住了。
 
 ---
 
 **项目信息**
 
 - 类型：Android 客户端（Hermes / Ekko Studio 的 WebView 壳）
-- 规模：前端 5514 行 + 原生与构建 620 行 + 验证脚本 2226 行（19 个脚本）；15 个提交；43 个受版本控制的文件
+- 规模：前端 5577 行 + 原生与构建 775 行 + 验证脚本 2671 行（23 个脚本）；13 个提交；47 个受版本控制的文件
 - 仓库：https://github.com/Enderiose/hermes-app
-- 状态：自用中，持续维护（当前 1.0.1）
+- 状态：自用中，持续维护（当前 1.0.2）
