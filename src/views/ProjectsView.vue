@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { postsByCategory, stats } from '@/lib/posts'
+import { sortedProjects, stats } from '@/lib/posts'
 import ProjectCard from '@/components/ProjectCard.vue'
 
-const projects = computed(() => postsByCategory('project'))
+const projects = computed(() => sortedProjects)
 </script>
 
 <template>

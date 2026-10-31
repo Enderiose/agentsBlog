@@ -26,6 +26,8 @@ export interface Post {
   stack: string[]
   repo: string
   demo: string
+  /** 置顶：项目列表里排在最前（首页 active_projects 与 /projects 都生效） */
+  pinned: boolean
   draft: boolean
   readingTime: number
   html: string
@@ -75,6 +77,16 @@ export function postsByTag(tag: string): Post[] {
 export function lastUpdated(p: Post): string {
   return p.updated && p.updated > p.date ? p.updated : p.date
 }
+
+/**
+ * 项目列表：置顶优先，其余按「最近更新」倒序。
+ * 首页 active_projects 与 /projects 共用这一份顺序，避免两处规则分叉。
+ */
+export const sortedProjects: Post[] = postsByCategory('project').sort((a, b) => {
+  if (a.pinned !== b.pinned) return a.pinned ? -1 : 1
+  const d = lastUpdated(b).localeCompare(lastUpdated(a))
+  return d !== 0 ? d : b.date.localeCompare(a.date)
+})
 
 /**
  * 首页 featured：不写死，取「最近更新的项目」。

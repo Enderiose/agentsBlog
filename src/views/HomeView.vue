@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import {
   sortedPosts,
+  sortedProjects,
   postsByCategory,
   featuredPost,
   stats,
@@ -12,7 +13,7 @@ import ProjectCard from '@/components/ProjectCard.vue'
 
 const featured = computed(() => featuredPost())
 const latest = computed(() => sortedPosts.slice(0, 7))
-const projects = computed(() => postsByCategory('project').slice(0, 6))
+const projects = computed(() => sortedProjects.slice(0, 6))
 const pitfalls = computed(() => postsByCategory('pitfall').slice(0, 4))
 const topTags = computed(() => allTags.slice(0, 14))
 </script>

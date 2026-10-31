@@ -107,6 +107,7 @@ summary: 一句话摘要，60-110 字，会出现在列表页与搜索结果里�
 stack: [Lua 5.1, Node.js]      # 技术栈，2-5 项
 status: shipped                # shipped | wip | abandoned
 updated: 2026-10-20            # 可选：有实质更新时填，文章头显示「更新于」
+pinned: false                  # 可选：true = 项目列表置顶（首页与 /projects）
 repo: https://github.com/you/repo   # 可选：文章头渲染成仓库链接
 ---
 ```

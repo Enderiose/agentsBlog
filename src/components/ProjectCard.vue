@@ -23,6 +23,7 @@ function glow(e: MouseEvent) {
 <template>
   <RouterLink :to="`/posts/${post.slug}`" class="card" @mousemove="glow">
     <div class="idx">
+      <span v-if="post.pinned" class="pin">置顶</span>
       <span v-if="index !== undefined">{{ String(index + 1).padStart(2, '0') }} / </span>{{ post.category }}
     </div>
 
@@ -89,6 +90,18 @@ function glow(e: MouseEvent) {
   text-transform: uppercase;
   color: var(--v1);
   margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pin {
+  font-size: 10px;
+  letter-spacing: 0.8px;
+  padding: 2px 7px;
+  border-radius: var(--radius-pill);
+  color: #06121a;
+  background: linear-gradient(100deg, #67e8f9, #c4b5fd);
 }
 
 h3.pname {
