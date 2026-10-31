@@ -46,79 +46,89 @@ function glow(e: MouseEvent) {
 </template>
 
 <style scoped>
+/* 项目卡：贴在纸上的便利贴，轮流换颜色 + 胶带 */
 .card {
+  position: relative;
   display: flex;
   flex-direction: column;
-  padding: 22px;
-  border-radius: var(--radius);
-  border: 1px solid var(--stroke);
-  background: linear-gradient(180deg, rgba(13, 15, 26, 0.72), rgba(9, 10, 18, 0.72));
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  transition: all 0.22s ease;
-  position: relative;
-  overflow: hidden;
+  padding: 22px 20px 18px;
+  border-radius: 2px;
+  border: 1px solid rgba(180, 168, 140, 0.55);
+  background: var(--note-y);
+  box-shadow: 3px 4px 0 rgba(84, 68, 32, 0.1);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  overflow: visible;
 }
 
+/* 便签上沿的胶带 */
+.card::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 22px;
+  width: 66px;
+  height: 20px;
+  transform: rotate(-4deg);
+  background: rgba(255, 255, 255, 0.55);
+  border-left: 1px dashed rgba(150, 140, 110, 0.35);
+  border-right: 1px dashed rgba(150, 140, 110, 0.35);
+  pointer-events: none;
+}
+
+/* 右下角折角 */
 .card::after {
   content: "";
   position: absolute;
-  inset: 0;
-  opacity: 0;
-  transition: opacity 0.24s ease;
+  right: 0;
+  bottom: 0;
+  width: 18px;
+  height: 18px;
+  background: linear-gradient(135deg, transparent 50%, rgba(180, 168, 140, 0.35) 50%);
   pointer-events: none;
-  background: radial-gradient(
-    420px circle at var(--mx, 50%) var(--my, 0%),
-    rgba(124, 92, 255, 0.14),
-    transparent 62%
-  );
 }
 
 .card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(124, 92, 255, 0.5);
-  box-shadow: 0 28px 64px -38px rgba(124, 92, 255, 0.95);
-}
-
-.card:hover::after {
-  opacity: 1;
+  transform: translateY(-4px) rotate(-0.7deg);
+  box-shadow: 5px 8px 0 rgba(84, 68, 32, 0.16);
 }
 
 .idx {
-  font-size: 11.5px;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  color: var(--v1);
-  margin-bottom: 12px;
+  font-size: 13px;
+  letter-spacing: 0.6px;
+  color: var(--ink-3);
+  margin-bottom: 10px;
   display: flex;
   align-items: center;
   gap: 8px;
+  font-family: var(--mono);
 }
 
 .pin {
-  font-size: 10px;
-  letter-spacing: 0.8px;
-  padding: 2px 7px;
-  border-radius: var(--radius-pill);
-  color: #06121a;
-  background: linear-gradient(100deg, #67e8f9, #c4b5fd);
+  font-size: 11.5px;
+  padding: 0 7px;
+  border-radius: 2px;
+  color: var(--ink);
+  background: var(--hl-p);
+  border-bottom: 1.4px solid var(--v3);
+  font-family: var(--hand);
+  transform: rotate(-2deg);
 }
 
 h3.pname {
-  font-size: 17.5px;
+  font-size: 20px;
   line-height: 1.35;
-  letter-spacing: -0.4px;
-  margin: 0 0 6px;
+  margin: 0 0 4px;
   color: var(--ink);
-  transition: all 0.2s ease;
+  font-weight: 400;
+  letter-spacing: 0.2px;
 }
 
-/* 文章标题：内容式标题，作为项目名下面的副行 */
+/* 文章标题：铅笔小字 */
 p.ptitle {
-  font-size: 12.5px;
+  font-size: 13.5px;
   line-height: 1.6;
-  color: var(--ink-2);
-  margin: 0 0 12px;
+  color: var(--ink-3);
+  margin: 0 0 10px;
   flex: none;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -127,17 +137,14 @@ p.ptitle {
 }
 
 .card:hover h3.pname {
-  background: linear-gradient(100deg, #c4b5fd, #67e8f9);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  background: linear-gradient(transparent 60%, var(--hl-y) 60% 94%, transparent 94%);
 }
 
 p {
-  font-size: 13.5px;
+  font-size: 15px;
   line-height: 1.75;
   color: var(--ink-2);
-  margin: 0 0 16px;
+  margin: 0 0 14px;
   flex: 1;
 }
 
@@ -145,32 +152,32 @@ p {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .tag {
-  font-size: 11px;
-  padding: 3px 9px;
-  border-radius: var(--radius-pill);
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--stroke);
-  color: var(--ink-3);
+  font-size: 12.5px;
+  padding: 0 8px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(180, 168, 140, 0.5);
+  color: var(--ink-2);
 }
 
 .foot {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 14px;
-  border-top: 1px solid var(--stroke);
-  font-size: 12px;
-  color: var(--ink-4);
+  padding-top: 12px;
+  border-top: 1.5px dashed rgba(150, 140, 110, 0.4);
+  font-size: 13px;
+  color: var(--ink-3);
 }
 
 .st {
   display: flex;
   align-items: center;
   gap: 7px;
-  color: var(--ink-3);
+  color: var(--ink-2);
 }
 </style>

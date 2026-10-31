@@ -110,7 +110,7 @@ async function main() {
   })
   md.use(
     await Shiki({
-      theme: 'github-dark-default',
+      theme: 'github-light-default',
       // 不指定 langs 会加载全部语言，构建会明显变慢
       langs: [
         'lua',

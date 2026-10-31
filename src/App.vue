@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import AuroraBackground from '@/components/AuroraBackground.vue'
+import PaperBackground from '@/components/PaperBackground.vue'
 import AppHeader from '@/components/AppHeader.vue'
 import AppFooter from '@/components/AppFooter.vue'
 </script>
 
 <template>
-  <AuroraBackground />
+  <PaperBackground />
   <AppHeader />
   <main>
     <RouterView v-slot="{ Component }">

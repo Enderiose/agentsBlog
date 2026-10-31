@@ -118,13 +118,19 @@ agentsBlog/
 
 ## Design
 
-The look combines two directions that were prototyped first (see
-`design-previews/`):
+The current look is **K11 study notebook** (from the style library entry
+`风格提示词/K_卡通画风/K11_手账笔记.md`).
 
-- **Palette** from the "aurora / glassmorphism" candidate — dark base, violet
-  and cyan gradients, frosted glass panels.
-- **Typography and structure** from the "terminal" candidate — a global
-  monospace stack, `//` section markers, `$` prompts, log-line lists, and a
-  faint scanline overlay.
+- **Paper**: warm off-white exercise-book stock with a faint ruled line every
+  32px, a spiral binding column, a red margin rule and a folded top-right corner.
+- **Type**: a handwriting stack everywhere (Ink Free / Segoe Print, falling back
+  to KaiTi for Chinese); code blocks stay monospaced.
+- **Ink**: blue-black ballpoint for body text, fountain-pen blue links, red-pen
+  accents, highlighter yellow/pink/green/orange for emphasis.
+- **Objects**: cards are sticky notes with tape (three rotating colours),
+  blockquotes are yellow notes, tables are ruled-paper tables, code blocks are
+  graph paper, section heads are `✎` + highlighter + a hand-drawn wavy rule.
+- **Syntax highlighting** uses Shiki's `github-light-default` (a dark theme is
+  unreadable on paper) — see `scripts/build-content.mjs`.
 
 Design tokens live in `src/styles/main.css` as CSS custom properties.

@@ -129,70 +129,104 @@ window.addEventListener('keydown', (e) => {
 </template>
 
 <style scoped>
+/* 手账封面页眉：横线纸 + 索引标签 + 手写品牌 */
 header {
   position: sticky;
   top: 0;
   z-index: 60;
-  padding: 14px 0;
-  background: linear-gradient(180deg, rgba(7, 8, 15, 0.86), rgba(7, 8, 15, 0.3));
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 10px 0 0;
+  background: rgba(250, 247, 238, 0.93);
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  border-bottom: 1.5px solid var(--stroke-2);
+}
+
+/* 页眉下方的双线，像作业本抬头 */
+header::after {
+  content: "";
+  display: block;
+  height: 3px;
+  margin-top: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(201, 191, 164, 0.55) 0 10px,
+    transparent 10px 20px
+  );
+  opacity: 0.5;
 }
 
 .bar {
   display: flex;
   align-items: center;
   gap: 16px;
+  padding-bottom: 9px;
 }
 
-/* ---- 品牌 ---- */
+/* ---- 品牌：手写签名 ---- */
 .brand {
   display: flex;
   align-items: center;
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: 0.3px;
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: 0.4px;
   white-space: nowrap;
+  padding: 2px 6px;
+  border-bottom: 2px solid var(--ink);
+  border-radius: 1px;
 }
+
 .brand .prompt {
-  color: var(--prompt);
+  color: var(--pen-red);
+  margin-right: 2px;
+  transform: rotate(-8deg);
+  display: inline-block;
 }
+
 .brand .name {
   color: var(--ink);
   margin-right: 3px;
-}
-.brand .cursor {
-  width: 8px;
-  height: 14px;
-  vertical-align: -1px;
+  background: linear-gradient(transparent 58%, var(--hl-y) 58% 94%, transparent 94%);
+  padding: 0 2px;
 }
 
-/* ---- 导航 ---- */
+.brand .cursor {
+  width: 2px;
+  height: 18px;
+  vertical-align: -3px;
+}
+
+/* ---- 导航：索引标签 ---- */
 .nav {
   margin-left: auto;
   display: flex;
-  gap: 4px;
-  align-items: center;
+  gap: 2px;
+  align-items: flex-end;
 }
 
 .nav-link {
-  padding: 7px 14px;
-  border-radius: var(--radius-pill);
-  font-size: 13.5px;
-  color: var(--ink-2);
-  transition: all 0.18s ease;
+  position: relative;
+  padding: 6px 15px 7px;
+  border-radius: 3px 3px 0 0;
+  font-size: 15.5px;
+  color: var(--ink-3);
+  border: 1.3px solid transparent;
+  border-bottom: 0;
+  transition: all 0.16s ease;
   white-space: nowrap;
 }
+
 .nav-link:hover {
   color: var(--ink);
-  background: var(--panel-2);
+  background: rgba(255, 253, 244, 0.85);
+  border-color: var(--stroke);
 }
+
 .nav-link.on {
   color: var(--ink);
-  background: rgba(124, 92, 255, 0.16);
-  border: 1px solid rgba(124, 92, 255, 0.4);
-  padding: 6px 13px;
+  background: var(--note);
+  border-color: var(--stroke-2);
+  box-shadow: 0 -2px 0 var(--hl-y) inset;
+  transform: translateY(1px);
 }
 
 /* ---- 动作 ---- */
@@ -205,29 +239,30 @@ header {
 .icon-btn {
   display: grid;
   place-items: center;
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  border: 1px solid var(--stroke);
-  background: var(--panel);
+  border: 1.4px solid var(--ink-3);
+  background: var(--note);
   color: var(--ink-2);
   cursor: pointer;
-  transition: all 0.18s ease;
+  transition: all 0.16s ease;
+  box-shadow: 1px 1px 0 rgba(46, 58, 72, 0.2);
 }
 .icon-btn:hover {
   color: var(--ink);
-  background: var(--panel-2);
-  border-color: var(--stroke-2);
-  transform: translateY(-1px);
+  background: var(--hl-y);
+  border-color: var(--ink);
+  transform: rotate(-6deg);
 }
 
-/* ---- 搜索 ---- */
+/* ---- 搜索：便签面板 ---- */
 .search-layer {
   position: fixed;
   inset: 0;
   z-index: 80;
-  background: rgba(4, 5, 10, 0.72);
-  backdrop-filter: blur(6px);
+  background: rgba(64, 56, 40, 0.42);
+  backdrop-filter: blur(3px);
   display: flex;
   justify-content: center;
   padding-top: 12vh;
@@ -239,19 +274,34 @@ header {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 40px 100px -40px rgba(124, 92, 255, 0.7);
+  background: var(--note);
+  border: 1.5px solid var(--stroke-2);
+  border-radius: 3px;
+  box-shadow: 6px 8px 0 rgba(84, 68, 32, 0.14);
+}
+
+.search-panel::before {
+  width: 96px;
+  height: 24px;
+  background: rgba(255, 236, 158, 0.8);
+  transform: translateX(-50%) rotate(-1.6deg);
 }
 
 .search-head {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--stroke);
+  padding: 15px 20px;
+  border-bottom: 1px dashed var(--stroke-2);
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0 31px,
+    rgba(140, 178, 210, 0.22) 31px 32px
+  );
 }
 .search-head .prompt {
-  color: var(--prompt);
-  font-size: 14px;
+  color: var(--pen-red);
+  font-size: 15px;
 }
 .search-head input {
   flex: 1;
@@ -259,8 +309,8 @@ header {
   border: 0;
   outline: none;
   color: var(--ink);
-  font-family: var(--mono);
-  font-size: 15px;
+  font-family: var(--hand);
+  font-size: 17px;
 }
 .search-head input::placeholder {
   color: var(--ink-4);
@@ -269,10 +319,10 @@ header {
 kbd {
   font-family: var(--mono);
   font-size: 10.5px;
-  padding: 2px 6px;
-  border-radius: 5px;
-  border: 1px solid var(--stroke);
-  background: rgba(255, 255, 255, 0.06);
+  padding: 1px 6px;
+  border-radius: 2px;
+  border: 1px solid var(--stroke-2);
+  background: var(--paper-2);
   color: var(--ink-3);
 }
 
@@ -287,38 +337,46 @@ kbd {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 11px 12px;
-  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  border-radius: 2px;
   cursor: pointer;
   transition: background 0.14s ease;
+  border-bottom: 1px dashed rgba(207, 222, 234, 0.9);
+}
+.search-results li:last-child {
+  border-bottom: 0;
 }
 .search-results li:hover {
-  background: rgba(124, 92, 255, 0.12);
+  background: linear-gradient(transparent 12%, var(--hl-y) 12% 94%, transparent 94%);
 }
 .search-results .t {
   flex: 1;
-  font-size: 14px;
+  font-size: 16px;
   color: var(--ink);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .search-results .d {
-  font-size: 12px;
+  font-size: 12.5px;
   color: var(--ink-4);
+  font-family: var(--mono);
 }
 
 .search-empty,
 .search-hint {
   padding: 22px 20px;
-  font-size: 13.5px;
+  font-size: 15px;
   color: var(--ink-3);
 }
 
 @media (max-width: 860px) {
   .nav-link {
-    padding: 6px 10px;
-    font-size: 13px;
+    padding: 5px 10px 6px;
+    font-size: 14.5px;
+  }
+  .brand {
+    font-size: 18px;
   }
 }
 

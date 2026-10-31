@@ -89,7 +89,7 @@ const countOf = (k: Filter) =>
 
 <style scoped>
 .head {
-  padding: 46px 0 0;
+  padding: 40px 0 0;
 }
 
 .spacer {
@@ -97,60 +97,64 @@ const countOf = (k: Filter) =>
 }
 
 h1 {
-  font-size: clamp(26px, 4vw, 38px);
-  letter-spacing: -1.2px;
-  margin: 6px 0 12px;
+  font-size: clamp(26px, 4vw, 40px);
+  letter-spacing: 0.6px;
+  margin: 6px 0 10px;
+  font-weight: 400;
 }
 
 .lede {
   color: var(--ink-2);
-  font-size: 14.5px;
+  font-size: 16.5px;
   margin: 0;
   max-width: 62ch;
 }
 
 .sec {
-  padding: 36px 0 0;
+  padding: 32px 0 0;
 }
 
 .toolbar {
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 20px;
+  gap: 14px;
+  margin-bottom: 18px;
   flex-wrap: wrap;
 }
 
 .filters {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
 }
 
 .chip .n {
   margin-left: 6px;
-  font-size: 10.5px;
+  font-size: 12px;
   color: var(--ink-4);
+  font-family: var(--mono);
 }
 .chip.on .n {
-  color: #a78bfa;
+  color: var(--ink-2);
 }
 
+/* 搜索：手写检索框 */
 .search {
   margin-left: auto;
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 7px 14px;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--stroke);
-  background: var(--panel);
-  min-width: 180px;
+  padding: 4px 14px;
+  border-radius: 2px;
+  border: 1.4px solid var(--ink-3);
+  background: var(--note);
+  min-width: 190px;
+  box-shadow: 2px 2px 0 rgba(46, 58, 72, 0.12);
 }
 
 .search .p {
-  color: var(--prompt);
-  font-size: 13px;
+  color: var(--pen-red);
+  font-size: 15px;
 }
 
 .search input {
@@ -159,8 +163,8 @@ h1 {
   border: 0;
   outline: none;
   color: var(--ink);
-  font-family: var(--mono);
-  font-size: 13.5px;
+  font-family: var(--hand);
+  font-size: 15.5px;
   min-width: 80px;
 }
 
@@ -169,7 +173,7 @@ h1 {
 }
 
 .empty {
-  padding: 46px 24px;
+  padding: 44px 24px;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -180,7 +184,7 @@ h1 {
 .empty p {
   margin: 0;
   color: var(--ink-3);
-  font-size: 14px;
+  font-size: 16px;
 }
 
 @media (max-width: 640px) {

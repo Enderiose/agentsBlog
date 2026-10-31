@@ -99,7 +99,7 @@ agentsBlog/
 │   └── generate-static-routes.mjs 为 GitHub Pages 生成静态路由
 ├── public/favicon.svg             （feed.xml / sitemap.xml 为生成物）
 ├── src/
-│   ├── components/                AuroraBackground、AppHeader、AppFooter、
+│   ├── components/                PaperBackground、AppHeader、AppFooter、
 │   │                              PostRow、ProjectCard
 │   ├── views/                     Home、PostList、Post、Projects、Tags、
 │   │                              Tag、About、Feed、Sitemap、NotFound
@@ -112,10 +112,14 @@ agentsBlog/
 
 ## 设计说明
 
-视觉上融合了前期两个方向（见 `design-previews/`）：
+当前套用的是 **K11 手账笔记**（来自风格库 `风格提示词/K_卡通画风/K11_手账笔记.md`）。
 
-- **配色**取自「极光玻璃拟态」方案 —— 深色底、紫青渐变、毛玻璃面板。
-- **排版与结构**取自「终端极客风」方案 —— 全局等宽字体、`//` 分节标记、
-  `$` 提示符、日志行列表，以及一层很淡的扫描线。
+- **纸**：米黄作业本底 + 每 32px 一条极淡横线，左侧螺旋装订孔、红色装订边线、右上折角。
+- **字**：全局手写栈（Ink Free / Segoe Print → 中文落楷体），代码块仍走等宽。
+- **笔**：蓝黑圆珠笔正文，钢笔蓝链接，批改红做重音，荧光笔（黄/粉/青/橙）做勾画。
+- **物**：卡片是带胶带的便利贴（黄粉蓝三色轮换）、引用是黄色便签、表格是横线纸表格、
+  代码块是方格纸、分节标题是「✎ + 荧光笔 + 手绘波浪线」。
+- **代码高亮**：`scripts/build-content.mjs` 里 Shiki 主题改成 `github-light-default`，
+  深色主题在纸上会看不清。
 
 设计变量都在 `src/styles/main.css` 里，用 CSS 自定义属性集中管理。

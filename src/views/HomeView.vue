@@ -188,9 +188,9 @@ const topTags = computed(() => allTags.slice(0, 14))
 </template>
 
 <style scoped>
-/* ---- hero ---- */
+/* ---- hero：手账第一页 ---- */
 .hero {
-  padding: 62px 0 20px;
+  padding: 44px 0 18px;
 }
 
 .spacer {
@@ -198,155 +198,179 @@ const topTags = computed(() => allTags.slice(0, 14))
 }
 
 h1 {
-  font-size: clamp(30px, 5.2vw, 52px);
-  line-height: 1.16;
-  letter-spacing: -1.6px;
-  margin: 6px 0 18px;
-  font-weight: 700;
+  font-size: clamp(30px, 5vw, 50px);
+  line-height: 1.3;
+  letter-spacing: 1px;
+  margin: 8px 0 16px;
+  font-weight: 400;
 }
 
 .lede {
   color: var(--ink-2);
   max-width: 62ch;
-  font-size: 14.5px;
+  font-size: 16.5px;
   margin: 0;
+  line-height: 1.95;
 }
 
 .lede em {
-  color: var(--amber);
+  color: var(--pen-red);
   font-style: normal;
+  border-bottom: 2px dashed var(--pen-red);
+  padding-bottom: 1px;
 }
 
+/* 统计：铅笔框格子 */
 .metrics {
   display: flex;
-  gap: 34px;
+  gap: 14px;
   flex-wrap: wrap;
-  margin-top: 30px;
-  padding-top: 22px;
-  border-top: 1px dashed var(--stroke);
+  margin-top: 26px;
+  padding-top: 20px;
+  border-top: 1.5px dashed var(--stroke-2);
+}
+
+.metric {
+  min-width: 92px;
+  padding: 6px 12px 4px;
+  border: 1.4px solid var(--ink-3);
+  border-radius: 2px;
+  background: rgba(255, 253, 244, 0.7);
+  box-shadow: 2px 2px 0 rgba(46, 58, 72, 0.12);
 }
 
 .metric b {
   display: block;
-  font-size: 26px;
-  line-height: 1.2;
-  background: linear-gradient(120deg, #c4b5fd, #67e8f9);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  font-size: 27px;
+  line-height: 1.25;
+  font-weight: 400;
+  color: var(--pen-red);
+  font-family: var(--mono);
+  letter-spacing: -1px;
 }
 
 .metric span {
-  font-size: 11px;
-  letter-spacing: 1.4px;
-  text-transform: uppercase;
-  color: var(--ink-4);
+  font-size: 12.5px;
+  letter-spacing: 0.4px;
+  color: var(--ink-3);
 }
 
 /* ---- 通用 ---- */
 .sec {
-  padding: 46px 0 0;
+  padding: 44px 0 0;
 }
 
 .link:hover {
-  color: var(--v2);
+  color: var(--ink);
+  background: linear-gradient(transparent 55%, var(--hl-b) 55% 92%, transparent 92%);
 }
 
-/* ---- featured ---- */
+/* ---- featured：贴上去的大便签 ---- */
 .feature {
   display: grid;
   grid-template-columns: 1.2fr 1fr;
   overflow: hidden;
-  transition: all 0.25s ease;
+  border-radius: 2px;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
 .feature:hover {
-  border-color: rgba(124, 92, 255, 0.55);
-  box-shadow: 0 32px 80px -44px var(--v1);
+  transform: translateY(-3px) rotate(-0.3deg);
+  box-shadow: 6px 8px 0 rgba(84, 68, 32, 0.14);
 }
 
 .fx {
-  padding: 34px 32px;
+  padding: 32px 30px;
 }
 
 .kicker {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 .kicker .d {
-  font-size: 11.5px;
-  letter-spacing: 1.4px;
-  text-transform: uppercase;
-  color: var(--ink-4);
+  font-size: 13px;
+  letter-spacing: 0.3px;
+  color: var(--ink-3);
 }
 
 .feature h3 {
-  font-size: clamp(21px, 2.8vw, 28px);
-  line-height: 1.25;
-  letter-spacing: -0.9px;
-  margin: 0 0 14px;
+  font-size: clamp(22px, 2.8vw, 30px);
+  line-height: 1.35;
+  letter-spacing: 0.3px;
+  margin: 0 0 12px;
+  font-weight: 400;
+  display: table;
+  background: linear-gradient(transparent 58%, var(--hl-y) 58% 94%, transparent 94%);
 }
 
 .feature p {
   color: var(--ink-2);
-  font-size: 14px;
-  margin: 0 0 20px;
+  font-size: 16px;
+  line-height: 1.85;
+  margin: 0 0 18px;
 }
 
 .fmeta {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
-  font-size: 12px;
-  color: var(--ink-4);
+  font-size: 13.5px;
+  color: var(--ink-3);
+  border-top: 1.5px dashed var(--stroke);
+  padding-top: 12px;
 }
 
+/* 右侧：方格纸上的手绘涂鸦 */
 .visual {
   position: relative;
   overflow: hidden;
   display: grid;
   place-items: center;
   min-height: 250px;
-  background: linear-gradient(
-    150deg,
-    rgba(124, 92, 255, 0.26),
-    rgba(34, 211, 238, 0.13) 55%,
-    rgba(244, 114, 182, 0.2)
-  );
-}
-
-.visual::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
-  background-size: 28px 28px;
+  background-color: var(--note);
+  background-image: linear-gradient(rgba(140, 178, 210, 0.3) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(140, 178, 210, 0.3) 1px, transparent 1px);
+  background-size: 24px 24px;
+  border-left: 1.5px dashed var(--stroke-2);
 }
 
 .orb {
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
+  width: 130px;
+  height: 130px;
   position: relative;
-  background: conic-gradient(from 0deg, #7c5cff, #22d3ee, #f472b6, #7c5cff);
-  animation: spin 14s linear infinite;
-  box-shadow: 0 0 70px -6px rgba(124, 92, 255, 0.8);
+  border-radius: 47% 53% 55% 45% / 52% 45% 55% 48%;
+  background: radial-gradient(circle at 32% 28%, #fffdf4 0 18%, transparent 55%),
+    repeating-linear-gradient(
+      -45deg,
+      var(--hl-y) 0 9px,
+      var(--hl-o) 9px 18px
+    );
+  border: 2.2px solid var(--ink);
+  box-shadow: 4px 5px 0 rgba(46, 58, 72, 0.16);
+  animation: wobble 9s ease-in-out infinite;
+  display: grid;
+  place-items: center;
 }
 
+/* 老师批改的对勾：笔记边上最常见的涂鸦 */
 .orb::after {
-  content: "";
-  position: absolute;
-  inset: 22px;
-  border-radius: 50%;
-  background: rgba(7, 8, 15, 0.86);
+  content: "✓";
+  font-size: 58px;
+  color: var(--pen-red);
+  transform: rotate(-7deg);
+  line-height: 1;
+  margin-top: 6px;
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+@keyframes wobble {
+  0%,
+  100% {
+    transform: rotate(-3deg) scale(1);
+  }
+  50% {
+    transform: rotate(3deg) scale(1.04);
   }
 }
 
@@ -354,87 +378,117 @@ h1 {
 .pgrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 16px;
+  gap: 26px 18px;
 }
 
-/* ---- 标签云 ---- */
+/* 便签三色轮换 */
+.pgrid > :nth-child(3n + 1) {
+  background: var(--note-y);
+}
+.pgrid > :nth-child(3n + 2) {
+  background: var(--note-p);
+}
+.pgrid > :nth-child(3n) {
+  background: var(--note-b);
+}
+
+/* ---- 标签云：荧光笔标签 ---- */
 .tagcloud {
   display: flex;
-  gap: 9px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
 .tag-pill {
-  font-size: 12.5px;
-  padding: 6px 14px;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--stroke);
-  background: var(--panel);
-  color: var(--ink-3);
-  transition: all 0.18s ease;
+  font-size: 14.5px;
+  padding: 1px 11px;
+  border-radius: 2px;
+  border: 1px solid rgba(180, 168, 140, 0.55);
+  background: var(--note);
+  color: var(--ink-2);
+  transition: all 0.15s ease;
+  box-shadow: 1px 1px 0 rgba(84, 68, 32, 0.08);
 }
 
 .tag-pill:hover {
-  color: #c4b5fd;
-  border-color: rgba(124, 92, 255, 0.5);
-  background: rgba(124, 92, 255, 0.14);
-  transform: translateY(-2px);
+  color: var(--ink);
+  background: var(--hl-y);
+  transform: translateY(-2px) rotate(-1deg);
 }
 
-/* ---- 代码片段 ---- */
+/* ---- 代码片段：手抄的 markdown ---- */
 .snippet {
-  font-size: 13px;
-  line-height: 1.85;
+  font-size: 13.5px;
+  line-height: 1.95;
   color: var(--ink-2);
+  font-family: var(--mono);
 }
 .snippet .blank {
-  height: 8px;
+  height: 6px;
 }
 .snippet .p {
-  color: var(--prompt);
+  color: var(--pen-red);
 }
 .snippet .k {
-  color: var(--v2);
+  color: var(--pen-blue);
 }
 .snippet .dim {
   color: var(--ink-4);
 }
 .snippet .h {
   color: var(--ink);
+  font-weight: 700;
 }
 .snippet .err {
-  color: var(--amber);
+  color: var(--pen-red);
 }
 
-/* ---- CTA ---- */
+/* ---- CTA：一张大便利贴 ---- */
 .cta {
-  margin: 60px 0 0;
-  padding: 44px 38px;
-  border-radius: 24px;
+  margin: 56px 0 0;
+  padding: 40px 34px;
+  border-radius: 2px;
   text-align: center;
   position: relative;
-  overflow: hidden;
-  background: linear-gradient(
-    135deg,
-    rgba(124, 92, 255, 0.22),
-    rgba(34, 211, 238, 0.14) 50%,
-    rgba(244, 114, 182, 0.2)
-  );
-  border: 1px solid var(--stroke-2);
-  backdrop-filter: blur(24px);
+  background: var(--note-y);
+  border: 1.5px solid rgba(180, 168, 140, 0.6);
+  box-shadow: 5px 6px 0 rgba(84, 68, 32, 0.12);
+  transform: rotate(-0.35deg);
+}
+
+/* 两条胶带 */
+.cta::before,
+.cta::after {
+  content: "";
+  position: absolute;
+  top: -12px;
+  width: 92px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.6);
+  border-left: 1px dashed rgba(150, 140, 110, 0.35);
+  border-right: 1px dashed rgba(150, 140, 110, 0.35);
+}
+.cta::before {
+  left: 26px;
+  transform: rotate(-5deg);
+}
+.cta::after {
+  right: 26px;
+  transform: rotate(4deg);
 }
 
 .cta h3 {
-  font-size: clamp(21px, 3.2vw, 30px);
-  letter-spacing: -1px;
-  margin: 0 0 12px;
+  font-size: clamp(22px, 3.2vw, 30px);
+  letter-spacing: 0.4px;
+  margin: 0 0 10px;
+  font-weight: 400;
 }
 
 .cta p {
   color: var(--ink-2);
   max-width: 46ch;
-  margin: 0 auto 24px;
-  font-size: 14.5px;
+  margin: 0 auto 22px;
+  font-size: 16px;
 }
 
 .cta .row {
@@ -451,18 +505,20 @@ h1 {
   .visual {
     min-height: 170px;
     order: -1;
+    border-left: 0;
+    border-bottom: 1.5px dashed var(--stroke-2);
   }
   .fx {
-    padding: 26px 22px;
+    padding: 24px 20px;
   }
 }
 
 @media (max-width: 640px) {
   .hero {
-    padding: 40px 0 10px;
+    padding: 30px 0 10px;
   }
   .metrics {
-    gap: 22px;
+    gap: 10px;
   }
   .metric b {
     font-size: 22px;

@@ -20,39 +20,41 @@
 }
 
 .box {
-  padding: 48px 40px;
+  padding: 44px 38px;
   text-align: center;
   max-width: 520px;
   width: 100%;
+  background: var(--note-y);
 }
 
 .code {
-  font-size: 64px;
-  letter-spacing: -4px;
+  font-size: 68px;
+  letter-spacing: 3px;
   line-height: 1;
-  background: linear-gradient(120deg, #c4b5fd, #67e8f9);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  margin-bottom: 18px;
+  color: var(--pen-red);
+  margin-bottom: 16px;
+  font-family: var(--mono);
+  transform: rotate(-2deg);
 }
 
 .cmd {
-  font-size: 12.5px;
-  color: var(--ink-4);
-  margin-bottom: 22px;
+  font-size: 14px;
+  color: var(--ink-3);
+  margin-bottom: 20px;
+  font-family: var(--mono);
 }
 .cmd .p {
-  color: var(--prompt);
+  color: var(--pen-red);
 }
 .cmd .err {
   color: var(--amber);
 }
 
 h2 {
-  font-size: 19px;
-  margin: 0 0 26px;
-  letter-spacing: -0.4px;
+  font-size: 22px;
+  margin: 0 0 24px;
+  letter-spacing: 0.4px;
+  font-weight: 400;
 }
 
 .row {

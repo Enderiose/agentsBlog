@@ -49,7 +49,7 @@ const projects = computed(() => sortedProjects)
 
 <style scoped>
 .head {
-  padding: 46px 0 0;
+  padding: 40px 0 0;
 }
 
 .spacer {
@@ -57,30 +57,41 @@ const projects = computed(() => sortedProjects)
 }
 
 h1 {
-  font-size: clamp(26px, 4vw, 38px);
-  letter-spacing: -1.2px;
-  margin: 6px 0 12px;
+  font-size: clamp(26px, 4vw, 40px);
+  letter-spacing: 0.6px;
+  margin: 6px 0 10px;
+  font-weight: 400;
 }
 
 .lede {
   color: var(--ink-2);
-  font-size: 14.5px;
+  font-size: 16.5px;
   margin: 0;
   max-width: 64ch;
 }
 
 .sec {
-  padding: 36px 0 0;
+  padding: 32px 0 0;
 }
 
 .pgrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
-  gap: 16px;
+  gap: 28px 18px;
+}
+
+.pgrid > :nth-child(3n + 1) {
+  background: var(--note-y);
+}
+.pgrid > :nth-child(3n + 2) {
+  background: var(--note-p);
+}
+.pgrid > :nth-child(3n) {
+  background: var(--note-b);
 }
 
 .empty {
-  padding: 46px 24px;
+  padding: 44px 24px;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -90,5 +101,6 @@ h1 {
 .empty p {
   margin: 0;
   color: var(--ink-3);
+  font-size: 16px;
 }
 </style>

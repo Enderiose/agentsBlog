@@ -118,7 +118,7 @@ repo: https://github.com/you/repo   # 可选：文章头会渲染成仓库链接
 
 <style scoped>
 .head {
-  padding: 46px 0 0;
+  padding: 40px 0 0;
 }
 
 .spacer {
@@ -126,30 +126,43 @@ repo: https://github.com/you/repo   # 可选：文章头会渲染成仓库链接
 }
 
 h1 {
-  font-size: clamp(26px, 4vw, 38px);
-  letter-spacing: -1.2px;
+  font-size: clamp(26px, 4vw, 40px);
+  letter-spacing: 0.6px;
   margin: 6px 0 0;
+  font-weight: 400;
 }
 
 .sec {
-  padding: 40px 0 0;
+  padding: 34px 0 0;
 }
 
+/* 四类记录：四张小便签 */
 .cats {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin: 1.4em 0;
+  gap: 22px 16px;
+  margin: 1.6em 0 1em;
 }
 
 .cat-card {
-  padding: 16px 18px;
+  padding: 18px 18px 16px;
+  background: var(--note-y);
+}
+
+.cat-card:nth-child(2) {
+  background: var(--note-p);
+}
+.cat-card:nth-child(3) {
+  background: var(--note-g);
+}
+.cat-card:nth-child(4) {
+  background: var(--note-b);
 }
 
 .cat-card p {
   margin: 10px 0 0;
-  font-size: 13px;
-  line-height: 1.7;
+  font-size: 15px;
+  line-height: 1.8;
   color: var(--ink-2);
 }
 
@@ -161,19 +174,19 @@ h1 {
 }
 
 .tag-pill {
-  font-size: 12.5px;
-  padding: 5px 13px;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--stroke);
-  background: var(--panel);
-  color: var(--ink-3);
-  transition: all 0.18s ease;
+  font-size: 14px;
+  padding: 1px 11px;
+  border-radius: 2px;
+  border: 1.3px dashed rgba(150, 138, 108, 0.75);
+  background: rgba(255, 253, 244, 0.9);
+  color: var(--ink-2);
+  transition: all 0.15s ease;
 }
 
 .tag-pill:hover {
-  color: #c4b5fd;
-  border-color: rgba(124, 92, 255, 0.5);
-  background: rgba(124, 92, 255, 0.14);
+  color: var(--ink);
+  background: var(--hl-y);
+  transform: translateY(-2px) rotate(-1deg);
 }
 
 @media (max-width: 560px) {
