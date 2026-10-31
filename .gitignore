@@ -20,3 +20,6 @@ Thumbs.db
 
 # Vite
 .vite/
+
+# 本地交接笔记（个人上下文，不进仓库）
+docs/handoff.md
