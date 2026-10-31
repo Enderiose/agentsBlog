@@ -5,10 +5,11 @@ slug: twwb-checkin
 date: 2026-09-27
 category: project
 tags: [自动化, 签到, python, cdp, windows]
-summary: Trae SOLO CN 和 WorkBuddy 每天都要手动签到。它们都没有 API，所以只能模拟点击。这篇文章记录了怎么把"点按钮"这件事做得不靠运气 —— 自校验、不盲点、可诊断。后来又加了第三类目标：任意网页签到，先静默 HTTP、失败再上无头浏览器。
+summary: Trae SOLO CN 和 WorkBuddy 每天都要手动签到，都没有 API，只能模拟点击。这篇文章记录怎么让「点按钮」不靠运气：自校验、不盲点、可诊断；再到任意网页签到，以及 cookie 过期时主动告警、推不出去就弹窗兜底。
 stack: [Python, ctypes, Win32 API, CDP, Node.js, schtasks]
 status: shipped
-updated: 2026-10-26
+updated: 2026-10-31
+pinned: true
 repo: https://github.com/Enderiose/checkin
 ---
 
@@ -304,9 +305,106 @@ python scripts\web_checkin.py --login anyrouter
 - **子模块指到了 fork**。上游改了点击逻辑，但装在自己这边的 `workbuddy-checkin/` 还是旧的 —— 子模块改指 fork，并把 `.gitmodules` 补进版本控制，不然换台机器 `--recursive` 克隆下来还是一份没人维护的代码。
 - **残留进程会被下一次签到撞上**。上一轮的 Chrome/Node 没退干净，下一轮抢窗口、抢调试端口。`clean_strays.py` 就是干这个的：只清自己起的进程，按名字和命令行比对，不做宽口径杀进程。
 
+## 第三版：签到失败，谁告诉你
+
+第二版解决了「怎么签」，没解决「签失败了谁知道」。
+
+计划任务在早上跑，我不在电脑前。失败只会写进 `logs\auto_checkin_YYYY-MM-DD.log`。而 cookie 过期这种事，通常要等我某天手动打开某个站点，才发现已经登出好几天了。
+
+于是这一版只做一件事：**把失败推到我手机上**。
+
+### 先让子进程说清楚「为什么失败」
+
+以前 `web_checkin.py` 对「登录态没了」和「页面结构变了」都返回一个模糊的 `fallback`。父进程只看到退出码，没法知道是哪个站、什么原因。
+
+现在判定结果里多了一个独立状态 `login_required`，并且子进程往 stdout 打一行机器可读的标记：
+
+```text
+LOGIN_REQUIRED site=anyrouter
+```
+
+父进程只解析这一行，不去猜日志、不去重跑判定。**父子进程之间的契约是一条文本行，不是退出码。**
+
+为什么不用退出码？因为退出码只有一个字节，而我要知道的是「哪几个站需要重新登录」。
+
+### 四种「失效」，从强到弱
+
+```text
+1. HTTP 401/403              （静默层和无头层都算）
+2. 被重定向到登录页
+3. 页面文案里有「请先登录」/「not logged in」
+4. cookies/<site>.json 里的 expiry 字段
+```
+
+前三条是「已经死了」，第四条是「快死了」—— 默认提前 3 天提醒（`expiry_warn_days`）。**能提前修的事，不要等它坏。**
+
+### 坑：最短命的 cookie 不代表登录态
+
+第一版我图省事，把 cookie 文件里所有 `expiry` 取最小值，结果每天都能收到「即将过期」。
+
+原因是有个反爬 cookie（`acw_sc__v2` 之类）寿命只有一小时 —— 它每次请求都会重发，和登录态毫无关系。
+
+修法两条：
+
+- 取**最长寿**的那个 cookie 当作会话寿命
+- 再维护一份短命 WAF cookie 前缀黑名单（`acw_`、`cf_clearance`、`_abck` …），扫描时直接跳过
+
+> 判断「会话还在不在」要看最长的那个，不是最短的那个。
+
+### 每天最多一条，不重复吵
+
+同一份状态每天只推一次：把「站点列表 + 到期日期」算成一个指纹，落在 `logs/.notify_state.json`。
+
+不这么做，定时任务会每天把同一条「cookie 过期」推给你，直到你续期为止 —— 然后你就学会无视它了。**告警一旦变成噪音，就等于没有告警。**
+
+默认只在 `expired` 时发；也可以改成 `failure`（任何失败）或 `always`（每次都发）。成功且没到期时，一条都不发。
+
+### token 不进仓库，也不进 URL
+
+```text
+优先级 1：CHECKIN_WEBHOOK_TOKEN 环境变量
+优先级 2：.hook_token 单行文件（git-ignored）
+```
+
+token 放在 `X-Hook-Token` **请求头**里，不拼在 URL 上 —— URL 会进宿主和反代的访问日志。
+
+`.hook_token.example` 里留的是 `<...>` 占位符，程序把它当作「未配置」，不会拿占位符去请求。轮换 token 也不用重启，下次运行重新读文件。
+
+### 坑：通知失败，不能把签到判成失败
+
+这是我最在意的一条。通知只是旁路，签到才是主任务。
+
+所以通知步骤整体包在 try/except 里，失败只记 `WARN`，**退出码仍然只由签到结果决定**。
+
+我还专门做了一次反向验证：故意把 token 改错，跑一遍自动签到 —— 签到成功，退出码 0，日志里多一条通知失败。顺序对了。
+
+### 最后一道兜底：投递不出去，就弹窗
+
+webhook 挂了的时候（token 错 `40001`、宿主不可达、`429` 限流），消息不能就这么消失 —— 那正是你最需要看到它的时刻。
+
+于是加了一层本地弹窗：
+
+- 弹窗跑在**独立分离进程**里，签到主流程不等它
+- 始终置顶（`MB_TOPMOST`）
+- `MessageBoxTimeoutW` 到点自动关闭（默认 60 秒）
+
+最后这条是关键：`MessageBoxW` 会一直等人点确定。计划任务在凌晨跑，没人点，进程就永远卡在那儿。而 `MessageBoxTimeoutW` 是**没有公开文档**的 API，但从 Win2000 起就在 —— 这是唯一能自动关闭消息框的办法。
+
+### 怎么验证
+
+```cmd
+python scripts\notify.py --selftest              :: 发一条连通性测试
+python scripts\notify.py --check-expiry          :: 只扫描 cookie，不发送
+python scripts\notify.py --show-config           :: 看生效配置（不打印 token）
+python scripts\auto_checkin.py --notify-dry-run  :: 只记录消息，不发送
+python scripts\auto_checkin.py --no-notify       :: 完全跳过通知
+```
+
+`--dry-run` 是我后来加得最值的一个开关：**先看它会发什么，再决定要不要让它发。**
+
 ## 回头看
 
-第一版很小 —— 4 次提交，58 个文件。加上网页签到这一轮，现在是 8 次提交、`scripts/` 下 2810 行 Python。
+第一版很小 —— 4 次提交，58 个文件。加上网页签到和失败告警这两轮，现在是 9 次提交、`scripts/` 下 3686 行 Python。
 
 但它把"自动化一个没有 API 的东西"这件事里所有的坑都踩了一遍：
 
@@ -320,6 +418,7 @@ python scripts\web_checkin.py --login anyrouter
 | 安装静默失败 | 独立安装日志 + UAC 取消明确报错 |
 | 窗口互相抢 | 串行化 + 每步重新确认前台 |
 | 事后无法排查 | 全量环境 dump + 子进程退出码 |
+| 定时任务失败没人知道 | 子进程标记行 + 每日去重推送 + 弹窗兜底 |
 
 而贯穿全部的一条是：
 
@@ -331,8 +430,8 @@ python scripts\web_checkin.py --login anyrouter
 
 **项目信息**
 
-- 类型：Windows 自动化签到（计划任务）
+- 类型：Windows 自动化签到（计划任务）+ 失败通知
 - 目标：Trae SOLO CN + WorkBuddy + 任意网页
-- 规模：8 次提交 · `scripts/*.py` 2810 行
+- 规模：9 次提交 · `scripts/*.py` 3686 行（其中 `notify.py` 724 行）
 - 仓库：https://github.com/Enderiose/checkin
 - 状态：自用中，持续维护
