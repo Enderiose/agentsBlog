@@ -69,7 +69,7 @@ pi、codex、opencode、opencode tui、grokbuild、dsh desktop、dsh web、herme
 | grokbuild | Windows 11 | 同上 + 日聚合表 | 同上 |
 | opencode tui | Windows 11 | `~/.local/share/opencode/opencode.db` | OpenCode **自带账本**：逐条 assistant 消息的 token + 原生 USD cost |
 | dsh desktop | Windows 11 | `~/.dsh/sessions/*/*/session.v4.jsonl.zstd` | 要从 Zstandard 多帧事件流还原 per-message usage |
-| dsh web | WSL2 Ubuntu-24.04 | 同上，经 `wsl.exe` | 本机 `\\wsl.localhost\` 不可达；WSL 侧现在也有 187 个 session |
+| dsh web | WSL2 Ubuntu-24.04 | 同上，经 `wsl.exe` | 本机 `\\wsl.localhost\` 不可达；WSL 内也是 187 个 session 文件（数据与桌面端不同，数字纯属巧合） |
 | hermes | NAS docker（群晖） | `[NAS]:\hermes\hermes_data\profiles\*\state.db` | 唯一自带 cost 列，含企微 bot 会话 |
 | minimax code | Windows 11 | `~/.minimax/v2/sqlite/runtime-state.sqlite` | 账本行的 `model` 是 `NULL` |
 
@@ -218,7 +218,6 @@ node serve.mjs --dir [NAS]:/hermes/opt_data/tokens-usage --port 80
 ## 现状与欠债
 
 - **一半的调用没有价。** 36,800/73,346 有显式价目（50%），剩下的按规则显示「未知」。dsh 两个源完全没有价格字段，hermes 只有一部分行带 cost；补价只能靠猜，所以我选择不猜。
-- **dsh desktop 和 dsh web 都报 187 个 artifact。** 字节数不同（86.6 MB vs 62.8 MB），但 session 数完全一样。到底是 WSL 侧同步了一份副本，还是真的各自 187 个会话，我没查 —— 记账上现在把两边都算进去了，这可能是一处重复。
 - **指标条上的「已计价」比例刚修过一次。** 原来是按会话列表累加 `costSource`，只统计了有模型归属的调用（22,378 条调用被漏掉），显示 65%；改成按每个 agent 的 totals 累加才与顶部「调用」口径一致（50%）。
 - **面板没有自动化测试。** 16 个探针都在采集侧，面板本身只有肉眼验收 —— 上面那条比例 bug 就是肉眼看不出来的那种。
 - **归档依赖 cc-switch 的轮转备份。** 如果哪天它把备份也清了，codex / opencode / grokbuild 的历史就只剩已经生成过的 snapshot。
