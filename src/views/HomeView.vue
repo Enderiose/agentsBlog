@@ -407,7 +407,7 @@ h1 {
   background: var(--note);
   color: var(--ink-2);
   transition: all 0.15s ease;
-  box-shadow: 1px 1px 0 rgba(84, 68, 32, 0.08);
+  box-shadow: 1px 1px 0 var(--sketch-shadow-2);
 }
 
 .tag-pill:hover {

@@ -171,7 +171,7 @@ h1 {
   border: 1.3px dashed var(--line-strong);
   background: rgb(var(--veil) / 0.9);
   color: var(--ink-2);
-  box-shadow: 1px 1px 0 rgba(84, 68, 32, 0.08);
+  box-shadow: 1px 1px 0 var(--sketch-shadow-2);
   transition: all 0.15s ease;
 }
 

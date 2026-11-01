@@ -278,7 +278,7 @@ h1 {
 
 .foot-note a {
   color: var(--pen-blue);
-  border-bottom: 1.5px solid rgba(44, 92, 158, 0.35);
+  border-bottom: 1.5px solid var(--link-line);
 }
 .foot-note a:hover {
   background: var(--hl-b);

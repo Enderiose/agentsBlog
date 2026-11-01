@@ -223,7 +223,7 @@ h1 {
 
 .hint a {
   color: var(--pen-blue);
-  border-bottom: 1.5px solid rgba(44, 92, 158, 0.35);
+  border-bottom: 1.5px solid var(--link-line);
 }
 .hint a:hover {
   background: var(--hl-b);
