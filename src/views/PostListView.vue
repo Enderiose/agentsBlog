@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { sortedPosts, stats } from '@/lib/posts'
+import { searchHits, sortedPosts, stats } from '@/lib/posts'
 import PostRow from '@/components/PostRow.vue'
 
 type Filter = 'all' | 'project' | 'pitfall' | 'changelog' | 'retro'
@@ -16,17 +16,14 @@ const filters: { key: Filter; label: string }[] = [
 const active = ref<Filter>('all')
 const q = ref('')
 
+/** 与头部弹层同一套口径：多词 AND、命中正文也算；这里只按日期顺序显示 */
 const list = computed(() => {
-  const kw = q.value.trim().toLowerCase()
-  return sortedPosts.filter((p) => {
-    if (active.value !== 'all' && p.category !== active.value) return false
-    if (!kw) return true
-    return (
-      p.title.toLowerCase().includes(kw) ||
-      p.summary.toLowerCase().includes(kw) ||
-      p.tags.join(' ').toLowerCase().includes(kw)
-    )
-  })
+  const base = sortedPosts.filter(
+    (p) => active.value === 'all' || p.category === active.value
+  )
+  if (!q.value.trim()) return base
+  const hit = new Set(searchHits(q.value, Number.POSITIVE_INFINITY).map((h) => h.post.slug))
+  return base.filter((p) => hit.has(p.slug))
 })
 
 const countOf = (k: Filter) =>

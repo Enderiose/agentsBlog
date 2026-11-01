@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, computed, watch, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { search } from '@/lib/posts'
-import type { Post } from '@/lib/posts'
+import { highlightParts, searchHits, searchTerms } from '@/lib/posts'
+import type { Hit } from '@/lib/posts'
 import {
   THEME_MODES,
   applyMode,
@@ -35,7 +35,31 @@ const open = ref(false)
 const q = ref('')
 const inputEl = ref<HTMLInputElement | null>(null)
 
-const results = computed<Post[]>(() => (q.value.trim().length > 0 ? search(q.value) : []))
+const results = computed<Hit[]>(() => searchHits(q.value, 12))
+const terms = computed(() => searchTerms(q.value))
+/** 键盘选中的那一条（-1 = 没选） */
+const sel = ref(-1)
+
+const EXAMPLES = ['坑', 'webview', '上下文']
+
+function pick(i: number) {
+  const hit = results.value[i]
+  if (hit) goto(hit.post.slug)
+}
+
+function moveSel(d: number) {
+  const n = results.value.length
+  if (!n) return
+  sel.value = sel.value < 0 ? (d > 0 ? 0 : n - 1) : (sel.value + d + n) % n
+}
+
+watch(q, () => {
+  sel.value = -1
+})
+
+watch(results, () => {
+  if (sel.value >= results.value.length) sel.value = -1
+})
 
 watch(open, async (v) => {
   if (v) {
@@ -52,7 +76,18 @@ function goto(slug: string) {
 }
 
 function onKeydown(e: KeyboardEvent) {
-  if (e.key === 'Escape') open.value = false
+  if (e.key === 'Escape') {
+    open.value = false
+  } else if (e.key === 'ArrowDown') {
+    e.preventDefault()
+    moveSel(1)
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault()
+    moveSel(-1)
+  } else if (e.key === 'Enter') {
+    e.preventDefault()
+    pick(sel.value < 0 ? 0 : sel.value)
+  }
 }
 
 /* ---- 配色：系统 / 浅 / 深 ---- */
@@ -133,41 +168,74 @@ window.addEventListener('keydown', (e) => {
       </div>
     </div>
 
-    <!-- 搜索面板 -->
-    <Transition name="fade">
-      <div v-if="open" class="search-layer" @click.self="open = false">
-        <div class="search-panel glass">
-          <div class="search-head">
-            <span class="prompt">$</span>
-            <input
-              ref="inputEl"
-              v-model="q"
-              type="text"
-              placeholder="grep -r …  输入关键词搜索"
-              @keydown="onKeydown"
-            />
-            <kbd>ESC</kbd>
-          </div>
+  </header>
 
-          <div v-if="q.trim() && results.length === 0" class="search-empty">
-            没有匹配的记录。
-          </div>
+      <!-- 搜索面板 -->
+      <Transition name="fade">
+        <div v-if="open" class="search-layer" @click.self="open = false">
+          <div class="search-panel glass">
+            <div class="search-head">
+              <span class="prompt">$</span>
+              <input
+                ref="inputEl"
+                v-model="q"
+                type="text"
+                placeholder="grep -r …  输入关键词搜索"
+                @keydown="onKeydown"
+              />
+              <kbd>ESC</kbd>
+            </div>
 
-          <ul v-else-if="results.length" class="search-results">
-            <li v-for="p in results" :key="p.slug" @click="goto(p.slug)">
-              <span :class="['cat', `cat-${p.category}`]">{{ p.categoryLabel }}</span>
-              <span class="t">{{ p.title }}</span>
-              <span class="d">{{ p.date }}</span>
-            </li>
-          </ul>
+            <div v-if="q.trim()" class="search-meta">
+              <span>共 {{ results.length }} 条</span>
+              <span class="keys"><kbd>↑</kbd><kbd>↓</kbd> 选 · <kbd>Enter</kbd> 打开</span>
+            </div>
 
-          <div v-else class="search-hint">
-            搜索标题、摘要、标签或正文。按 <kbd>Ctrl</kbd>+<kbd>K</kbd> 随时唤起。
+            <div v-if="q.trim() && results.length === 0" class="search-empty">
+              没有匹配的记录。
+            </div>
+
+            <ul v-else-if="results.length" class="search-results">
+              <li
+                v-for="(h, i) in results"
+                :key="h.post.slug"
+                :class="{ sel: i === sel }"
+                :aria-selected="i === sel"
+                @click="pick(i)"
+                @mouseenter="sel = i"
+              >
+                <div class="row1">
+                  <span :class="['cat', `cat-${h.post.category}`]">{{ h.post.categoryLabel }}</span>
+                  <span class="t">
+                    <template v-for="(part, k) in highlightParts(h.post.title, terms)" :key="k">
+                      <mark v-if="part.hit">{{ part.t }}</mark>
+                      <template v-else>{{ part.t }}</template>
+                    </template>
+                  </span>
+                  <span class="d">{{ h.post.date }}</span>
+                </div>
+                <p v-if="h.snippet" class="snip">
+                  <template v-for="(part, k) in highlightParts(h.snippet, terms)" :key="k">
+                    <mark v-if="part.hit">{{ part.t }}</mark>
+                    <template v-else>{{ part.t }}</template>
+                  </template>
+                </p>
+              </li>
+            </ul>
+
+            <div v-else class="search-hint">
+              <p>多词默认是「都要命中」；标题、标签、摘要、正文全都会搜。</p>
+              <p class="egs">
+                试试
+                <button v-for="w in EXAMPLES" :key="w" type="button" class="eg" @click="q = w">
+                  {{ w }}
+                </button>
+              </p>
+              <p class="hint-kbd">按 <kbd>Ctrl</kbd>+<kbd>K</kbd> 随时唤起。</p>
+            </div>
           </div>
         </div>
-      </div>
-    </Transition>
-  </header>
+      </Transition>
 </template>
 
 <style scoped>
@@ -376,9 +444,6 @@ kbd {
 }
 
 .search-results li {
-  display: flex;
-  align-items: center;
-  gap: 12px;
   padding: 9px 12px;
   border-radius: 2px;
   cursor: pointer;
@@ -388,8 +453,14 @@ kbd {
 .search-results li:last-child {
   border-bottom: 0;
 }
-.search-results li:hover {
-  background: linear-gradient(transparent 12%, var(--hl-y) 12% 94%, transparent 94%);
+/* 选中态（鼠标悬停与键盘共用）：荧光笔横着一道 */
+.search-results li.sel {
+  background: linear-gradient(transparent 10%, var(--hl-y) 10% 96%, transparent 96%);
+}
+.search-results .row1 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 .search-results .t {
   flex: 1;
@@ -399,10 +470,74 @@ kbd {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.search-results mark {
+  background: var(--hl-y);
+  color: var(--ink);
+  padding: 0 1px;
+  border-radius: 1px;
+}
+.search-results .snip {
+  margin: 3px 0 0;
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--ink-3);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.search-results .snip mark {
+  background: var(--hl-b);
+  color: var(--ink-2);
+}
 .search-results .d {
   font-size: 12.5px;
   color: var(--ink-4);
   font-family: var(--mono);
+}
+
+.search-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 20px;
+  font-size: 12.5px;
+  color: var(--ink-4);
+  border-bottom: 1px dashed var(--rule-dash);
+}
+.search-meta .keys {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.search-hint .egs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.search-hint .eg {
+  font-family: var(--hand);
+  font-size: 14px;
+  padding: 2px 10px;
+  border: 1.3px dashed var(--stroke-2);
+  border-radius: var(--radius-pill);
+  background: var(--paper-2);
+  color: var(--ink-2);
+  cursor: pointer;
+}
+.search-hint .eg:hover {
+  border-style: solid;
+  color: var(--ink);
+  background: var(--hl-y);
+}
+.search-hint .hint-kbd {
+  margin-top: 10px;
+  font-size: 12.5px;
+  color: var(--ink-4);
 }
 
 .search-empty,
