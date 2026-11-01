@@ -14,7 +14,7 @@ repo: https://github.com/Enderiose/hermes-app
 
 起因很小：我白天在电脑上跟 Hermes（我自建的 agent）干活，晚上人挪到沙发或床上，就只剩一台手机。
 
-Hermes 的 Web UI 在手机浏览器里是能打开的，但用起来难受：工具调用一条一行、一屏全是 `terminal · read_file`；消息里的本地文件链接点不开；想写一段 Markdown，回车就发出去了。这些都是"在手机上"才会暴露的问题，所以决定做一个真正的客户端。
+Hermes 的 Web UI 在手机浏览器里能打开，但用起来难受：工具调用一条一行、一屏全是 `terminal · read_file`；消息里的本地文件链接点不开；写 Markdown 回车就发出去了。这些都是"在手机上"才会暴露的问题，所以决定做一个真正的客户端。
 
 问题是我在一台 NAS 容器里干活，没有 Android Studio，也没有 Gradle。于是就有了这个项目：**一个 WebView 壳，加一条手搓的构建链**。
 
@@ -39,8 +39,8 @@ Hermes 移动版（应用显示名 `HermesApp`，包名 `com.enderiose.hermes`�
 
 两个数字需要解释，不然就是误导：
 
-- **提交数不等于开发量。** 公开仓库的历史被塌缩过两次：2026-10-05 把历史整体压成一个根提交，2026-10-12 又删库重建了一回（原因见「现状与欠债」）。塌缩后只剩 5 个提交（一个根提交 + v0.22 → v0.25），10 月 18 日的 v0.26、10 月 24 日一天里的 5 个（alpha.2 → 1.0.1），再加上 10 月底到 11 月初的 2 个（v1.0.2 + 测试基建），凑成现在的 13 个。真正的版本序列记在 `docs/CONTEXT.md` 里，那是本机文件、不进仓库。
-- **2671 行 Python 不是业务代码**，全部是 Playwright 验证脚本——用真实服务端、真实 run 去驱动真实页面。这个比例（前端 5577 行 : 验证 2671 行）是刻意的，理由在坑三、坑五和最后一节。
+- **提交数不等于开发量。** 历史被塌缩过两次：2026-10-05 把历史压成一个根提交，2026-10-12 又删库重建了一回（原因见「现状与欠债」）。塌缩后只剩 5 个（根提交 + v0.22 → v0.25），加上 10 月 18 日的 v0.26、10 月 24 日一天里的 5 个（alpha.2 → 1.0.1）、10 月底到 11 月初的 2 个（v1.0.2 + 测试基建），凑成 13 个。真正的版本序列在本机的 `docs/CONTEXT.md` 里，不进仓库。
+- **2671 行 Python 不是业务代码**，全部是 Playwright 验证脚本——用真实服务端、真实 run 驱动真实页面。这个比例（5577 : 2671）是刻意的，理由在坑三、坑五和最后一节。
 
 ## 架构：为什么没有 Gradle
 
@@ -80,8 +80,8 @@ PLAT="$SDK/platforms/android-34/android.jar"
 
 这条约束连锁出了另外三个决定：
 
-1. 前端三件套（`index.html` / `app.css` / `app.js`）由 `build.sh` 内联成一个 `inline.html` 打进 APK。**图标也只能以 data URI 内联**——页面 base URL 指向服务器，相对路径的图片会 404。
-2. **`socket.io` 客户端不内联**，直接引服务端的 `/socket.io/socket.io.js`。改这一条的收益是可量化的：`inline.html` 136KB → 105KB，APK 119KB → 115KB，而且版本永远和服务端一致，不会出现"客户端内置的 `socket.io` 比服务端旧"。
+1. 前端三件套由 `build.sh` 内联成一个 `inline.html` 打进 APK。**图标也只能以 data URI 内联**——页面 base URL 指向服务器，相对路径的图片会 404。
+2. **`socket.io` 客户端不内联**，直接引服务端的 `/socket.io/socket.io.js`。收益可量化：`inline.html` 136KB → 105KB，APK 119KB → 115KB，而且版本永远和服务端一致。
 3. 与服务器**同源**意味着可以直接复用服务端的文件下载接口（`/api/studio/files/download`，token 走 query——`<img>` 的 GET 不带 Authorization 头）——消息里的本地路径链接就是这么打开的。
 
 ### 版本与地址只有一个真源
@@ -102,28 +102,22 @@ PLAT="$SDK/platforms/android-34/android.jar"
 GET /api/studio/sessions/context-length?profile=enderiose&model=...&provider=...
 ```
 
-我当时用的是 `state.chosenModel`——**界面上"待选"的模型，未必是会话正在用的那个**。实测三种查法：
+我当时用的是 `state.chosenModel`——**界面上"待选"的模型，未必是会话正在用的那个**。实测：
 
 ```
-?model=cn:deepseek-v4.1-flash&provider=workbuddy   → 256000   ← 我一直在用这个
-?model=deepseek-flash&provider=deepseek（会话真实） → 1000000  ✅
-不传参数（服务端按会话自己解析）                     → 1000000  ✅
+不传参数（服务端按会话自己解析）                  → 1000000   ✅ 最稳
+provider=custom:workbuddy（带前缀）               → 1048576   ✅
+provider=workbuddy（缺 custom:，我一直在用这个）  → 256000    ← 内置默认，错的
+只传 model 不传 provider                          → 256000
 ```
 
-256000 不是这批模型的真实上限，它是 **Hermes 内置的默认值**。而自定义 provider 的键名必须带 `custom:` 前缀：
-
-```
-不传参数                            → 1000000   ✅ 最稳
-provider=workbuddy（缺 custom:）    → 256000    ← 内置默认，错的
-provider=custom:workbuddy（带前缀） → 1048576   ✅
-只传 model 不传 provider            → 256000
-```
+256000 不是这批模型的真实上限，它是 **Hermes 内置的默认值**——而自定义 provider 的键名必须带 `custom:` 前缀。
 
 **这个接口查不到就静默回退默认值，不报错。** 我传了个匹配不上的键，它安安静静地给了我 256000，我拿着这个数算了很久的百分比，还据此判断"上下文要满了"——按 1M 算，当时其实只有 ~26%。
 
 **修法**：查询只传 `profile`，model/provider 一律不传，让服务端按会话自己解析。同时把 `workbuddy` 裸写法补进服务端的 `model_context` 覆盖表（官方接口是 `PUT /api/hermes/model-context/{provider}/{model}`，`custom:X` 和裸 `X` **两种写法各要写一行**，否则下次又退到 256000）。
 
-**教训**：静默回退比报错危险一个数量级。报错会让我当场去查；回退只会给我一个看起来正常的数字。后来我给自己定了条规矩：**凡是"查不到就用默认值"的接口，必须把四组输入（不传 / 只传 model / 裸 provider / 带前缀 provider）都实测一遍**，否则你不知道自己在用哪条分支。顺带纠正一个我之前的错误认知：服务端**没有** remaining 字段，web 端也是前端自己算 `limit - used`——所以"余量准不准"完全取决于"上限对不对"。
+**教训**：静默回退比报错危险一个数量级——报错会让我当场去查，回退只会给我一个看起来正常的数字。规矩：**凡是"查不到就用默认值"的接口，必须把四组输入都实测一遍**。顺带纠正一个错误认知：服务端**没有** remaining 字段，余量是前端自己算 `limit - used`，所以"余量准不准"完全取决于"上限对不对"。
 
 ### 坑二：企微历史里的工具调用整合不了
 
@@ -142,12 +136,11 @@ Counter({'None': 62})     # 62 条消息，run_marker 全空
 ```js
 /**
  * 给没有 run_marker 的历史工具行补一个「合成轮次」键。
- * 以**用户消息**为界划轮次——服务端的一次 run 就是一条用户消息引发的整段处理，
+ * 以**用户消息**为界划轮次——服务端一次 run 就是一条用户消息引发的整段处理，
  * 所以合成键与 studio 会话的 run_marker 语义等价。
  */
 function assignSynthRuns(rows) {
-  let seq = 0;
-  let cur = '';
+  let seq = 0, cur = '';
   for (const m of rows) {
     if (m.role === 'user') { seq += 1; cur = 'hist' + seq; }
     else if (!cur) cur = 'hist0';   // 窗口开头（用户消息之前）的工具行
@@ -156,26 +149,23 @@ function assignSynthRuns(rows) {
 }
 ```
 
-两个细节是踩出来的：
+两个细节是踩出来的：**不要按"工具行连续段"切分**（`assistant(tool_calls)` 每轮只有一条，按连续段切会把一整轮切碎）；**顺序要紧**——`normalizeHistory()` 必须是 `map(normMsg)` → `assignSynthRuns` → `mergeToolAnnouncements`，合成键要在合并公告行之前打上，否则合并后的行没键可用。
 
-- **不要按"工具行连续段"切分**。`assistant(tool_calls)` 每轮只有一条，按连续段切会把一整轮切碎。
-- **顺序要紧**：`normalizeHistory()` 必须是 `map(normMsg)` → `assignSynthRuns` → `mergeToolAnnouncements`。合成键要在"合并掉公告行"之前打上，否则合并后的行没有键可用。
+实测：62 条消息（34 结果行 + 25 公告行）→ 1 组「34 次工具调用」、0 散条；另一个 265 条的会话 → 5 组，合计 143，正好等于服务端的结果行数。
 
-实测：62 条消息（34 结果行 + 25 公告行）→ 1 组「34 次工具调用」、0 散条；另一个 265 条的会话 → 5 组（64/14/13/12/40），合计 143，正好等于服务端的结果行数。
-
-**教训**：数据里没有你要的那个键时，只有两条路——补它，或者造一个语义等价的。造的时候必须能说清"它和服务端那个键为什么等价"，否则就是自欺欺人。这里的等价关系是"一次 run = 一条用户消息引发的整段处理"，所以我以用户消息为界。
+**教训**：数据里没有你要的那个键时，只有两条路——补它，或者造一个语义等价的。造的时候必须能说清"它为什么等价"，否则就是自欺欺人。
 
 ### 坑三：实时工具是单条，切走再切回才整合
 
 **现象**：会话正在跑的时候，工具调用是每条一行；切到别的会话再切回来，历史一重拉，它们突然整合好了。这个"切一下就好"的现象持续了好几个版本。
 
-**原因**：实时事件和历史消息用的**不是同一个 run 键**。socket 的 `tool.started/completed` payload 里只有 `run_id`（bridge 的 run id），而历史消息里的 `run_marker` 是服务端另外生成的 `cli_run_<ts>_<rand>`。我建工具行时没带任何 run 标识，`groupToolsByRun()` 无从归组。Web 端之所以没这个问题：它的 `readRunMarker` 会回落到 `run_id`。
+**原因**：实时事件和历史消息用的**不是同一个 run 键**。socket 的 `tool.started/completed` payload 里只有 `run_id`，而历史消息里的 `run_marker` 是服务端另外生成的 `cli_run_<ts>_<rand>`。我建工具行时没带任何 run 标识，`groupToolsByRun()` 无从归组。Web 端之所以没这个问题：它的 `readRunMarker` 会回落到 `run_id`。
 
-**修法**：加两个状态——`state.activeRunId`（实时事件的 `run_id`）和 `state.lastHistoryRun`（历史里最新的 `run_marker`）。中途打开会话时，用历史的 `run_marker` 顶上 `activeRunId`，增量条目就并进已在屏的那一组，而不是为同一轮另起一组。
+**修法**：加两个状态——`state.activeRunId`（实时事件的 `run_id`）和 `state.lastHistoryRun`（历史里最新的 `run_marker`）。中途打开会话时，用历史的 `run_marker` 顶上 `activeRunId`，增量条目就并进已在屏的那一组。
 
-顺带修掉一个**计数翻倍**：历史里一次调用存两行（公告行 + 结果行），`normMsg` 会把两行都转成 tool 行，重开会话后同一轮读成 `2N`——实测 live 3 条、历史 6 条。加了 `mergeToolAnnouncements()`：公告行有同 `tool_call_id` 且同 run 的结果行时丢弃。
+顺带修掉一个**计数翻倍**：历史里一次调用存两行（公告行 + 结果行），`normMsg` 会把两行都转成 tool 行，重开会话后同一轮读成 `2N`——实测 live 3 条、历史 6 条。`mergeToolAnnouncements()` 收掉：公告行有同 `tool_call_id` 且同 run 的结果行时丢弃。
 
-**教训**：同一个概念在两个通道里有不同的名字（`run_id` vs `run_marker`），这类不一致不会报错，只会让功能"时好时坏"。遇到"重开一下就好"的 bug，先怀疑"两条数据路径用了不同的键"。
+**教训**：同一个概念在两个通道里有不同的名字，这类不一致不会报错，只会让功能"时好时坏"。遇到"重开一下就好"的 bug，先怀疑"两条数据路径用了不同的键"。
 
 ### 坑四：点"插队"变成了"另起一次运行"
 
@@ -217,18 +207,14 @@ on('run.peer_user_message', (ev) => {
 
 ### 坑六：企微会话的上下文条恒为 0
 
-**现象**：App 的「🐧 企微」标签下打开任何一个会话，顶部都写着 `上下文 0 / 1.0M · 余 1.0M (0%)`。上限是对的（1.0M），用量永远是 0。
+**现象**：App 的「🐧 企微」标签下打开任何一个会话，顶部都写着 `上下文 0 / 1.0M · 余 1.0M (0%)`。上限是对的，用量永远是 0。
 
 **原因**：企微会话是 **hermes-history 会话**，和 Studio 自建会话不是一套数据，而用量有两条路，**两条路都拿不到数**：
 
-1. `openSession()` 对这类会话**不发 socket `resume`**（服务端没有它的 run 状态），所以 `contextTokens` 永远是换会话时的清零值；
-2. 退路 `GET /api/studio/sessions/:id/usage` 只统计 **Studio 自己跑的 run**（`session_usage` 表），企微会话在里面没有行——实测该接口对一个 700 条消息的企微会话返回 `{"input_tokens":0,"output_tokens":0}`。
+1. `openSession()` 对这类会话**不发 socket `resume`**（服务端没有它的 run 状态），`contextTokens` 永远是换会话时的清零值；
+2. 退路 `GET /api/studio/sessions/:id/usage` 只统计 **Studio 自己跑的 run**（`session_usage` 表），企微会话在里面没有行——实测对一个 700 条消息的企微会话返回 `{"input_tokens":0,"output_tokens":0}`。
 
-**修法**：加一条针对 hermes 会话的退路，数据来源是已经在发的那个请求（不额外发请求）：`loadMessages()` 拉 `/api/studio/sessions/hermes/:id` 时顺手把 `input_tokens` / `output_tokens` 存下来，用量链变成
-
-```
-contextTokens（socket） → hermesUsage（hermes 会话） → REST /usage（studio 会话）
-```
+**修法**：加一条针对 hermes 会话的退路，数据来源是已经在发的那个请求（不额外发请求）：`loadMessages()` 拉 `/api/studio/sessions/hermes/:id` 时顺手把 `input_tokens` / `output_tokens` 存下来，用量链变成 `contextTokens（socket）→ hermesUsage（hermes 会话）→ REST /usage（studio 会话）`。
 
 （这条口径后来又改了一次——累计值看着像一直在爆上下文，见后面「给一个数字标上 ≈」那节。）
 
@@ -240,37 +226,22 @@ contextTokens（socket） → hermesUsage（hermes 会话） → REST /usage（s
 | 企微会话 B | 上下文 0 / 1.0M (0%) | 上下文 679.8k / 1.0M (65%) |
 | 企微会话 C | 上下文 0 / 1.0M (0%) | 上下文 485.9k / 1.0M (46%) |
 
-**教训**：两条退路如果建立在**同一个不成立的假设**上，那它们不是两条退路，是一条。这个 bug 存在了很久没人发现，因为"0"看起来像个正常值——它不像报错那样刺眼。修完之后我顺手加了一个回归脚本 `tests/wecom_ctx.py`：打开企微标签下前 3 个会话，断言条上的数字 == `/sessions/hermes/:id` 的 `in+out`。**恒为 0 的值，要有断言盯着。**
+**教训**：两条退路如果建立在**同一个不成立的假设**上，那它们不是两条退路，是一条。这个 bug 存在很久没人发现，因为"0"看起来像个正常值——它不像报错那样刺眼。修完顺手加了回归脚本 `tests/wecom_ctx.py`：打开企微标签下前 3 个会话，断言条上的数字 == `/sessions/hermes/:id` 的 `in+out`。**恒为 0 的值，要有断言盯着。**
 
 ### 坑七：会话跑完了，列表还挂着「● 运行中」
 
 **现象**：某个会话跑完之后，会话列表里那条仍然显示「● 运行中」。**点进那个会话再退出来**，标记才消失。（用户原话是"运行状态不同步更新"。）
 
-**原因**：列表的运行标记只有一个数据来源——**当前会话的 run 事件**（`run.started` / `run.completed` / `run.failed` / `abort.completed`）。而这些事件只发给 `session:<id>` 房间；只有房间为空时，服务端才把它直发给发起这次 run 的那个 socket：
-
-```js
-this.nsp.to(`session:${sessionId}`).emit(event, tagged)
-if (!this.nsp.adapter.rooms.get(`session:${sessionId}`)?.size && socket.connected) {
-  socket.emit(event, tagged)      // 房间里没人 → 只回给发起者
-}
-```
-
-于是两种情况都会漏掉完成事件：
-
-1. **App 切后台 / 断线重连后已经不在那个房间**（Android WebView 后台会挂起 JS，socket 常被系统断掉）→ `run.completed` 永久错过；
-2. **别的端发起的 run**（网页 / 企微 / 另一台设备）——App 从来就收不到。
-
-而唯一能清掉这个标记的路径是 `resumed`，`resume` 只对**打开的那个会话**发。这就是"点进会话再切出才消失"的机械原因：**我给这个状态只留了一条补救路径，而那条路径要求用户先打开那个会话。**
+**原因**：列表的运行标记只有一个数据来源——**当前会话的 run 事件**，而这些事件只发给 `session:<id>` 房间（房间里有人就只广播，房间里没人就只直发给发起这次 run 的那个 socket）。于是两种情况都会漏掉完成事件：**App 切后台 / 断线重连后已经不在那个房间**（WebView 后台会挂起 JS，socket 常被系统断掉），`run.completed` 永久错过；**别的端发起的 run**（网页 / 企微 / 另一台设备），App 从来就收不到。而唯一能清掉标记的路径是 `resumed`，`resume` 只对**打开的那个会话**发。这就是"点进会话再切出才消失"的机械原因：**我给这个状态只留了一条补救路径，而那条路径要求用户先打开那个会话。**
 
 **修法**：服务端其实另发了两条**与房间无关**的事件，客户端一直没接：
 
-- `session.activity.snapshot`：每次连上（含重连）发一次，权威列出该 profile 正在跑的会话；
-- `session.activity`：run 生命周期广播到 `pending-interactions:<profile>` 房间——客户端连上时服务端就把它自动加进这个房间，不需要订阅。
+- `session.activity.snapshot`：每次连上（含重连）发一次，权威列出该 profile 正在跑的会话——不在里面的就不是在跑；
+- `session.activity`：run 生命周期广播到 `pending-interactions:<profile>` 房间，客户端连上时服务端自动把它加进去，不需要订阅。
 
 ```js
 on('session.activity.snapshot', (ev) => {
   const running = new Set((ev.sessions || []).map(s => String(s && s.session_id || '')).filter(Boolean));
-  // 快照是「此刻在跑什么」的权威答案：不在里面的就不是在跑
   for (const sid of Object.keys(state.working)) if (!running.has(sid)) delete state.working[sid];
   for (const sid of running) state.working[sid] = true;
   syncStopButton(); renderVisibleLists();
@@ -281,18 +252,11 @@ on('session.activity', (ev) => {
 });
 ```
 
-顺带把渲染收口成一个函数：`renderVisibleLists()` 按"哪个列表在屏上"刷——企微列表也显示运行标记，以前只在 `view === 'sessions'` 时刷。
+顺带把渲染收口成 `renderVisibleLists()`：按"哪个列表在屏上"刷，企微列表也开始显示运行标记。
 
-**验证**：新增 `tests/session_activity_sync.py`，用**两个浏览器上下文**——A 只看列表（全程 `state.cur === null`，从不点进那个会话），B 负责发起 run，模拟"别的端发起的 run"。四条断言里有两条在修复前就是失败的：
+**验证**：`tests/session_activity_sync.py` 用**两个浏览器上下文**——A 只看列表（全程 `state.cur === null`，从不点进那个会话），B 负责发起 run。四条断言里两条在修复前就是红的：「A 端列表出现运行中」和「重连后快照清掉陈旧标记」，而且断言里写死了"不许点进会话"。
 
-| 断言 | 修复前 | 修复后 |
-|---|---|---|
-| A 端列表出现「运行中」（没点进会话） | ❌ | ✅ |
-| A 端跑完自动消失（没点进会话） | ✅（压根没出现过，空过） | ✅ |
-| A 端不是靠 `run.completed` 直达（证明走的是活动通道） | ✅ | ✅ |
-| 重连后快照清掉陈旧「运行中」 | ❌ | ✅ |
-
-**教训**：这条和坑三是同一族的——**我假设了"事件一定会到"**。但这次还多了一层，值得单独记：**我给一个状态只留了一条补救路径，而那条路径对用户很贵**（"点进会话"）。于是它的表现形式变成"点一下就好"，看起来像小毛病，实际是"只有打开的那个会话能被修好"。所以现在多了一条自问：**当用户不做那个动作的时候，谁负责对齐这个状态？** 答案是"连上时的快照"——而且断言里写死了"不许点进会话"。
+**教训**：这条和坑三是同一族的——**我假设了"事件一定会到"**。但多了更贵的一层：**我给一个状态只留了一条补救路径，而那条路径要求用户先动一下**。于是它伪装成"点一下就好"，实际是"只有打开的那个会话能被修好"。所以现在多一条自问：**用户什么都不做的时候，谁负责把它对齐？**
 
 ### 工具链上的几个小坑
 
@@ -307,7 +271,7 @@ on('session.activity', (ev) => {
 
 ## 十月末：从 v0.26 到 1.0.1
 
-10 月 24 日一天里提了五个提交，版本从 alpha.2 一路推到 1.0.1。这段时间做的不是「新功能」，而是把一件事做全：
+10 月 24 日一天里提了五个提交，版本从 alpha.2 推到 1.0.1。这段时间做的不是「新功能」，而是把一件事做全：
 
 **每次都给一个 WebView 给不了的入口。**
 
@@ -321,7 +285,7 @@ on('session.activity', (ev) => {
 | alpha.6 | 单条消息的复制 / 引用 / 朗读 / Fork |
 | 1.0.1 | 版本收敛：alpha 系列收口 |
 
-每一项都能对到服务端已经做好的能力上 —— 技能、MCP、定时任务、工作流，服务端早就有接口，缺的只是手机上一个能点的入口。反过来，任何一次「顺手自己实现一套」的尝试都变成了 bug。
+每一项都能对到服务端已经做好的能力上——技能、MCP、定时任务、工作流，服务端早就有接口，缺的只是手机上一个能点的入口。反过来，任何一次「顺手自己实现一套」的尝试都变成了 bug。
 
 ### 两个与功能无关的坑
 
@@ -332,127 +296,65 @@ on('session.activity', (ev) => {
 
 ## 十一月初：给一个数字标上「≈」（v1.0.2）
 
-坑六修完，企微会话的上下文条终于不是 0 了。用了一周才发现：它只是"不为 0"，并不等于"对"。
+坑六修完，企微会话的上下文条终于不是 0 了。用了一周才发现：它只是"不为 0"，并不等于"对"。数字有了出处，出处却是错的那种。
 
 **现象**：打开一个聊了很久的企微会话，顶部写着 `上下文 1.63M / 1.0M (163%)`。我真的以为它在爆上下文，还据此跟用户说过"这个会话该清了"。
 
-**原因**：那个退路取的是 `GET /api/studio/sessions/hermes/:id` 的 `input_tokens + output_tokens`。这两个字段是**每次 API 调用的 prompt 累加**——同一段历史在一轮对话里被重复计费 N 次，聊得越久越离谱。实测：某会话累计 1.63M，而 provider 最后一次实际收到的 prompt 只有 **126.9k**。
+**原因**：那个退路取的是 `input_tokens + output_tokens`，而这两个字段是**每次 API 调用的 prompt 累加**——同一段历史在一轮对话里被重复计费 N 次，聊得越久越离谱。实测某会话累计 1.63M，而 provider 最后一次实际收到的 prompt 只有 **126.9k**。
 
-**真值在哪**：Hermes 把 provider 回报的用量落盘在 `state.db` 的 `sessions.model_config._usage_anchor.prompt_tokens`。问题是 Studio 的 `/sessions/hermes/:id` **不透出这个字段**，客户端拿不到。要拿真值得改 `/app` 里 Studio 自己的代码再重启容器——超出这个 App 的范围。
+**真值在哪**：Hermes 把 provider 回报的用量落盘在 `state.db` 的 `sessions.model_config._usage_anchor.prompt_tokens`。但 Studio 的 `/sessions/hermes/:id` **不透出这个字段**，要拿真值得改 `/app` 里的代码再重启容器——超出这个 App 的范围。
 
-**修法**：客户端按**消息字数估算**当前上下文，并且明确标成估算。
+**修法**：客户端按**消息字数估算**当前上下文，并且明确标成估算。口径必须与拟合样本一致：只算 `content` 与 `tool_calls`，不含 `reasoning_content`。
 
 ```js
-const CTX_BASE = 9886;          // 系统提示 + 工具 schema 的固定底噪
-const CTX_PER_CJK = 0.9049;     // 中文 token/字
-const CTX_PER_OTHER = 0.3298;   // 其它 token/字
-
-function estimateContextTokens(msgs) {
-  let cjk = 0, other = 0;
-  for (const m of (msgs || [])) {
-    // 口径必须与拟合样本一致：只算 content 与 tool_calls，不含 reasoning_content
-    for (const raw of [m.content, m.tool_calls]) {
-      if (!raw) continue;
-      const s = typeof raw === 'string' ? raw : JSON.stringify(raw);
-      const hit = s.match(CTX_CJK_RE);
-      const c = hit ? hit.length : 0;
-      cjk += c; other += s.length - c;
-    }
-  }
-  if (!cjk && !other) return 0;
-  return Math.round(CTX_BASE + cjk * CTX_PER_CJK + other * CTX_PER_OTHER);
-}
+const CTX_BASE = 9886;        // 系统提示 + 工具 schema 的固定底噪
+const CTX_PER_CJK = 0.9049;   // 中文 token/字
+const CTX_PER_OTHER = 0.3298; // 其它 token/字
+return Math.round(CTX_BASE + cjk * CTX_PER_CJK + other * CTX_PER_OTHER);
 ```
 
-三个系数不是拍的：拿 **91 个真实会话**的 anchor 做最小二乘拟合，中位误差 ~10%。界面上显示 `≈143.2k`，`title` 里写明"估算值：客户端按消息字数折算（服务端未透出真实 prompt 用量）"。
+三个系数不是拍的：拿 **91 个真实会话**的 anchor 做最小二乘拟合，中位误差 ~10%。界面显示 `≈143.2k`，`title` 写明"估算值：客户端按消息字数折算（服务端未透出真实 prompt 用量）"。
 
-**断言也跟着换了口径**（`tests/wecom_ctx.py`），每个会话三条：
+**断言也跟着换了口径**（`tests/wecom_ctx.py`），每个会话三条：文本里必须带 `≈`；与 anchor 偏差 ≤35%；必须**明显小于**累计值（至少小 2 倍）。第三条专门防"哪天又改回旧口径"——回退之后前两条可能照样通过。
 
-1. 文本里必须带 `≈`（标明这是估算）；
-2. 估算值与 anchor 偏差 ≤35%；
-3. 估算值必须**明显小于**累计值（至少小 2 倍）。
-
-第三条是专门防"哪天又改回旧口径"的——回退之后前两条可能照样通过，因为累计值和 prompt 值都"像"上下文。
-
-**教训**：**"能算出来的数"和"有意义的数"是两件事。** 上一版给出的数字有出处、有代码、能复现，唯独没有意义——它是计费口径，不是窗口占用。这类错误最坏的地方是它长得跟正确值一模一样：1.63M 和 126.9k 都是"有出处的数字"，只有把两者放一起比对才知道哪个是错的。所以现在凡是从推算得来的量，界面上一律带 `≈` 再加一句口径说明——不是客套，是为了让下一个人（包括三个月后的我）不会把它当实测值继续往上算。
+**教训**：**"能算出来的数"和"有意义的数"是两件事。** 上一版的数字有出处、有代码、能复现，唯独没有意义——它是计费口径，不是窗口占用。这类错误最坏的地方是它长得跟正确值一模一样。所以现在凡是从推算得来的量，界面上一律带 `≈` 再加一句口径，不是客套，是为了让三个月后的我不把它当实测值继续往上算。
 
 ## 测试基建：/dev/shm 只有 64M，还有一张假 PNG
 
 这两个不算功能 bug，但吃掉的时间比任何一个功能 bug 都多。
 
-### 每个脚本各写一遍的启动参数
+### 参数散在 23 个脚本里，图片是手抄的
 
-**现象**：跑全套 Playwright，页面动不动 `TargetClosedError: Page crashed`。诡异的是同一时刻 REST 请求全部正常——只有浏览器崩。
+**现象一**：跑全套 Playwright，页面动不动 `TargetClosedError: Page crashed`，而同一时刻 REST 全部正常——只有浏览器崩。原因是容器 `/dev/shm` 只有 64MB，Chromium 拿它当渲染缓冲，而 `inline.html` 是单文件、DOM 一百多 KB 的大页面。修法：抽 `scripts/_launch.py`，一套参数走遍 23 个脚本（`--no-sandbox --disable-dev-shm-usage --disable-gpu --single-process --disable-features=LocalNetworkAccessChecks`）。`--single-process` 是硬需求，但它在单进程下开多个 context 会卡死，所以截图脚本 `ui_shots.py` 改成每个场景单独 launch。原先这套参数每加一条就漏几个——"我明明改了啊"的经典来源。
 
-**原因**：容器里 `/dev/shm` 只有 64MB。Chromium 默认把共享内存当渲染缓冲，而 `inline.html` 是单文件、DOM 一百多 KB 的大页面，一渲染就压崩。
+**现象二**：`verify_image.py` 的图片上传用例一直红，`fetch` 返回 200，`<img>` 却 `onerror`。上传链路、data URI、CSP 查了一圈都不像有错。原因：那张图是我**手抄的一段 base64**，根本不是合法 PNG——**我在验证一个假失败，被验证的代码其实是对的**。修法：用 `zlib` + `struct` 现场拼一张 8×8 真 PNG（容器里没 Pillow），代码里留了一句"别再换回那段"。
 
-**修法**：抽出 `scripts/_launch.py`，一套参数走遍 23 个脚本：
-
-```python
-DEFAULT_ARGS = [
-    '--no-sandbox',              # 容器内非 root 命名空间受限
-    '--disable-dev-shm-usage',   # /dev/shm 64M，不关掉会把渲染进程压崩
-    '--disable-gpu',             # 无 GPU，软件渲染反而更稳
-    '--single-process',          # 不加它渲染这份大页面必崩（Page crashed）
-    '--disable-features=LocalNetworkAccessChecks',  # 页面以 127.0.0.1 为 origin
-]
-LAUNCH_ARGS = os.environ.get('CHROME_ARGS', '').split() or DEFAULT_ARGS
-```
-
-`--single-process` 是必须的，但它有个反作用：**单进程下开多个 context 会卡死**。所以 `scripts/ui_shots.py`（出包后"看一眼"的截图脚本）改成每个场景单独 launch 一个浏览器，宁可慢，也不赌。
-
-**教训**：这套参数原先散在二十多个脚本里，每加一条就漏几个——"我明明改了啊"的经典来源。抽成一个被 `import` 的文件，代价是一行 `sys.path.insert`，收益是下次改参数只改一处。
-
-### 一张自己手抄的假 PNG
-
-**现象**：`verify_image.py` 里图片上传用例一直红：`fetch` 返回 200，`<img>` 却 `onerror`。我先查上传链路，再查 data URI，又查 CSP，全都不像有错。
-
-**原因**：测试用的那张图是我**手抄的一段 base64**，它根本不是合法 PNG。Chrome 能下载、却解不出来，`<img>` 自然 `onerror`。也就是说，**我在验证一个假失败**，被验证的代码其实是对的。
-
-**修法**：用 `zlib` + `struct` 现场拼一张 8×8 的真 PNG（容器里没有 Pillow，不能依赖它）：
-
-```python
-def tiny_png(w=8, h=8):
-    def chunk(tag, data):
-        return (struct.pack('>I', len(data)) + tag + data
-                + struct.pack('>I', zlib.crc32(tag + data) & 0xffffffff))
-    raw = b''.join(b'\x00' + b'\xff\x00\x00' * w for _ in range(h))
-    return (b'\x89PNG\r\n\x1a\n'
-            + chunk(b'IHDR', struct.pack('>IIBBBBB', w, h, 8, 2, 0, 0, 0))
-            + chunk(b'IDAT', zlib.compress(raw))
-            + chunk(b'IEND', b''))
-```
-
-代码里留了一句注释警告：*旧版这里是一段手抄 base64，Chrome 解不出来（fetch 200 但 `<img>` onerror），曾误判成「图片显示坏了」——别再换回那段。*
-
-**教训**：**验证脚本的输入也要自证。** 一个稳定的假失败比没有测试更糟：它会训练你忽略红色，或者让你去改本来正确的代码。现在的规矩是——测试素材一律程序生成，而且生成后先断言"它自己能被解码"。
-
-顺带补了两个用例：`tests/attach_panel.py`（点 ＋ → 面板 → 选中 → 附件条出现，不触发真实 run）和 `tests/message_actions.py`（长按菜单的复制 / 引用 / 朗读 / Fork，直接调 `openMessageActions()`，绕开 Playwright 里不可靠的长按手势）。
+**教训**：一个稳定的假失败比没有测试更糟——它会训练你忽略红色，或者让你去改本来正确的代码。规矩改成：测试素材一律程序生成，生成后先断言"它自己能被解码"；启动参数一律抽成被 `import` 的文件。顺带补了 `tests/attach_panel.py`（＋ → 面板 → 附件条出现，不触发真实 run）和 `tests/message_actions.py`（直接调 `openMessageActions()`，绕开 Playwright 里不可靠的长按手势）。
 
 ---
 
 ## 现状与欠债
 
-- **上下文数字是“估算”，不是实测。** 企微/hermes-history 会话拿不到 socket 的 `contextTokens`，客户端按消息字数折算（91 个会话拟合：中文 0.905 token/字、其它 0.33、底噪 9.9k），界面带 `≈`，与 provider 真实 anchor 的中位偏差 ~10%，断言卡 ≤35%。真值在 `state.db` 的 `_usage_anchor.prompt_tokens`，但 Studio 的 `/sessions/hermes/:id` 不透出——要拿真值就得改服务端接口，这一版先忍住。
+- **上下文数字是“估算”，不是实测。** 企微/hermes-history 会话拿不到 socket 的 `contextTokens`，客户端按消息字数折算并在界面标 `≈`，与 provider 真实 anchor 的中位偏差 ~10%，断言卡 ≤35%。真值在 `state.db` 的 `_usage_anchor.prompt_tokens`，但接口不透出——要拿真值得改服务端，这一版先忍住。
 - **v2 待办还剩三件**：后台推送、离线缓存、企微回复写回。（会话改名 1.0 已落地）
-- **脱敏残留：这条债最后是"删库重建"还掉的。** 这个仓库是公开的，`docs/CONTEXT.md`（含机型、内网地址、本机路径）被 `.gitignore` 排除，历史也被 `filter-branch` 和 `--orphan` 塌缩过一轮。但 **force-push + `git gc` 并不能清掉 GitHub 上的旧对象**：塌缩之后实测 `GET /contents/CONTEXT.md?ref=<旧提交 SHA>` 仍然返回 200——删掉引用不等于删掉对象。最后是**把仓库整个删掉、同名重建**（2026-10-12）再重推：同一个旧 SHA 现在返回 404。代价是 tag 和 Release 一起没了（要发版得重新打），外加一次"仓库归零"——star、issue、外部链接全部断掉。推之前扫了一遍工作树与历史（`git grep` 全量提交 + `git fsck --unreachable`），确认 `.env`、`signing.jks`、`config.env`、`docs/CONTEXT.md`、`inline.html` 都没进库，仓库里只有 `*.example` 模板。
+- **脱敏残留：这条债最后是"删库重建"还掉的。** `docs/CONTEXT.md`（含机型、内网地址、本机路径）被 `.gitignore` 排除，历史也被 `filter-branch` 和 `--orphan` 塌缩过一轮；但 **force-push + `git gc` 并不能清掉 GitHub 上的旧对象**——塌缩之后 `GET /contents/CONTEXT.md?ref=<旧 SHA>` 仍返回 200，删掉引用不等于删掉对象。所以最后是**把仓库整个删掉、同名重建**（2026-10-12）再重推，同一个旧 SHA 现在 404；代价是 tag、Release、star、issue 全部归零。推之前用 `git grep` 全量提交 + `git fsck --unreachable` 扫过，确认 `.env`、`signing.jks`、`config.env`、`docs/CONTEXT.md`、`inline.html` 都没进库。
 - **没有 CI。** 23 个验证脚本都要真实服务端 + 真实 run + 一个 `.model-run-token`，只能在有服务的机器上跑。好处是测试很真实（很多 bug 只有真 run 才现形），代价是"忘了跑"就等于没有测试。
 - **只有一台 Android 真机自测过。** 没有多机型、没有多 Android 版本矩阵。
-- **签名密钥是硬约束。** 真实 `signing.jks` 不进仓库，仓库里只有一副新生成的测试密钥（alias `hermes`，口令 `android`）。用测试密钥签的包**无法覆盖安装**在真实密钥签的同包名应用上（`INSTALL_FAILED_UPDATE_INCOMPATIBLE`，只能先卸载）。另外包名从 `com.ekko.hermesm` 改成 `com.enderiose.hermes` 时我才真正体会到：**包名变了就是另一个应用**，签名没变也不构成升级关系，旧包只能手动卸载。
+- **签名密钥是硬约束。** 真实 `signing.jks` 不进仓库，仓库里只有一副新生成的测试密钥（alias `hermes`，口令 `android`）。用测试密钥签的包**无法覆盖安装**真实密钥签的同包名应用（`INSTALL_FAILED_UPDATE_INCOMPATIBLE`，只能先卸载）。包名从 `com.ekko.hermesm` 改成 `com.enderiose.hermes` 时我才真正体会到：**包名变了就是另一个应用**，旧包只能手动卸载。
 
 ## 回头看
 
 这个项目让我改掉的最大的一个习惯，是**先看别人怎么做**。
 
-坑四（插队变成新运行）、坑六（上下文恒为 0）和坑七（运行状态不消失）看着毫无关系，其实是同一件事：我都在**猜一个已经存在的约定**。前者我猜了 socket 事件名，中间那个我猜了"用量该从哪个接口拿"，最后一个我猜了"哪些事件会到我这里"。猜对的时候什么都不会发生（看起来一切正常），猜错的时候现象千奇百怪，而且都不像"猜错了"。
+坑四、坑六、坑七看着毫无关系，其实是同一件事：我都在**猜一个已经存在的约定**——猜 socket 事件名、猜"用量该从哪个接口拿"、猜"哪些事件会到我这里"。猜对的时候什么都不会发生，猜错的时候现象千奇百怪，而且都不像"猜错了"。
 
-第二个认识：**静默回退的数字比报错危险**。256000 那个坑里，接口没有报错、没有警告，只是安静地给了我一个默认值，我拿它算了很久的百分比，还据此对用户下了"上下文已满"的错误结论。十月底又栽了同一族的一次：累计口径给了我 1.63M，而真实 prompt 只有 126.9k，我对着那个数字说过好几回"该清了"。两次的共同点是——**数字有出处，但出处不对**。从那以后我对"有默认值的接口"会刻意测边界输入，对"推算出来的量"一律在界面上标 `≈`。
+第二个认识：**静默回退的数字比报错危险**。256000 和 1.63M 是同一族——"数字有出处，但出处不对"，而我拿着它们下过结论。从此我对"有默认值的接口"刻意测边界输入，对推算出来的量一律标 `≈`。
 
-第三个认识来自坑七，也是我自己以前没想清楚的一条：**如果一个状态只有一条"补救路径"，而且那条路径要用户付出动作，那这个 bug 就会伪装成小毛病。** "点进会话再退出就好了"——听起来像个刷新问题，实际上是"只有打开的那个会话能被修好，别的会话永远修不好"。所以判断一个状态设计好不好，我现在会问一句：**用户什么都不做的时候，谁负责把它对齐？** 如果答案是"没有人"，那就是个定时炸弹。
+第三个认识来自坑七：**一个状态如果只有一条补救路径，而那条路径要用户付出动作，这个 bug 就会伪装成小毛病。** 所以判断状态设计好不好，我会问：**用户什么都不做的时候，谁负责把它对齐？** 答案是"没有人"的时候，那就是定时炸弹。
 
-第四个，关于测试：这个项目的验证脚本比前端代码的一半还多，而且是刻意的。**看起来正常，是这个项目最贵的失败模式**——上下文 0、工具不整合、消息重复、运行状态不消失，全都不报错，全都要靠断言盯着。我后来给自己定了一条：修完一个"不报错的 bug"，必须先写出一个能复现它的断言，再改代码。
+第四个，关于测试：验证脚本比前端代码的一半还多，而且是刻意的。**看起来正常，是这个项目最贵的失败模式**——上下文 0、工具不整合、消息重复、运行状态不消失，全都不报错。规矩是：修完一个"不报错的 bug"，先写一个能复现它的断言，再改代码。
 
-最后一点，是关于"客户端"这件事本身的：我一开始以为我要写一个 App，后来发现我写的其实是**一层补丁**——补 WebView 做不到的那几件事，剩下的全部交给服务端已经做好的部分。所有我想"顺手重写一下"的地方，事后都变成了坑；所有我老实复用服务端协议和资源的地方（`socket.io` 外部引用、文件下载接口、字段命名），都省下了后面几轮返工。582 行 Java 加 5577 行前端里，真正属于我的原创部分其实很少——而它能用，恰恰是因为我忍住了。
+最后一点，关于"客户端"本身：我一开始以为在写 App，后来发现写的是**一层补丁**——补 WebView 做不到的那几件事，剩下的交给服务端。我想"顺手重写一下"的地方事后全变成坑；老实复用服务端协议的地方都省下了返工。582 行 Java 加 5577 行前端里，原创部分很少——而它能用，恰恰是因为我忍住了。
 
 ---
 
