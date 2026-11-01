@@ -1,8 +1,16 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { search } from '@/lib/posts'
 import type { Post } from '@/lib/posts'
+import {
+  THEME_MODES,
+  applyMode,
+  onSystemChange,
+  readMode,
+  saveMode,
+  type ThemeMode,
+} from '@/lib/theme'
 
 const route = useRoute()
 const router = useRouter()
@@ -47,6 +55,26 @@ function onKeydown(e: KeyboardEvent) {
   if (e.key === 'Escape') open.value = false
 }
 
+/* ---- 配色：系统 / 浅 / 深 ---- */
+const mode = ref<ThemeMode>(readMode())
+applyMode(mode.value)
+
+let offSystem: (() => void) | null = null
+function bindSystem() {
+  offSystem?.()
+  offSystem = mode.value === 'system' ? onSystemChange(() => applyMode('system')) : null
+}
+bindSystem()
+
+function setMode(next: ThemeMode) {
+  mode.value = next
+  saveMode(next)
+  applyMode(next)
+  bindSystem()
+}
+
+onUnmounted(() => offSystem?.())
+
 // Ctrl/Cmd + K 唤起搜索
 window.addEventListener('keydown', (e) => {
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
@@ -75,6 +103,20 @@ window.addEventListener('keydown', (e) => {
       </nav>
 
       <div class="actions">
+        <div class="theme-switch" role="radiogroup" aria-label="配色">
+          <button
+            v-for="m in THEME_MODES"
+            :key="m.mode"
+            type="button"
+            role="radio"
+            :aria-checked="mode === m.mode"
+            :class="['theme-btn', { on: mode === m.mode }]"
+            :title="m.title"
+            @click="setMode(m.mode)"
+          >
+            {{ m.label }}
+          </button>
+        </div>
         <button class="icon-btn" title="搜索 (Ctrl+K)" @click="open = !open">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
             <circle cx="11" cy="11" r="7" />
@@ -135,7 +177,7 @@ header {
   top: 0;
   z-index: 60;
   padding: 10px 0 0;
-  background: rgba(250, 247, 238, 0.93);
+  background: rgb(var(--paper-rgb) / 0.93);
   backdrop-filter: blur(6px) saturate(120%);
   -webkit-backdrop-filter: blur(6px) saturate(120%);
   border-bottom: 1.5px solid var(--stroke-2);
@@ -149,7 +191,7 @@ header::after {
   margin-top: 0;
   background: repeating-linear-gradient(
     90deg,
-    rgba(201, 191, 164, 0.55) 0 10px,
+    var(--line-strong-2) 0 10px,
     transparent 10px 20px
   );
   opacity: 0.5;
@@ -217,7 +259,7 @@ header::after {
 
 .nav-link:hover {
   color: var(--ink);
-  background: rgba(255, 253, 244, 0.85);
+  background: rgb(var(--veil) / 0.85);
   border-color: var(--stroke);
 }
 
@@ -247,7 +289,7 @@ header::after {
   color: var(--ink-2);
   cursor: pointer;
   transition: all 0.16s ease;
-  box-shadow: 1px 1px 0 rgba(46, 58, 72, 0.2);
+  box-shadow: 1px 1px 0 var(--ink-shadow-3);
 }
 .icon-btn:hover {
   color: var(--ink);
@@ -261,7 +303,7 @@ header::after {
   position: fixed;
   inset: 0;
   z-index: 80;
-  background: rgba(64, 56, 40, 0.42);
+  background: var(--scrim);
   backdrop-filter: blur(3px);
   display: flex;
   justify-content: center;
@@ -277,13 +319,13 @@ header::after {
   background: var(--note);
   border: 1.5px solid var(--stroke-2);
   border-radius: 3px;
-  box-shadow: 6px 8px 0 rgba(84, 68, 32, 0.14);
+  box-shadow: 6px 8px 0 var(--sketch-shadow-7);
 }
 
 .search-panel::before {
   width: 96px;
   height: 24px;
-  background: rgba(255, 236, 158, 0.8);
+  background: var(--tape-2);
   transform: translateX(-50%) rotate(-1.6deg);
 }
 
@@ -296,7 +338,7 @@ header::after {
   background: repeating-linear-gradient(
     0deg,
     transparent 0 31px,
-    rgba(140, 178, 210, 0.22) 31px 32px
+    var(--grid-c) 31px 32px
   );
 }
 .search-head .prompt {
@@ -341,7 +383,7 @@ kbd {
   border-radius: 2px;
   cursor: pointer;
   transition: background 0.14s ease;
-  border-bottom: 1px dashed rgba(207, 222, 234, 0.9);
+  border-bottom: 1px dashed var(--rule-dash);
 }
 .search-results li:last-child {
   border-bottom: 0;

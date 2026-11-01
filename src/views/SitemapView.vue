@@ -158,7 +158,7 @@ h1 {
   border: 1.4px solid var(--ink-3);
   background: var(--note);
   min-width: 190px;
-  box-shadow: 2px 2px 0 rgba(46, 58, 72, 0.12);
+  box-shadow: 2px 2px 0 var(--ink-shadow-4);
 }
 
 .search .p {
@@ -224,7 +224,7 @@ h1 {
 
 .pitem:hover {
   transform: translateY(-2px) rotate(-0.5deg);
-  box-shadow: 3px 5px 0 rgba(84, 68, 32, 0.12);
+  box-shadow: 3px 5px 0 var(--sketch-shadow-6);
 }
 
 .pitem .pl {
@@ -258,8 +258,8 @@ h1 {
   font-size: 14px;
   padding: 1px 11px;
   border-radius: 2px;
-  border: 1.3px dashed rgba(150, 138, 108, 0.75);
-  background: rgba(255, 253, 244, 0.9);
+  border: 1.3px dashed var(--line-strong);
+  background: rgb(var(--veil) / 0.9);
   color: var(--ink-2);
   transition: all 0.15s ease;
 }

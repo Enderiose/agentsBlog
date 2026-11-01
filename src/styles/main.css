@@ -61,8 +61,174 @@
   --radius-sm: 3px;
   --radius-pill: 999px;
 
+  /* ---- 纸面质感（暗色整体替换，组件里不许再写死颜色） ---- */
+  --paper-glow-1: rgba(255, 255, 255, 0.85);
+  --paper-glow-2: rgba(226, 210, 170, 0.34);
+  --rule-c: rgba(140, 178, 210, 0.13);
+  --rule-c-strong: rgba(140, 178, 210, 0.28);
+  --rule-c-soft: rgba(140, 178, 210, 0.26);
+  --sketch-shadow: rgba(84, 68, 32, 0.07);
+  --sketch-shadow-2: rgba(84, 68, 32, 0.08);
+  --sketch-shadow-3: rgba(84, 68, 32, 0.06);
+  --sketch-shadow-4: rgba(84, 68, 32, 0.09);
+  --ink-shadow: rgba(46, 58, 72, 0.35);
+  --ink-shadow-2: rgba(46, 58, 72, 0.3);
+  --ink-shadow-3: rgba(46, 58, 72, 0.2);
+  --ink-wash: rgba(46, 58, 72, 0.05);
+  --tape: rgba(255, 236, 158, 0.72);
+  --tape-edge: rgba(180, 160, 90, 0.35);
+  --hl-band-0: rgba(255, 232, 115, 0);
+  --hl-band-1: rgba(255, 232, 115, 0.5);
+  --hl-band-2: rgba(255, 232, 115, 0.42);
+  --scroll-thumb: #cdc2a6;
+  --scroll-thumb-h: #b3a884;
+  --code-bg: #fdfcf6;
+  --code-grid: rgba(140, 178, 210, 0.25);
+  --ok-ink: #1f4a38;
+  --ok-line: rgba(47, 125, 91, 0.28);
+  --link-line: rgba(44, 92, 158, 0.35);
+  --scrim: rgba(64, 56, 40, 0.42);
+
+  /* ---- 装订孔 / 折角 / 纸纤维 ---- */
+  --binding-1: rgba(226, 214, 184, 0.55);
+  --binding-2: rgba(250, 247, 238, 0);
+  --binding-edge: rgba(180, 168, 140, 0.4);
+  --hole-in: #fffdf6;
+  --hole-mid: #ded3b8;
+  --hole-out: #c9bda0;
+  --hole-ring: rgba(160, 148, 118, 0.5);
+  --hole-shadow: rgba(120, 105, 70, 0.18);
+  --grain-opacity: 0.5;
+
+  /* ---- 组件里用到的半透明层（暗色整套替换，组件不许再写死 rgba） ---- */
+  --veil: 255 253 244;
+  --paper-rgb: 250 247 238;
+  --line-mid: rgba(180, 168, 140, 0.55);
+  --line-mid-2: rgba(180, 168, 140, 0.5);
+  --line-soft: rgba(180, 168, 140, 0.35);
+  --line-soft-2: rgba(150, 140, 110, 0.4);
+  --line-strong: rgba(150, 138, 108, 0.75);
+  --line-strong-2: rgba(201, 191, 164, 0.55);
+  --rule-dash: rgba(207, 222, 234, 0.9);
+  --grid-c: rgba(140, 178, 210, 0.22);
+  --grid-c-2: rgba(140, 178, 210, 0.3);
+  --sketch-shadow-5: rgba(84, 68, 32, 0.1);
+  --sketch-shadow-6: rgba(84, 68, 32, 0.12);
+  --sketch-shadow-7: rgba(84, 68, 32, 0.14);
+  --sketch-shadow-8: rgba(84, 68, 32, 0.16);
+  --ink-shadow-4: rgba(46, 58, 72, 0.12);
+  --ink-shadow-5: rgba(46, 58, 72, 0.16);
+  --tape-2: rgba(255, 236, 158, 0.8);
+  --link-ink: #1f3f66;
+  --spot: #fffdf4;
+
   /* 手绘边框：四角圆度不同，像圆珠笔描的 */
   --sketch: 255px 15px 225px 15px / 15px 225px 15px 255px;
+
+  color-scheme: light;
+}
+
+/* ==========================================================================
+   夜读本：同一本本子，熄灯之后
+   只换颜色，不动布局；所有颜色都从上面那组变量来，这里只是另一套值
+   ========================================================================== */
+html[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* ---- 纸 ---- */
+  --paper: #191c22;
+  --paper-2: #1e222a;
+  --paper-3: #23282f;
+  --note: #21262e;
+  --note-y: #2c2a1e;
+  --note-p: #2e2229;
+  --note-b: #1f2a35;
+  --note-g: #202c26;
+  --rule: #2b3441;
+  --margin-line: #6e3a37;
+
+  /* ---- 兼容旧变量名 ---- */
+  --panel-2: #2f2b18;
+  --stroke: #343b46;
+  --stroke-2: #464f5c;
+
+  /* ---- 墨水反白（不是纯白，是铅灰） ---- */
+  --ink: #e6e3da;
+  --ink-2: #c4c1b8;
+  --ink-3: #96938a;
+  --ink-4: #776f60;
+
+  /* ---- 笔色：暗底下提亮一档 ---- */
+  --pen-red: #e0735e;
+  --pen-blue: #86aee2;
+  --pen-green: #62bb90;
+  --hl-y: #6d6226;
+  --hl-p: #6d3646;
+  --hl-g: #2f5c49;
+  --hl-o: #6d5026;
+  --hl-b: #2e4b64;
+  --v3: #d97cb2;
+  --amber: #e0a54c;
+
+  /* ---- 纸面质感 ---- */
+  --paper-glow-1: rgba(255, 246, 226, 0.05);
+  --paper-glow-2: rgba(126, 150, 190, 0.1);
+  --rule-c: rgba(126, 160, 196, 0.1);
+  --rule-c-strong: rgba(126, 160, 196, 0.2);
+  --rule-c-soft: rgba(126, 160, 196, 0.18);
+  --sketch-shadow: rgba(0, 0, 0, 0.35);
+  --sketch-shadow-2: rgba(0, 0, 0, 0.38);
+  --sketch-shadow-3: rgba(0, 0, 0, 0.3);
+  --sketch-shadow-4: rgba(0, 0, 0, 0.42);
+  --ink-shadow: rgba(0, 0, 0, 0.55);
+  --ink-shadow-2: rgba(0, 0, 0, 0.5);
+  --ink-shadow-3: rgba(0, 0, 0, 0.45);
+  --ink-wash: rgba(230, 228, 220, 0.07);
+  --tape: rgba(150, 136, 78, 0.45);
+  --tape-edge: rgba(190, 172, 110, 0.25);
+  --hl-band-0: rgba(200, 180, 70, 0);
+  --hl-band-1: rgba(200, 180, 70, 0.3);
+  --hl-band-2: rgba(200, 180, 70, 0.25);
+  --scroll-thumb: #3b424e;
+  --scroll-thumb-h: #4c5563;
+  --code-bg: #1c2129;
+  --code-grid: rgba(126, 160, 196, 0.14);
+  --ok-ink: #86d3b3;
+  --ok-line: rgba(98, 187, 144, 0.3);
+  --link-line: rgba(134, 174, 226, 0.35);
+  --scrim: rgba(0, 0, 0, 0.62);
+
+  /* ---- 装订孔 / 折角 / 纸纤维 ---- */
+  --binding-1: rgba(70, 78, 92, 0.55);
+  --binding-2: rgba(25, 28, 34, 0);
+  --binding-edge: rgba(120, 130, 148, 0.3);
+  --hole-in: #2b313b;
+  --hole-mid: #1f242c;
+  --hole-out: #171b21;
+  --hole-ring: rgba(140, 150, 168, 0.28);
+  --hole-shadow: rgba(0, 0, 0, 0.35);
+  --grain-opacity: 0.22;
+
+  --veil: 33 38 46;
+  --paper-rgb: 25 28 34;
+  --line-mid: rgba(74, 84, 98, 0.9);
+  --line-mid-2: rgba(74, 84, 98, 0.8);
+  --line-soft: rgba(74, 84, 98, 0.6);
+  --line-soft-2: rgba(74, 84, 98, 0.6);
+  --line-strong: rgba(96, 106, 124, 0.85);
+  --line-strong-2: rgba(96, 106, 124, 0.7);
+  --rule-dash: rgba(52, 59, 70, 0.9);
+  --grid-c: rgba(126, 160, 196, 0.16);
+  --grid-c-2: rgba(126, 160, 196, 0.22);
+  --sketch-shadow-5: rgba(0, 0, 0, 0.42);
+  --sketch-shadow-6: rgba(0, 0, 0, 0.45);
+  --sketch-shadow-7: rgba(0, 0, 0, 0.48);
+  --sketch-shadow-8: rgba(0, 0, 0, 0.52);
+  --ink-shadow-4: rgba(0, 0, 0, 0.42);
+  --ink-shadow-5: rgba(0, 0, 0, 0.46);
+  --tape-2: rgba(150, 136, 78, 0.55);
+  --link-ink: #9cc2ef;
+  --spot: #2a303a;
 }
 
 *,
@@ -96,9 +262,9 @@ body::before {
   z-index: -3;
   pointer-events: none;
   background:
-    radial-gradient(circle at 16% 8%, rgba(255, 255, 255, 0.85), transparent 52%),
-    radial-gradient(circle at 84% 82%, rgba(226, 210, 170, 0.34), transparent 58%),
-    repeating-linear-gradient(0deg, transparent 0 31px, rgba(140, 178, 210, 0.13) 31px 32px),
+    radial-gradient(circle at 16% 8%, var(--paper-glow-1), transparent 52%),
+    radial-gradient(circle at 84% 82%, var(--paper-glow-2), transparent 58%),
+    repeating-linear-gradient(0deg, transparent 0 31px, var(--rule-c) 31px 32px),
     var(--paper);
 }
 
@@ -130,12 +296,12 @@ img {
   background: var(--paper-2);
 }
 ::-webkit-scrollbar-thumb {
-  background: #cdc2a6;
+  background: var(--scroll-thumb);
   border-radius: 99px;
   border: 2px solid var(--paper-2);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #b3a884;
+  background: var(--scroll-thumb-h);
 }
 
 /* ==========================================================================
@@ -164,7 +330,7 @@ img {
   background: var(--note);
   border: 1px solid var(--stroke);
   border-radius: var(--radius);
-  box-shadow: 3px 4px 0 rgba(84, 68, 32, 0.07);
+  box-shadow: 3px 4px 0 var(--sketch-shadow);
 }
 
 /* 便签顶上的胶带 */
@@ -176,9 +342,9 @@ img {
   width: 78px;
   height: 22px;
   transform: translateX(-50%) rotate(-2.4deg);
-  background: rgba(255, 236, 158, 0.72);
-  border-left: 1px dashed rgba(180, 160, 90, 0.35);
-  border-right: 1px dashed rgba(180, 160, 90, 0.35);
+  background: var(--tape);
+  border-left: 1px dashed var(--tape-edge);
+  border-right: 1px dashed var(--tape-edge);
   pointer-events: none;
 }
 
@@ -192,7 +358,7 @@ img {
   border-radius: 3px;
   overflow: hidden;
   background: var(--note);
-  box-shadow: 4px 5px 0 rgba(84, 68, 32, 0.08);
+  box-shadow: 4px 5px 0 var(--sketch-shadow-2);
 }
 
 /* 左侧红色装订边线 */
@@ -249,7 +415,7 @@ img {
   background: repeating-linear-gradient(
     0deg,
     transparent 0 31px,
-    rgba(140, 178, 210, 0.28) 31px 32px
+    var(--rule-c-strong) 31px 32px
   );
 }
 
@@ -313,12 +479,12 @@ img {
   color: var(--ink);
   cursor: pointer;
   transition: transform 0.14s ease, box-shadow 0.14s ease, background 0.14s ease;
-  box-shadow: 2px 2px 0 rgba(46, 58, 72, 0.35);
+  box-shadow: 2px 2px 0 var(--ink-shadow);
 }
 
 .btn:hover {
   transform: translate(-1px, -2px) rotate(-0.6deg);
-  box-shadow: 4px 5px 0 rgba(46, 58, 72, 0.3);
+  box-shadow: 4px 5px 0 var(--ink-shadow-2);
   background: var(--note-y);
 }
 
@@ -338,7 +504,7 @@ img {
   padding: 3px 13px;
   border-radius: 2px;
   border: 1.4px solid transparent;
-  background: rgba(46, 58, 72, 0.05);
+  background: var(--ink-wash);
   color: var(--ink-2);
   cursor: pointer;
   transition: all 0.15s ease;
@@ -439,9 +605,13 @@ img {
   flex: 1;
   height: 6px;
   min-width: 40px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='6' viewBox='0 0 40 6'%3E%3Cpath d='M0 4 q5 -4 10 0 t10 0 t10 0 t10 0' fill='none' stroke='%23c9bfa4' stroke-width='1.2'/%3E%3C/svg%3E");
-  background-repeat: repeat-x;
-  background-position: 0 50%;
+  background-color: var(--line-strong-2);
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='6' viewBox='0 0 40 6'%3E%3Cpath d='M0 4 q5 -4 10 0 t10 0 t10 0 t10 0' fill='none' stroke='%23000' stroke-width='1.2'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='6' viewBox='0 0 40 6'%3E%3Cpath d='M0 4 q5 -4 10 0 t10 0 t10 0 t10 0' fill='none' stroke='%23000' stroke-width='1.2'/%3E%3C/svg%3E");
+  -webkit-mask-repeat: repeat-x;
+  mask-repeat: repeat-x;
+  -webkit-mask-position: 0 50%;
+  mask-position: 0 50%;
 }
 
 .sec-head .count {
@@ -459,7 +629,7 @@ img {
   border-radius: 3px;
   overflow: hidden;
   background: var(--note);
-  box-shadow: 3px 4px 0 rgba(84, 68, 32, 0.06);
+  box-shadow: 3px 4px 0 var(--sketch-shadow-3);
 }
 
 .row {
@@ -490,10 +660,10 @@ img {
   transition: transform 0.22s ease;
   background: linear-gradient(
     90deg,
-    rgba(255, 232, 115, 0) 0%,
-    rgba(255, 232, 115, 0.5) 8%,
-    rgba(255, 232, 115, 0.42) 92%,
-    rgba(255, 232, 115, 0) 100%
+    var(--hl-band-0) 0%,
+    var(--hl-band-1) 8%,
+    var(--hl-band-2) 92%,
+    var(--hl-band-0) 100%
   );
   pointer-events: none;
 }
@@ -578,7 +748,7 @@ img {
   background: repeating-linear-gradient(
     0deg,
     transparent 0 31px,
-    rgba(140, 178, 210, 0.26) 31px 32px
+    var(--rule-c-soft) 31px 32px
   );
   background-position: 0 0;
   padding-bottom: 22px;
@@ -647,7 +817,7 @@ img {
 
 .prose a {
   color: var(--pen-blue);
-  border-bottom: 1.5px solid rgba(44, 92, 158, 0.35);
+  border-bottom: 1.5px solid var(--link-line);
   transition: all 0.16s ease;
 }
 
@@ -685,7 +855,7 @@ img {
   background: var(--note-y);
   border-radius: 0 3px 3px 0;
   color: var(--ink);
-  box-shadow: 2px 3px 0 rgba(84, 68, 32, 0.08);
+  box-shadow: 2px 3px 0 var(--sketch-shadow-2);
   transform: rotate(-0.3deg);
 }
 
@@ -696,9 +866,13 @@ img {
 .prose hr {
   border: 0;
   height: 8px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='8' viewBox='0 0 60 8'%3E%3Cpath d='M0 5 q7.5 -6 15 0 t15 0 t15 0 t15 0' fill='none' stroke='%23c9bfa4' stroke-width='1.3'/%3E%3C/svg%3E");
-  background-repeat: repeat-x;
-  background-position: 0 50%;
+  background-color: var(--line-strong-2);
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='8' viewBox='0 0 60 8'%3E%3Cpath d='M0 5 q7.5 -6 15 0 t15 0 t15 0 t15 0' fill='none' stroke='%23000' stroke-width='1.3'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='8' viewBox='0 0 60 8'%3E%3Cpath d='M0 5 q7.5 -6 15 0 t15 0 t15 0 t15 0' fill='none' stroke='%23000' stroke-width='1.3'/%3E%3C/svg%3E");
+  -webkit-mask-repeat: repeat-x;
+  mask-repeat: repeat-x;
+  -webkit-mask-position: 0 50%;
+  mask-position: 0 50%;
   margin: 2.2em 0;
 }
 
@@ -708,8 +882,8 @@ img {
   padding: 1px 6px;
   border-radius: 2px;
   background: var(--hl-g);
-  color: #1f4a38;
-  border: 1px solid rgba(47, 125, 91, 0.28);
+  color: var(--ok-ink);
+  border: 1px solid var(--ok-line);
 }
 
 /* 代码块：方格纸 */
@@ -718,14 +892,14 @@ img {
   padding: 20px 22px 20px 24px;
   border-radius: 3px;
   border: 1px solid var(--stroke-2);
-  background-color: #fdfcf6 !important;
-  background-image: linear-gradient(rgba(140, 178, 210, 0.25) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(140, 178, 210, 0.25) 1px, transparent 1px);
+  background-color: var(--code-bg) !important;
+  background-image: linear-gradient(var(--code-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--code-grid) 1px, transparent 1px);
   background-size: 22px 22px;
   overflow-x: auto;
   font-size: 13.5px;
   line-height: 1.75;
-  box-shadow: 3px 3px 0 rgba(84, 68, 32, 0.07);
+  box-shadow: 3px 3px 0 var(--sketch-shadow);
   position: relative;
 }
 
@@ -742,6 +916,17 @@ img {
   background: transparent !important;
 }
 
+/* Shiki 双主题：构建时同时写进 --shiki-light / --shiki-dark，这里按 data-theme 二选一 */
+.prose .shiki,
+.prose .shiki span {
+  color: var(--shiki-light);
+}
+
+html[data-theme="dark"] .prose .shiki,
+html[data-theme="dark"] .prose .shiki span {
+  color: var(--shiki-dark);
+}
+
 /* 配图：贴上去的照片 */
 .prose figure {
   margin: 1.7em 0;
@@ -755,7 +940,7 @@ img {
   border-radius: 2px;
   background: var(--note);
   padding: 6px;
-  box-shadow: 2px 3px 0 rgba(84, 68, 32, 0.09);
+  box-shadow: 2px 3px 0 var(--sketch-shadow-4);
 }
 
 .prose figure figcaption {
@@ -859,5 +1044,62 @@ img {
   }
   .prose {
     font-size: 16px;
+  }
+}
+
+/* ==========================================================================
+   配色切换（系统 / 浅 / 深）——笔袋里的三支笔
+   ========================================================================== */
+
+.theme-switch {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border: 1.3px dashed var(--stroke-2);
+  border-radius: var(--radius-pill);
+  background: var(--paper-2);
+}
+
+.theme-btn {
+  font-family: var(--hand);
+  font-size: 12.5px;
+  line-height: 1;
+  padding: 5px 8px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--ink-3);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.theme-btn:hover {
+  color: var(--ink);
+}
+
+.theme-btn:focus-visible {
+  outline: 1.6px dashed var(--ink-3);
+  outline-offset: 1px;
+}
+
+/* 选中的那支：被荧光笔划了一道 */
+.theme-btn.on {
+  background: var(--hl-y);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1.2px var(--ink);
+}
+
+@media (max-width: 720px) {
+  .theme-btn {
+    padding: 5px 6px;
+    font-size: 11.5px;
+  }
+}
+
+/* 窄屏：GitHub 挪到页脚（页脚本来就有），把位置让给配色 */
+@media (max-width: 640px) {
+  .actions .gh {
+    display: none;
   }
 }

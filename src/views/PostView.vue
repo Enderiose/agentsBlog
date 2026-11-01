@@ -273,8 +273,8 @@ h1 {
   font-size: 13.5px;
   padding: 0 10px;
   border-radius: 2px;
-  border: 1.3px dashed rgba(150, 138, 108, 0.75);
-  background: rgba(255, 253, 244, 0.9);
+  border: 1.3px dashed var(--line-strong);
+  background: rgb(var(--veil) / 0.9);
   color: var(--ink-2);
   transition: all 0.15s ease;
 }
@@ -304,13 +304,13 @@ h1 {
   padding: 0 8px;
   border-radius: 2px;
   background: var(--hl-g);
-  border: 1px solid rgba(47, 125, 91, 0.3);
-  color: #1f4a38;
+  border: 1px solid var(--ok-line);
+  color: var(--ok-ink);
   font-size: 13px;
 }
 .stack .s.repo {
-  color: #1f3f66;
-  border-color: rgba(44, 92, 158, 0.3);
+  color: var(--link-ink);
+  border-color: var(--link-line);
   background: var(--hl-b);
 }
 .stack .s.repo:hover {
@@ -340,7 +340,7 @@ h1 {
 .toc-inner::before {
   width: 54px;
   height: 18px;
-  background: rgba(255, 255, 255, 0.62);
+  background: rgb(var(--veil) / 0.62);
   transform: translateX(-50%) rotate(2deg);
 }
 
@@ -348,7 +348,7 @@ h1 {
   width: 4px;
 }
 .toc-inner::-webkit-scrollbar-thumb {
-  background: rgba(160, 148, 118, 0.4);
+  background: var(--hole-ring);
   border: 0;
 }
 
@@ -359,14 +359,14 @@ h1 {
   margin: 0 0 10px;
   font-weight: 400;
   padding-bottom: 6px;
-  border-bottom: 1.5px dashed rgba(150, 140, 110, 0.4);
+  border-bottom: 1.5px dashed var(--line-soft-2);
 }
 
 .toc ul {
   list-style: none;
   margin: 0;
   padding: 0;
-  border-left: 1.5px solid rgba(150, 140, 110, 0.35);
+  border-left: 1.5px solid var(--line-soft);
 }
 
 .toc li a {
@@ -413,7 +413,7 @@ h1 {
 
 .pn-item:hover {
   transform: translateY(-2px) rotate(-0.4deg);
-  box-shadow: 4px 6px 0 rgba(84, 68, 32, 0.12);
+  box-shadow: 4px 6px 0 var(--sketch-shadow-6);
 }
 
 .pn-item .lbl {
@@ -518,7 +518,7 @@ h1 {
   cursor: pointer;
   opacity: 0;
   transition: all 0.16s ease;
-  box-shadow: 1px 1px 0 rgba(46, 58, 72, 0.2);
+  box-shadow: 1px 1px 0 var(--ink-shadow-3);
 }
 
 .prose pre.code-block:hover .copy-btn {

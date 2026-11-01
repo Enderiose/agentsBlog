@@ -149,7 +149,7 @@ h1 {
   border: 1.4px solid var(--ink-3);
   background: var(--note);
   min-width: 190px;
-  box-shadow: 2px 2px 0 rgba(46, 58, 72, 0.12);
+  box-shadow: 2px 2px 0 var(--ink-shadow-4);
 }
 
 .search .p {

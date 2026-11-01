@@ -50,10 +50,10 @@ footer {
   padding: 40px 0 34px;
   position: relative;
   border-top: 2px dashed var(--stroke-2);
-  background: linear-gradient(180deg, rgba(255, 253, 244, 0.55), transparent);
+  background: linear-gradient(180deg, rgb(var(--veil) / 0.55), transparent);
 }
 
-/* 顶部锯齿撕纸 */
+/* 顶部锯齿撕纸：用 conic-gradient 画三角，颜色跟着 --paper 走（暗色才不会变成白牙） */
 footer::before {
   content: "";
   position: absolute;
@@ -61,7 +61,8 @@ footer::before {
   left: 0;
   right: 0;
   height: 8px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='8' viewBox='0 0 24 8'%3E%3Cpath d='M0 8 L6 1 L12 7 L18 0 L24 8 Z' fill='%23faf7ee'/%3E%3C/svg%3E");
+  background-image: conic-gradient(from 135deg at 50% 100%, var(--paper) 90deg, transparent 0);
+  background-size: 12px 8px;
   background-repeat: repeat-x;
 }
 

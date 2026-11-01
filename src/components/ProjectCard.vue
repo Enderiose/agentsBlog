@@ -53,9 +53,9 @@ function glow(e: MouseEvent) {
   flex-direction: column;
   padding: 22px 20px 18px;
   border-radius: 2px;
-  border: 1px solid rgba(180, 168, 140, 0.55);
+  border: 1px solid var(--line-mid);
   background: var(--note-y);
-  box-shadow: 3px 4px 0 rgba(84, 68, 32, 0.1);
+  box-shadow: 3px 4px 0 var(--sketch-shadow-5);
   transition: transform 0.18s ease, box-shadow 0.18s ease;
   overflow: visible;
 }
@@ -69,9 +69,9 @@ function glow(e: MouseEvent) {
   width: 66px;
   height: 20px;
   transform: rotate(-4deg);
-  background: rgba(255, 255, 255, 0.55);
-  border-left: 1px dashed rgba(150, 140, 110, 0.35);
-  border-right: 1px dashed rgba(150, 140, 110, 0.35);
+  background: rgb(var(--veil) / 0.55);
+  border-left: 1px dashed var(--line-soft);
+  border-right: 1px dashed var(--line-soft);
   pointer-events: none;
 }
 
@@ -83,13 +83,13 @@ function glow(e: MouseEvent) {
   bottom: 0;
   width: 18px;
   height: 18px;
-  background: linear-gradient(135deg, transparent 50%, rgba(180, 168, 140, 0.35) 50%);
+  background: linear-gradient(135deg, transparent 50%, var(--line-soft) 50%);
   pointer-events: none;
 }
 
 .card:hover {
   transform: translateY(-4px) rotate(-0.7deg);
-  box-shadow: 5px 8px 0 rgba(84, 68, 32, 0.16);
+  box-shadow: 5px 8px 0 var(--sketch-shadow-8);
 }
 
 .idx {
@@ -159,8 +159,8 @@ p {
   font-size: 12.5px;
   padding: 0 8px;
   border-radius: 2px;
-  background: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(180, 168, 140, 0.5);
+  background: rgb(var(--veil) / 0.6);
+  border: 1px solid var(--line-mid-2);
   color: var(--ink-2);
 }
 
@@ -169,7 +169,7 @@ p {
   justify-content: space-between;
   align-items: center;
   padding-top: 12px;
-  border-top: 1.5px dashed rgba(150, 140, 110, 0.4);
+  border-top: 1.5px dashed var(--line-soft-2);
   font-size: 13px;
   color: var(--ink-3);
 }

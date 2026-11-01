@@ -235,8 +235,8 @@ h1 {
   padding: 6px 12px 4px;
   border: 1.4px solid var(--ink-3);
   border-radius: 2px;
-  background: rgba(255, 253, 244, 0.7);
-  box-shadow: 2px 2px 0 rgba(46, 58, 72, 0.12);
+  background: rgb(var(--veil) / 0.7);
+  box-shadow: 2px 2px 0 var(--ink-shadow-4);
 }
 
 .metric b {
@@ -276,7 +276,7 @@ h1 {
 
 .feature:hover {
   transform: translateY(-3px) rotate(-0.3deg);
-  box-shadow: 6px 8px 0 rgba(84, 68, 32, 0.14);
+  box-shadow: 6px 8px 0 var(--sketch-shadow-7);
 }
 
 .fx {
@@ -330,8 +330,8 @@ h1 {
   place-items: center;
   min-height: 250px;
   background-color: var(--note);
-  background-image: linear-gradient(rgba(140, 178, 210, 0.3) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(140, 178, 210, 0.3) 1px, transparent 1px);
+  background-image: linear-gradient(var(--grid-c-2) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-c-2) 1px, transparent 1px);
   background-size: 24px 24px;
   border-left: 1.5px dashed var(--stroke-2);
 }
@@ -341,14 +341,14 @@ h1 {
   height: 130px;
   position: relative;
   border-radius: 47% 53% 55% 45% / 52% 45% 55% 48%;
-  background: radial-gradient(circle at 32% 28%, #fffdf4 0 18%, transparent 55%),
+  background: radial-gradient(circle at 32% 28%, var(--spot) 0 18%, transparent 55%),
     repeating-linear-gradient(
       -45deg,
       var(--hl-y) 0 9px,
       var(--hl-o) 9px 18px
     );
   border: 2.2px solid var(--ink);
-  box-shadow: 4px 5px 0 rgba(46, 58, 72, 0.16);
+  box-shadow: 4px 5px 0 var(--ink-shadow-5);
   animation: wobble 9s ease-in-out infinite;
   display: grid;
   place-items: center;
@@ -403,7 +403,7 @@ h1 {
   font-size: 14.5px;
   padding: 1px 11px;
   border-radius: 2px;
-  border: 1px solid rgba(180, 168, 140, 0.55);
+  border: 1px solid var(--line-mid);
   background: var(--note);
   color: var(--ink-2);
   transition: all 0.15s ease;
@@ -451,8 +451,8 @@ h1 {
   text-align: center;
   position: relative;
   background: var(--note-y);
-  border: 1.5px solid rgba(180, 168, 140, 0.6);
-  box-shadow: 5px 6px 0 rgba(84, 68, 32, 0.12);
+  border: 1.5px solid var(--line-mid);
+  box-shadow: 5px 6px 0 var(--sketch-shadow-6);
   transform: rotate(-0.35deg);
 }
 
@@ -464,9 +464,9 @@ h1 {
   top: -12px;
   width: 92px;
   height: 24px;
-  background: rgba(255, 255, 255, 0.6);
-  border-left: 1px dashed rgba(150, 140, 110, 0.35);
-  border-right: 1px dashed rgba(150, 140, 110, 0.35);
+  background: rgb(var(--veil) / 0.6);
+  border-left: 1px dashed var(--line-soft);
+  border-right: 1px dashed var(--line-soft);
 }
 .cta::before {
   left: 26px;

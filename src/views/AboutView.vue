@@ -177,8 +177,8 @@ h1 {
   font-size: 14px;
   padding: 1px 11px;
   border-radius: 2px;
-  border: 1.3px dashed rgba(150, 138, 108, 0.75);
-  background: rgba(255, 253, 244, 0.9);
+  border: 1.3px dashed var(--line-strong);
+  background: rgb(var(--veil) / 0.9);
   color: var(--ink-2);
   transition: all 0.15s ease;
 }

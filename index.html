@@ -10,6 +10,24 @@
       content="我做 Agent 应用的过程记录：需求怎么来、架构怎么选、哪里炸了、最后长成什么样。"
     />
     <meta name="theme-color" content="#faf7ee" />
+    <script>
+      // 首屏防闪：在任何 CSS/组件之前把配色落到 <html> 上。
+      // 存的键要和 src/lib/theme.ts 里的 THEME_KEY 一致（agentlog-theme）。
+      (function () {
+        try {
+          var m = localStorage.getItem('agentlog-theme') || 'system'
+          var dark =
+            m === 'dark' ||
+            (m === 'system' &&
+              window.matchMedia &&
+              window.matchMedia('(prefers-color-scheme: dark)').matches)
+          var root = document.documentElement
+          root.setAttribute('data-theme', dark ? 'dark' : 'light')
+          var meta = document.querySelector('meta[name="theme-color"]')
+          if (meta) meta.setAttribute('content', dark ? '#191c22' : '#faf7ee')
+        } catch (e) {}
+      })()
+    </script>
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Agent Log · 施工日志" />
     <meta

@@ -110,7 +110,10 @@ async function main() {
   })
   md.use(
     await Shiki({
-      theme: 'github-light-default',
+      // 双主题：同时写进 --shiki-light / --shiki-dark 两个 CSS 变量，
+      // 页面靠 html[data-theme] 二选一（见 main.css），不用为暗色再跑一遍构建。
+      themes: { light: 'github-light-default', dark: 'github-dark-default' },
+      defaultColor: false,
       // 不指定 langs 会加载全部语言，构建会明显变慢
       langs: [
         'lua',
